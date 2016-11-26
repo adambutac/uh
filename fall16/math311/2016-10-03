@@ -1,0 +1,45 @@
+EXAM 1 REVIEW THING
+
+elementary matrix:
+    take the identiy matrix and perform an elementary operation
+
+note for exam:
+    you forgot to reverse the order of the product...raise_volume
+
+Thingies:
+    The set spans if the something something linear equation...
+
+    Linear independence means if the linear combination is 0 all coefficents are 0
+
+Adding a vector to a linearly independant set that is not in the span, it is still linearly independent.
+
+    Write down a linear combination nd set it to zero.
+
+    So now I have to show each coefficent is zero.
+
+Show that U is a subspace:
+    It cannot be empty
+    It is closed under addition and multiplication with scalars
+
+LINEAR MAPS
+
+aka functions, operaors, homomorphous linear functions
+
+    Suppose V & W are vectorspaces Thru L:V -> W is linear
+    for all C1 C2 in F and v1, v2 exists in V
+    
+    L(c1v1 + c2v2) = c1L(v1) + c2L(v2)
+
+
+    example:
+        V = W = C^inf(R)
+        L(f) = f'
+
+        (af + bg) = af' + bg'
+
+        V = R^n, W=R^m
+        L(v) = Av , where A exists in a matrix M^(m x n)
+
+        L(c1v1 + c2v2) = A(c1v1 + c2v2)
+
+        

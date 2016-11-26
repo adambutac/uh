@@ -1,0 +1,31 @@
+A note about the homework?
+
+
+if every vector i san eigen vector (except v=0) then the linear map L is a multiple of the identity map
+
+Proof:
+    if dim(V) == 1, then every linear map is a multiple of Id.
+
+    Define:linearity
+
+
+    Suppose dim(V) >= 2
+        pick any two lin. indp. vec. v & w. 
+        
+        Then L(v) = lam(v) && L(w) = mew(w)
+            bet(v) + bet(w) = bet(v+w) = L(v+w) = L(v) + L(w) = lam(v) + lam(w)
+            (lam-bet)v + (mew-bet)w
+
+            Linear independence implice lam-mew = 0  &&  mew - bet = 0
+            hence lam=mew
+            This implies a single eigen value L=lam(Id)
+
+
+    At some point we proved a related theorm 
+    if two different eigen values associated eigen vectors are linear independent
+    lam1 ... lamk = distinct eigen values, associated with eigenvectors v1 ... vk
+    then v1...vk are lin indp
+
+
+    Linear independence
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

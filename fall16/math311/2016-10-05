@@ -1,0 +1,21 @@
+I)
+    Vectorspaces, subspaces, sums
+
+    Basis (linearly independent and spanning)   
+
+    Coordinates
+
+        Along the way we solved 
+            system of equations, 
+            matrices, 
+                elementary matrices, 
+                and non singularity matrices.
+
+II)
+    MAPS
+        So far we have done linear maps
+        L(a v_1+b v_2) = aL(v_1) + bL(v_2)
+        
+        All important exxample 
+            V = RR^n -L-> w = RR^M
+            A = M[] ^ mxn _ RR

@@ -1,0 +1,93 @@
+Eigen Values and Eigen Vectors
+    EIGEN VALUES ARE NOT ZERO
+    EIGEN VECTORS ARE NOT ZERO
+
+    You have homework you still need to do...
+    He said it was ok to turn it in a "little late."
+o   Still have yet to do any homework revisions. Find time.
+
+
+Invarient subspaces
+
+    L: V -> V linear operator
+
+if u subspace of V & L(u) <= u, then
+    u is called invarient
+
+
+1)
+    L restricts to a linear map from u to U
+
+
+Examples:
+
+    U is all of V
+    U is zero {0} the zero set
+    U is the kernel
+    U is the image of L
+
+
+Invarient Subspaces of dimension 1:
+
+    v is an eigen vector if
+
+    L of V is a multiple of v
+    L(v) = lam*v (some multiple of v)
+
+
+
+THEORM: 
+
+    If lam_1 lam_r are distinct eigen values for eigen vectors v1, ... , vr then v1, ... vr are lin ind.
+    
+
+PROOF: 
+
+    a1 * v1 + ... + an * vn = 0;  <= apply L
+    a1*lam1*v1 + ... + an * lamn * vn = 0; multipily with lam_r
+    a1 lamr v1 + ... + ar lamr * vr = 0;
+    _____________________________________________________
+    a1 (lam1 - lamr)v1 + ... + ar-1 (lamr-1 -lamr) vr-1 = 0;
+
+    eventually you get the following:
+
+    a1(lam1-lamr)(lam1-lamr-1) ... (lam1-lam2)v1  = 0
+        eigen values and vectors are not zero, so the coefficent a1 must be zero
+
+COR: 
+
+    L: V -> V then L cannot have more than dim(V) distinct eigen values. If there were more then there would be more eigen vectors.
+
+DEF:
+    
+    If lam is ean eigenvalue of L, then Elam  = { v exisits in V | L(v) = lam v}
+    is the eigenspace of lam
+
+    dim(Elam) >= 1
+
+
+    we call dim(Elam) the geometric multiplicity of lam
+
+REMARK:
+
+    Elam is an invarient subspace
+
+
+THEORM:
+    
+    Over field F = complex set C, every linear map has eigen values and eigen vectors.
+
+    if L: V -> V , dim (V) = n, L has n distinct eigen values,  then
+    with respect to the basis consists of eigen values, the matrix of L is diagonal.
+
+    
+    Use the basis of the eigen vectors B
+
+    [L] from B to B = (lam1     0       0)
+                      ( 0       lam2    0)
+                      ( 0       0       lam3)
+
+EQUIVELANCE RELATION:
+    
+    A~B <=>  P^-1 A P = B
+
