@@ -1,0 +1,146 @@
+PROPOSAL
+
+  The goal of this research is to identify and explore some common ways of how random 
+numbers are implemented in programs as well as the algorithms and techniques that are 
+used to create them. Random numbers are used in a wide array of applications aka 
+computer programs where entropy is required. A great example is a computer card game 
+which requires a function of shuffling a deck. Without randomness, the order
+of the cards would be too predictable and the game would not be fun. A more complex 
+example is how random numbers effect the expected order of complexity and runtime of 
+searching and sorting algorithms as well as its importantce in encryption.
+
+BIBLIOGRAPHY
+
+#1
+L’Ecuyer, Pierre. "Random number generation." Handbook of Computational
+Statistics. Springer Berlin Heidelberg, 2012. 35-71.
+
+L'Ecuyer supplies a vast amount of information on Random Number Generators, as well as
+some information on where random numbers are used and why they are nessesary. He 
+explains how they are important for simulation and how random number generators are 
+simulated themselves. Physical Random Number generators include gamma ray counters, 
+noise diodes,  and the system used to draw numbers for the lottery in which balls of 
+identical weights and sizes are used. L'Ecuyer then goes on into mathmatical proofs onhow random number generator alorithms are designed and tested and explains their 
+pitfalls.
+
+#2
+Reidler, I., et al. "Ultrahigh-speed random number generation based on a
+chaotic semiconductor laser." Physical review letters 103.2 (2009): 024102.
+
+Reidler and other researchers were able to generate random sequences at rates up to
+12.5Gbit/s using the light from a semiconductor laser. Reidler explains how
+random number generators are used in secure communications and how the quality
+of the random number generator is measured by its strength against a
+prediciton attack. They were able to generate random numbers using an external
+feedback loop which caused the laser to pulse with random amplitude and time
+position. Since the width of the pulse was less than 100 phemtoseconds the
+random numbers generated at an extremely high rate of 10GHz. 
+
+#3
+Vazirani, Umesh V., and Vijay V. Vazirani. "Efficient and secure pseudo-random
+number generation." Workshop on the Theory and Application of Cryptographic
+Techniques. Springer Berlin Heidelberg, 1984.
+
+Cryptographically secure pseudo random number generator are often inefficent
+which in layman's terms usually means they take a longer time to calculate.
+At the time, the most efficent random number generators could only generate
+one bit on each modular multiplicaton, which takes n^2 computations.
+However, Vazirani and Vijay prove that any generator satisfying the
+XOR-Condition can output log(n) bits on each modular multiplication. They also
+show how it also strengthens the seurity by proving that an attack on the
+random number generator is as hard as factoring.
+
+#4
+Park, Stephen K., and Keith W. Miller. "Random number generators: good ones
+are hard to find." Communications of the ACM 31.10 (1988): 1192-1201.
+
+Parka nd Keith explain how a minimalistic approach to random number generators
+can prove to be benificial by their lack of complexity. To implement this
+approach, they use Lehmer's algorithm which has stood against the test of
+time. Lehmer's algorithm is simple enough to be explained in about 5 lines.
+Lehmer's uses m, a large prime number, and a, an a multiplier within the range
+of integers 2 to m - 1. It works by feeding the previous value generated back
+into the generator which creates a feedback loop. The article also provides a
+high level implimentation in pseudocode.
+
+#5
+Blum, Lenore, Manuel Blum, and Mike Shub. "A simple unpredictable
+pseudo-random number generator." SIAM Journal on computing 15.2 (1986):
+364-383.
+
+Blum, Blum, and Shub identify that the ideal pseudo-random number generator is
+fast, uses small seeds, and generates long unpredictable and evenly
+distributed numbers. Also, the ideal pesudo-random number generator will
+output numbers that are polynomial-time unpredictable. This means that for
+every initial sequence of numbers that is produced by the generator and having
+ any element removed from either the left or right side of the sequence, a
+Turing machine (computer) can do no better in guessing the removed number in
+polynomial time. 
+
+#6
+Thomas, David Barrie, Lee Howes, and Wayne Luk. "A comparison of CPUs, GPUs,
+FPGAs, and massively parallel processor arrays for random number generation."
+Proceedings of the ACM/SIGDA international symposium on Field programmable
+gate arrays. ACM, 2009.
+
+Multi-processor computers are quickly becoming the standard, and so the demand
+for parallel processing within applications is also on the rise. Thomas Howes
+and Luk explore four different types of multi-core platforms including CPUs,
+GPUs, GPGAs and Massivly Parallel Processor Arrays. For each of the platforms
+they try to identify the best random number generator for creating uniform,
+Gaussian, and exponential distributions. Their results concluded that each
+platform requires different approaches.
+
+#7
+Dichtl, Markus, and Jovan Dj Golić. "High-speed true random number generation
+with logic gates only." International Workshop on Cryptographic Hardware and
+Embedded Systems. Springer Berlin Heidelberg, 2007.
+
+Random Number generators can be created using only Logic gates (semi-conductors) 
+and generate true random numbers as opposed to simulated random numbers (i.e.
+the number sequence cannot be easily reproduced if at all, and they don't
+require a seed). These types of random number generators tend to be less
+robust and are incapable of creating higher rates of entropy. These generators
+are usually implemented as a ring oscillator, where an odd number of logic
+inverters are connected in a cycle. Fibonacci and Galios ring oscillators are
+two generalisations of a ring oscillator.
+
+#8
+Guo, Hong, et al. "Truly random number generation based on measurement of
+phase noise of a laser." Physical Review E 81.5 (2010): 051137.
+
+According to this paper, chaotic lasers are NOT capable of generating a truly
+random number. They are infact "physically pseudorandom number generator[s]"
+They solve this problem by using a single stream of photons from a laser, and
+by splitting the beam in two and having it combine again create constructive
+and destructive waves or phases within the output beam, which are then
+detected and used to generate guarenteed true random numbers. However, it is
+much slower than a chaotic laser, generating only about 20 Mbit/s.
+
+#9
+Deng, Lih-Yuan, and Dennis KJ Lin. "Random number generation for the new
+century." The American Statistician 54.2 (2000): 145-150.
+
+Deng and Lin explain how linear congreuntial generators limitation of having a
+small period is no longer sufficently large for todays scale of simulation.
+Generators that have been discussed are the multiple recursive generator,
+which "is generated from a linear combination of the past k random numbers", and
+the matrix congruential generator, which uses a multidimensional approach to
+the linear congruential generator. Both of these random number generators
+provide a larger period (p^k -1 v.s. p). Of course with a larger period the
+algorithm takes k times longer to compute than the classic linear conguential
+generator.
+
+#10
+L'ecuyer, Pierre. "Good parameters and implementations for combined multiple
+recursive random number generators." Operations Research 47.1 (1999): 159-164.
+
+According to L'ecuyer and many others, it is known that the period value of
+random number generators is much too small to be considered secure. In fact,
+he goes on to say that the period of a general purpose generator must exceed
+2^100, preferrably more. He hows how to implement newer algorithms called
+Multiple Recursive Generators that can work on different architectures.
+L'ecuyer provides an implemintation of a newly created algorithm MRG32k3a
+which is a Multiple Recursive Generator that works on a 32bit word machine and
+is able to generate stronger random numbers by allowing a much larger period
+to distribute numbers within.
