@@ -1,0 +1,539 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #5: Probabilistic Analysis and Randomized Algorithms</title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #5: Probabilistic Analysis and Randomized
+Algorithms</h1> <hr>
+
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+<ol>
+  <li>Probabilistic Analysis</li>
+  <li>Randomized Algorithms</li>
+  <li>Skip Lists </li>
+</ol> 
+
+<h2> Readings and Screencasts</h2>
+<ul>
+  <li> If needed, brush up on probabilities with Appendix C. </li> 
+  <li> CLRS Sections 5.1-5.3 and 5.1.4 (Birthday Paradox) </li> 
+  <li> Goodrich & Tamassia's section on Skip Lists, posted in Laulima </li>
+  <li> Screencasts <a href="http://youtu.be/MgnvWTZgqcA">5A</a>,
+                  <a href="http://youtu.be/k-jusEhrRik">5B</a>,
+                  <a href="http://youtu.be/iaKu6jaKPFw">5C</a>,
+                  <a href="http://youtu.be/oW2VnviRh5M">5D</a>
+                  (also in Laulima and iTunesU)</li>
+  <li> In addition to my screencasts, there is a 
+       <a href="http://videolectures.net/mit6046jf05_demaine_lec12/">Video Lecture on Skip Lists</a>
+  </li>   
+</ul> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Motivations and Preview</h2>
+
+<p>Instead of limiting analysis to best case or worst case, analyze all cases based on a distribution
+of the probability of each case.</p>
+
+<p>We implicitly used probabilistic analysis when we said that <i>given random input</i> it takes n/2
+comparisons <i>on average</i> to find an item in a linked list of n items.</p> 
+
+<h3>Hiring Problem and Cost</h3>
+
+<p> The book's example is a little strange but illustrates the points well. Suppose you are using an
+employment agency to hire an office assistant. </p>
+
+<ul>
+  <li>The agency sends you one candidate per day: interview and decide.</li>
+  <li>Cost to interview is <i>c</i><sub><i>i</i></sub> per candidate (fee to agency). </li> 
+  <li>Cost to hire is <i>c</i><sub><i>h</i></sub> per candidate (includes firing prior assistant and fee to
+      agency).</li> 
+  <li><i>c<sub>h</sub></i> &gt; <i>c<sub>i</sub></i></li> 
+  <li>You always hire the best candidate seen so far.</li> 
+</ul>
+
+<pre>
+  Hire-Assistant(n)
+  1  best = 0                // fictional least qualified candidate
+  2  for i = 1 to n
+  3    interview candidate i // paying cost  <i>c<sub>i</sub></i>
+  4    if candidate i is better than candidate best
+  5      best = i
+  6      hire candidate i    // paying cost <i>c<sub>h</sub></i>
+</pre>
+
+<p>What is the cost of this strategy?</p>
+<ul> 
+  <li>If we interview <i>n</i> candidates and hire <i>m</i> of them, cost is
+      O(<i>c<sub>i</sub>n</i> + <i>c<sub>h</sub>m</i>)</li> 
+  <li>We interview all <i>n</i> and <i>c<sub>i</sub></i> is small, so we focus on
+      <i>c<sub>h</sub>m</i>.</li> 
+  <li><i>c<sub>h</sub>m</i> varies with each run and depends on interview order</li> 
+  <li>This is a common paradigm: finding the maximum or minimum in a sequence by examining each
+      element, and changing the winner <i>m</i> times.</li> 
+</ul>
+
+
+<h4>Best Case</h4>
+
+<p>If each candidate is worse than all who came before, we hire one candidate:<br>
+    &nbsp; &nbsp; O(<i>c<sub>i</sub>n</i> + <i>c<sub>h</sub></i>) = O(<i>c<sub>i</sub>n</i>)</p> 
+
+<h4>Worst Case</h4>
+
+<p>If each candidate is better than all who came before, we hire all <i>n</i> (<i>m</i> =
+   <i>n</i>):<br>
+    &nbsp; &nbsp; O(<i>c<sub>i</sub>n</i> + <i>c<sub>h</sub>n</i>) = O(<i>c<sub>h</sub>n</i>) since 
+    <i>c<sub>h</sub></i> &gt; <i>c<sub>i</sub></i></br>
+But this is pessimistic. What happens in the average case?</p>
+
+<h3>Probabilistic Analysis</h3> 
+<ul>
+  <li>We must know or make assumptions about the distribution of inputs.</li> 
+  <li>The expected cost is over this distribution.</li>
+  <li>The analysis will give us <b><em>average case</em></b> running time.</li>
+</ul>
+<p> We don't have this information for the Hiring Problem, but suppose we could assume that
+candidates come in random order. Then the analysis can be done by counting permutations:</p>
+
+<ul>
+  <li>Each ordering of candidates (relative to some reference ordering such as a
+      ranking of the candidates) is equally likely to be any of the n! permutations of the 
+      candidates. </li>
+  <li>In how many do we hire once? twice? three times? ... <i>n</i>&minus;1 times? <i>n</i>
+      times?</li>
+  <li> It depends on how many permutations have zero, one two ... <i>n</i>&minus;2 or <i>n</i>&minus;1
+       candidates that come before a better candidate.</li>
+  <li>This is complicated!</li>  
+  <li>Instead, we can do this analysis with indicator variables (next section)</li>
+</ul>
+
+<h3>Randomized Algorithms</h3>
+<p>We might not know the distribution of inputs or be able to model it.</p>
+<p>Instead we <em>randomize</em> within the algorithm to <em>impose</em> a distribution on the
+inputs.</p>
+<p>An algorithm is <b>randomized</b> if its behavior is determined in parts by values provided by a random
+number generator.</p>
+<p>This requires a change in the hiring problem scenario:</p> 
+<ul>
+  <li>The employment agency sends us a list of <i>n</i> candidates in advance and lets us choose the
+      interview order.</li> 
+  <li>We choose randomly.</li>
+</ul> 
+<p>Thus we <em>take control</em> of the question of whether the input is randomly ordered: we
+<em>enforce</em> random order, so the average case becomes the <b><em> expected value</em></b>.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Probabilistic Analysis with Indicator Random Variables</h2>
+
+<p>Here we introduce technique for computing the expected value of a random variable, even when
+there is dependence between variables. Two informal definitions will get us started:</p>
+
+<p>A <b>random variable</b> (e.g., <i>X</i>) is a variable that takes on any of a range of values
+according to a probability distribution. </p>
+
+<p>The <b>expected value</b> of a random variable (e.g., E[<i>X</i>]) is the average value we would
+observe if we sampled the random variable repeatedly. </p>
+
+<h3> Indicator Random Variables </h3>
+
+<p>Given sample space <i>S</i> and event <i>A</i> in <i>S</i>, define the <b>indicator random
+variable</b></p> <img src="Topic-05/indicator-random-variable.jpg">
+
+<p>We will see that indicator random variables simplify analysis by letting us work with the
+probability of the values of a random variable separately.</p>
+
+
+<a name="lemma1"><img src="Topic-05/lemming.jpg" align="right"> </a>
+<h4>Lemma 1</h4>
+
+<p>For an event <i>A</i>, let <i>X<sub>A</sub></i> = I{<i>A</i>}. Then the expected
+value <b>E[<i>X<sub>A</sub></i>] = Pr{<i>A</i>}</b>  (the probability of event <i>A</i>).</p>
+
+<p> <i>Proof:</i> Let &not;<i>A</i> be the complement of <i>A</i>. Then
+<blockquote>
+  E[<i>X<sub>A</sub></i>] = E[I{<i>A</i>}]  &nbsp; (by definition)<br>
+  &nbsp; &nbsp; = 1*Pr{<i>A</i>} + 0*Pr{&not;<i>A</i>}   &nbsp;  (definition of expected value)<br> 
+  &nbsp; &nbsp;  = Pr{<i>A</i>}.
+</blockquote>
+
+<h3>Simple Example</h3>
+
+<p>What is the expected number of heads when flipping a fair coin once?</p>
+<ul> 
+  <li>Sample space <i>S</i> is {H, T}</li> 
+  <li>Pr{H} = Pr{T} = 1/2</li> 
+  <li>Define indicator random variable <i>X</i><sub>H</sub>= I{H}, which counts the number of heads
+      in one flip.</li> 
+  <li>Since Pr{H} = 1/2, Lemma 1 says that E[<i>X</i><sub>H</sub>] = 1/2. </li>
+</ul> 
+
+<h3>Less Simple Example</h3>
+
+<p>What is the expected number of heads when we flip a fair coin <i>n</i> times?</p>
+<p>Let <i>X</i> be a random variable for the number of heads in <i>n</i> flips.</p> 
+
+<p>We could compute E[<i>X</i>] = &sum;<sub><i>i</i>=0,<i>n</i></sub><i>i</i> Pr{<i>X</i>=<i>i</i>}
+-- that is, compute and add the probability of there being 0 heads total, 1 head total, 2 heads
+total ... n heads total, as is done in C.37 in the appendix and in my screencast lecture <a
+ href="http://youtu.be/MgnvWTZgqcA">5A</a> -- but it's messy!</p>
+
+<p>Instead use indicator random variables to count something we <em>do</em> know the probability
+for: the probability of getting heads when flipping the coin once:</p>
+
+<ul> 
+  <li>For <i>i = 1, 2, ... n</i> define <i>X<sub>i</sub></i> = I{the <i>i</i>th flip results in
+      event H}.</li> 
+  <li>Then <i>X</i> = &sum;<sub><i>i</i>=1,<i>n</i></sub><i>X<sub>i</sub></i>. &nbsp; <i> (That is, 
+      count the flips individually and add them up.)</i></li> 
+  <li>Lemma 1 says that E[<i>X<sub>i</sub></i>] = Pr{H} = 1/2 for <i>i = 1, 2, ... n</i>.</li> 
+  <li>Expected number of heads is E[<i>X</i>] =
+      E[&sum;<sub><i>i</i>=1,<i>n</i></sub><i>X<sub>i</sub></i>]</li>  
+  <li><i>Problem:</i> We don't have &sum;<sub><i>i</i>=1,<i>n</i></sub><i>X<sub>i</sub></i>; we only
+      have E[<i>X</i><sub>1</sub>], E[<i>X</i><sub>2</sub>], ... E[<i>X<sub>n</sub></i>].</li> 
+  <li><i>Solution:</i> <b>Linearity of expectation</b> (appendix C): <i><b>expectation of sum equals sum of
+      expectations.</b></i> Therefore: <br>
+      <img src="Topic-05/expected-value-n-flips.jpg"></li>
+</ul>
+
+<p> The key idea: if it's hard to count one way, use indicator random variables to count an easier
+way!</p> 
+
+<h3>Hiring Problem Revisited</h3>
+
+<p>Assume that the candidates arrive in random order.</p>
+
+<p>Let <i>X</i> be the random variable for the number of times we hire a new office assistant.</p>
+
+<p>Define indicator random variables <i>X</i><sub>1</sub>, <i>X</i><sub>2</sub>,
+... <i>X<sub>n</sub></i> where <i>X<sub>i</sub></i> = I{candidate <i>i</i> is hired}.</p>
+
+<p>We will rely on these properties:</p>
+
+<ul>
+  <li><i>X</i> = <i>X</i><sub>1</sub> + <i>X</i><sub>2</sub> + ... + <i>X<sub>n</sub></i> &nbsp;
+  <i>(The total number of hires is
+      the sum of whether we did each individual hire (1) or not (0).)</i> </li>
+  <li>Lemma 1 implies that E[<i>X<sub>i</sub></i>] = Pr{candidate <i>i</i> is hired}.</li>
+</ul>
+
+<p>We need to compute Pr{candidate <i>i</i> is hired}:</p>
+
+<ul> 
+  <li>Candidate <i>i</i> is hired iff candidate <i>i</i> is better than candidates
+      1, 2, ..., <i>i</i>&minus;1</li> 
+  <li>Assumption of random order of arrival means any of the first <i>i</i> candidates are equally
+      likely to be the best one so far. </li> 
+  <li>Thus, Pr{candidate <i>i</i> is the best so far} = 1/i.
+      <br> <i>(Intuitively, as you add more candidates each candidate is less and less likely to be
+      better than all the ones prior.)</i></li>
+</ul>
+
+<p>By Lemma 1, E[X<sub>i</sub>] = <i>1/i</i>, a fact that lets us compute E[X]:<br>
+<img src="Topic-05/expected-value-hiring-problem.jpg"></p>
+
+<p> The sum is a harmonic series. From formula A7 in appendix A, the <i>n</i><sup>th</sup>
+<b>harmonic number</b> is: <br> 
+<img src="Topic-05/A7-harmonic-number.jpg"></p>
+
+<p>Thus, the expected hiring cost is O(<i>c<sub>h</sub></i> ln <i>n</i>), much better than worst case
+O(<i>c<sub>h</sub>n</i>)!  (ln is the natural log. Formula 3.15 of the text can be used to show that
+ln <i>n</i> = O(lg <i>n</i>.) </p>
+
+<p>We will see this kind of analysis repeatedly. Its strengths are that it lets us count in ways for
+which we have probabilities (compare to C.37), and that it works even when there are dependencies
+between variables.</p>
+
+<h3>Expected Number of Inversions</h3>
+
+<p>This is Exercise 5.2-5 page 122, for which there is a publicly posted solution. This example
+shows the great utility of random variables.</p>
+
+<p>Let A[1.. <i>n</i>] be an array of <i>n</i> distinct numbers. If <i>i &lt; j</i> and
+A[<i>i</i>] &gt; A[<i>j</i>], then the pair (<i>i</i>, <i>j</i>) is called an <b>inversion</b> of
+A (they are "out of order" with respect to each other). Suppose that the elements of A form a
+uniform random permutation of &lang;1, 2, ... <i>n</i>&rang;.</p>
+
+<p>We want to find the expected number of inversions. This has obvious applications to analysis of
+sorting algorithms, as it is a measure of how much a sequence is "out of order". In fact, each
+iteration of the <tt>while</tt> loop in insertion sort corresponds to the elimination of one
+inversion (see the posted solution to problem 2-4c).</p>
+
+<p><i>If we had to count in terms of whole permutations, figuring out how many permutations had 0
+inversions, how many had 1, ... etc. (sound familiar? :), that would be a real pain, as there are
+<i>n</i>! permutations of n items. Can indicator random variables save us this pain by letting us
+count something easier? </i></p>
+
+<p>We will count the number of inversions directly, without worrying about what permutations they
+occur in:</p>
+
+<p>Let <i>X<sub>ij</sub></i>, <i>i &lt j</i>, be an indicator random variable for the event where
+A[<i>i</i>] &gt; A[<i>j</i>] (they are inverted).</p>
+
+<p>More precisely, define: X<sub><i>ij</i></sub>= I{A[<i>i</i>] &gt; A[<i>j</i>]} for 1 &le; <i>i</i> &lt;
+<i>j</i> &le; <i>n</i>.</p>
+
+<p>Pr{X<sub><i>ij</i></sub> = 1} = 1/2 because given two distinct random numbers the probability
+that the first is bigger than the second is 1/2. <i>(We don't care where they are in a permutation;
+just that we can easily identify the probabililty that they are out of order. Brilliant in its
+simplicity!)</i></p>
+
+<p>By Lemma 1, E[X<sub><i>ij</i></sub>] = 1/2, and now we are ready to count.</p> 
+
+<p>Let X be the random variable denoting the total number of inverted pairs in the array. X is the
+sum of all X<sub><i>ij</i></sub> that meet the constraint 1 &le; <i>i</i> &lt;
+<i>j</i> &le; <i>n</i>:<br>
+<img src="Topic-05/inversions-random-var.jpg"></p>
+
+<p>We want the expected number of inverted pairs, so take the expectation of both sides:<br>
+<img src="Topic-05/inversions-expected.jpg"></p>
+
+<p>Using linearity of expectation, we can simplify this far: <br>
+<img src="Topic-05/inversions-solution-a.jpg"></p>
+
+<p>The fact that our nested summation is choosing 2 things out of <i>n</i> lets us write this
+as:</br>
+<img src="Topic-05/inversions-solution-b.jpg"></p>
+
+<p>We can use formula C.2 from the appendix:<br>
+<img src="Topic-05/C2-n-choose-k.jpg"></p>
+
+<p>In screencast <a href="http://youtu.be/MgnvWTZgqcA">5A</a> I show how to simplify this to (<i>n</i>(<i>n</i>&minus;1))/2, resulting in: </p> 
+<img src="Topic-05/inversions-solution-c.jpg">
+
+<p>Therefore the expected number of inverted pairs is <i>n</i>(<i>n</i> &minus; 1)/4, or O(<i>n</i><sup>2</sup>).</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Randomized Algorithms</h2>
+
+<img src="Topic-05/badguy.jpg" align="right">
+
+<p>Above, we had to <em>assume</em> a distribution of inputs, but we may not have control over
+inputs.</p>
+
+<p>An "adversary" can always mess up our assumptions by giving us worst case inputs. (This can be a
+fictional adversary in making analytic arguments, or it can be a real one ...)</p> 
+
+<p>Randomized algorithms foil the adversary by <em>imposing</em> a distribution of inputs.</p>
+
+<p>The modifiation to HIRE-ASSISTANT is trivial: add a line at the beginning that randomizes the
+list of candidates.</p>
+<ul> 
+  <li>The randomization is now in the algorithm, not the input distribution. </li> 
+  <li>Whereas before the algorithm was deterministic, and we could predict the hiring cost for a
+  given input, now we can no longer say what the hiring cost will be.</li> 
+  <li>But our payoff is that no particular input elicits worst-case behavior, even what was
+      worst-case for the deterministic version!</li> 
+  <li>Bad behavior occurs only if we get "unlucky" numbers. </li> 
+</ul>
+<p>Having done so, the above analysis applies to give us <em>expected value</em> rather than average
+case.</p>
+
+<p><i>Discuss:</i> Summarize the difference between probabilistic analysis and randomized
+algorithms.</i></p> 
+
+<h4> Randomization Strategies </h4>
+
+<p>There are different ways to randomize algorithms. One way is to randomize the ordering of the
+input before we apply the original algorithm (as was suggested for HIRE-ASSISTANT above). A
+procedure for randomizing an array: </p>
+
+<pre>
+  Randomize-In-Place(A)
+  1  <i>n</i> = A.length
+  2  for <i>i</i> = 1 to <i>n</i>
+  3      swap A[<i>i</i>] with A[Random(<i>i</i>,<i>n</i>)]  
+</pre>
+<p> The text offers a proof that this produces a uniform random permutation. It is obviously
+ O(<i>n</i>). </p>
+
+<p>Another approach to randomization is to randomize choices made within the algorithm. This is the
+approach taken by Skip Lists ...</p> 
+
+<a name="skiplists">&nbsp;</a> 
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Skip Lists</h2>
+
+<p>This is additional material, not found in your textbook. I introduce Skip Lists here for three
+reasons: </p>
+<ol>
+  <li>They are a natural extension of the linked list implementation of Dynamic Sets, which we
+  covered recently.</li>
+  <li>They are a good example of a randomized algorithm, where randomization is used to
+  <em>improve</em> asymptotic behavior from O(<i>n</i>) to  O(lg <i>n</i>).</li>
+  <li>They are one candidate implementation to be tested in your homework, the Battle of the
+  Dynamic Sets!</li>
+</ol> 
+<p>Motivation: Why do we have to search the entire linked list one item at a time? Can't we be more
+efficient by diving into the middle somewhere?</p>
+
+<p>Skip lists were first described by William Pugh. 1990. Skip lists: a probabilistic alternative to
+balanced trees. Commun. ACM 33, 6 (June 1990), 668-676. DOI=10.1145/78973.78977 <a
+ href="http://doi.acm.org/10.1145/78973.78977">http://doi.acm.org/10.1145/78973.78977</a> or <a href="ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf">ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf</a> (actually
+he had a conference paper the year before, but the CACM verion is more accessible).</p>
+
+<p>My discussion below follows Goodrich &amp; Tamassia (1998), <i>Data Structures and Algorithms in
+Java</i>, first edition, and uses images from their slides. Some details differ from the edition 4
+version of the text.</p>
+
+<p>An animated applet may be found at <a
+ href="http://iamwww.unibe.ch/~wenger/DA/SkipList/">http://iamwww.unibe.ch/~wenger/DA/SkipList/</a>.</p>
+
+<h3>Definition of Skip List</h3>
+
+<p>Given a set <i>S</i> of items with distinct keys, a <b>skip list</b> is a series of lists
+<i>S</i><sub>0</sub>, <i>S</i><sub>1</sub>, ...  <i>S<sub>h</sub></i> (as we shall see, <i>h</i> is
+the height) such that: </p>
+
+<ul>
+  <li> Each <i>S</i><sub><i>i</i></sub> contains the special keys &minus;&infin; and +&infin;</li>
+  <li> List <i>S</i><sub><i>h</i></sub> contains only  &minus;&infin; and +&infin;</li>
+  <li> List <i>S</i><sub>0</sub> contains all of the keys of <i>S</i> in nondecreasing order. </li>
+  <li> Each list is a subsequence of the previous one: <i>S</i><sub>0</sub> &supe;
+       <i>S</i><sub>1</sub> &supe; ... &supe; <i>S<sub>h</sub></i>. 
+</ul>
+
+<img src="Topic-05/skip-list.jpg">
+<p>We can implement skip lists with nodes that have <tt>above</tt> and <tt>below</tt> fields as well
+as the more familiar <tt>prev</tt> and <tt>next</tt>:</p> 
+<img src="Topic-05/skip-list-node.jpg">
+
+<h3>Searching a Skip List</h3>
+<p>An algorithm for searching for a key <i>k</i> in a skip list as follows:</p> 
+<pre>
+ SkipSearch(k)
+   Input: search key k
+   Output: Position p in S such that the item at p has the largest key &le; k.
+   Let p be the topmost-left position of S // <i>which has at least -&infin; and +&infin;</i>
+   while below(p) &ne; null do
+       p = below(p)                       // <i>drop down</i>
+       while key (next(p)) &le; k do
+           p = next(p)                    // <i>scan forward </i>
+   return p. 
+</pre>
+<p>Example: Search for 78:</p> 
+<img src="Topic-05/skip-list-search.jpg">
+
+<h3>Insertion and Randomization</h3>
+<p>Construction of a skip list is randomized:</p>
+<ul>
+  <li>Begin by inserting the new item where it belongs in S<sub>0</sub></li>
+  <li>After inserting an item at level S<sub>i</sub>, flip a coin to decide whether to also
+  insert it at S<sub>i+1</sub>.</li>
+  <li>If S<sub>i+1</sub> does not exist, the height of the Skip lists can be
+  increased. <br> <i>(Alternatively, some policy can be used to limit growth as a function of n, but the
+  probability of a run of "heads" diminishes greatly as the number of flips increases.).</i></li> 
+</ul>
+<p>The psuedocode provided by Goodrich &amp; Tamassia uses a helper procedure <tt>InsertAfterAbove(p1,
+p2, k, d)</tt> (left as exercise), which inserts key <tt>k</tt> and data <tt>d</tt> after
+<tt>p1</tt> and above <tt>p2</tt>. (The following omits code for returning "elements" not relevant
+here.)  </p> 
+<pre>
+ SkipInsert(k,d)
+   Input: search key k and data d
+   Instance Variables: s is the start node of the skip list,
+     h is the height of the skip list, and n the number of entries 
+   Output: None (list is modified to store d under k)
+   p = SkipSearch(k)
+   q = InsertAfterAbove(p, null, k, d)    // <i>we are at the bottom level</i>
+   l = 0                                  // <i>keeps track of level we are at</i> 
+   while random(0,1) &le; 1/2 do
+       l = l + 1
+       if l &ge; h then                      // need to add a level
+           h = h + 1
+           t = next(s)
+           s = insertAfterAbove(null, s, &minus;&infin;, null)
+           insertAfterAbove(s, t +&infin;, null) 
+       while above(p) == null do
+           p = prev(p)                    // <i>scan backwards to find tower</i>
+       p = above(p)                       // <i>jump higher</i>
+       q = insertAfterAbove(p, q, k, d)   // <i>add new item to top of tower</i>
+   n = n + 1.
+</pre>
+
+<p>For example, inserting key 15, when the randomization gave two "heads", forcing growth of
+<i>h</i> (for simplicity the figure does not include the above and below pointers):</p>
+
+<img src="Topic-05/skip-list-insert.jpg">
+
+<p>Deletion requires finding and removing all occurrences, and removing all but one empty list if
+needed. Example for removing key 34: </p>
+
+<img src="Topic-05/skip-list-delete.jpg">
+
+<h3>Analysis</h3>
+
+<p>The <b>worst case</b> performance of skip lists is very bad, but highly unlikely. Suppose
+<tt>random(0,1)</tt> is always less than 1/2. If there were no bound on the height of the data
+structure, <tt>SkipInsert</tt> would never exit! But this is as likely as an unending sequence of
+"heads" when flipping a fair coin.</p>
+
+<p>If we do impose a bound <i>h</i> on the height of the list (<i>h</i> can be a function of
+<i>n</i>), the worst case is that every item is inserted at every level. Then searching, insertion
+and deletion is O(<i>n+h</i>): you not only have to search a list S<sub>0</sub> of <i>n</i> items,
+as with conventional linked lists; you also have to go down <i>h</i> levels.</p>
+
+<p>But the probabilistic analysis shows that the expected time is much better. This requires that we
+find the expected value of the height <i>h</i>:</p>
+
+<ul>
+  <li>Probability that item is stored at level <i>i</i> is the probability of getting <i>i</i>
+      consecutive heads: 1/2<sup><i>i</i></sup>.</li> 
+  <li>Probability P<sub><i>i</i></sub> that level <i>i</i> has at least one item:
+      P<sub><i>i</i></sub> &le; n/2<sup><i>i</i></sup>  &nbsp; <i>(We had n tries at getting i
+      consecutive heads.)</i> </li> 
+  <li>Probablity that <i>h</i> is larger than <i>i</i> is no more than P<sub><i>i</i></sub>.</li> 
+  <li>G&amp;T show that given a constant <i>c</i> &gt; 1, the probability that <i>h</i> is larger
+      than <i>c</i> lg <i>n</i> is at most 1/<i>n</i><sup><i>c</i>&minus;1</sup> (also worked out in
+      screencast <a href="http://youtu.be/MgnvWTZgqcA">5A</a>).</li> 
+  <li>For example, for <i>c</i> = 3, the probability that <i>h</i> is larger
+      than 3 lg <i>n</i> is at most 1/<i>n</i><sup>2</sup>, which gets very small as n grows (e.g.,
+      p = .000001 = 1/1000000 for a list of length 1000).</li> 
+  <li>They conclude that the height <i>h</i> is O(lg <i>n</i>).</li> 
+</ul>
+<p>The search time is proportional to the number of drop-down steps plus the number of scan-forward
+steps. The number of drop-down steps is the same as <i>h</i> or O(lg <i>n</i>). So, we need the
+number of scan-forward steps.</p> 
+<p>In their textbook (1998), G&amp;T provide this argument: Let <i>X<sub>i</sub></i> be the number of keys
+examined scanning forward at level <i>i</i>.</p>
+<img src="Topic-05/code-SkipSearch.jpg" align="right" border="1">
+<ul> 
+  <li>After the starting position, each key examined at level <i>i</i> cannot also belong to level
+     <i>i+1</i>. <i>(Why?)</i> </li> 
+  <li>Thus the probability that any key is counted in <i>X<sub>i</sub></i> is 1/2. <i>(Why??)</i></li> 
+  <li>Therefore the expected value of <i>X<sub>i</sub></i> is the expected number of times we must
+      flip a coin before it comes up heads: 2.</li> 
+  <li>Hence the expected amount of time scanning forward at each level is O(1). <i>(Wow!)</i></li> 
+  <li>Since there are O(lg <i>n</i>) levels, the expected search time is O(lg <i>n</i>). </li>
+</ul> 
+<p>In their slides (2002), they provide this alternative analysis of the number of scan-forwards
+  needed. The reasoning is very similar, but based on the odds of the list we encounter being
+  constructed:</p> 
+<ul>
+  <li>When we scan forward in a list, the destination key does not belong to a higher list.</li> 
+  <li>Therefore, a scan forward is associated with a former coin toss that gave tails (otherwise it
+  would be in the higher list).</li> 
+  <li>The expected number of coin tosses in order to get tails is 2.</li> 
+  <li>Therefore the expected number of scan-forward steps at each level is 2.</li> 
+  <li>Thus the total number of expected scan forward steps (summing across all <i>h</i> or
+       O(lg <i>n</i>) levels) is O(lg <i>n</i>). </li> 
+</ul> 
+<p>A similar analysis can be applied to insertion and deletion. Thus, skip lists are far superior to
+linked lists in performance. </p>
+<p>G&amp;T also show that the expected space requirement is O(n). They leave as an exercise the
+elimination of <tt>above</tt> and <tt>prev</tt> fields: if random(0,1) is called up to <i>h</i> times in
+advance of the insertion search, then one can insert the item "on the way down" as specified by the
+results.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Sat Feb  1 03:40:37 HST 2014 <!-- hhmts end -->
+<br>Images of mathematical expressions are from the instructor's material for Cormen et
+al. Introduction to Algorithms, Third Edition. Images of skip lists are from lecture slides provided
+by M. Goodrich & R. Tamassia.</br> 
+</body>
+</html>

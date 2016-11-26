@@ -1,0 +1,619 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #4: Basic ADTs</title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #4: Basic ADTs: Stacks, Queues, Lists and Trees</h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+
+<ol>
+  <li>Stacks </li>
+  <li>Queues </li>
+  <li>Lists </li>
+  <li>First peek at Trees </li>
+  <li>Dynamic Set ADT</li> 
+</ol>
+
+<p>Here we review some basic Abstract Data Types that organize information in useful ways. This
+should be review, so will be covered briefly, although some nuances of implementation are discussed
+and we will also do asymptotic analyses of the main operations of implementations.</p>
+
+<h2> Readings and Screencasts</h2>
+<ul>
+  <li>CLRS Chapter 10</li>
+  <li>Screencasts <a href="https://www.youtube.com/watch?v=86QY8mBX7Ks">4A</a>,
+                  <a href="http://youtu.be/eECZ_lKXsHs">4B</a>
+                  (also in Laulima and iTunesU).
+  <i>(Audio problems continued, resolved soon. These are 211 review, so some parts may be obvious,
+  especially 4A, but be sure you are comfortable with the asympototic analyes.)</i> 
+  </li>
+</ul>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Stacks</h2>
+
+<p>Stacks follow the <b>Last In, First Out (LIFO)</b> principle. They are useful when a problem has
+goal-subgoal structure, and we need to keep track of higher level goals or processes when we set
+them aside to pursue subgoals or sub-processes (e.g., the run-time stack of a computer operating
+system, or keeping track of neighbor vertices yet to be visited when searching a graph). </p> 
+
+<h3>Stack ADT</h3>
+<p>We start by specifying the desired behavior of stacks before looking at implementations. Here's
+the Stack ADT written as a simple Java interface:</p> 
+<pre>
+  public interface <b>Stack</b> {
+  // ADT that stores and retrieves Objects in a LIFO manner
+
+     public <b>Stack</b>( ); 
+     // Create an instance of ADT Stack and initialize it to the empty stack.
+
+     public void <b>push</b>(Object o); 
+     // Insert object o at the top of the stack.
+
+     public Object <b>pop</b>( ); 
+     // Remove and return the top (most recently pushed) object on the stack.
+     // Error occurs if the stack is empty. 
+ 
+     public int <b>size</b>( ); 
+     // Return the number of objects in the stack.
+
+     public boolean <b>isEmpty</b>( ); 
+     // Return a boolean indicating whether the stack is empty.
+
+     public Object <b>top</b>( ); 
+     // Return the top (most recently pushed) object on the stack, without 
+     // removing it. Error occurs if the stack is empty.
+  }
+</pre>
+
+<p><b>Properties</b>, given <tt>s</tt> a stack instance:</p>
+<ol>
+      <li>{ <tt>push(<i>s</i>,<i>e</i>); <i>s</i>.top()</tt> }
+           returns value <tt><i>e</i></tt> </li>
+      <li>{ <tt>push(<i>s</i>,<i>e</i>); <i>s</i>.pop()</tt> }
+           returns value <tt><i>e</i></tt> and leaves
+          <tt><i>s</i></tt> in the same state </li>  
+      <li>{ <tt><i>s</i> = new(); <i>s</i>.isEmpty() } returns true </tt></li>
+      <li>{ <tt>push(<i>s</i>,<i>i</i>); <i>s</i>.isEmpty() } returns false </tt></li>
+      <li>if <tt>s.isEmpty()</tt> then <tt>s.top()</tt> is an error, and does not change
+          <tt>s</tt></li>
+      <li>if <tt>s.isEmpty()</tt> then <tt>s.pop()</tt> is an error, and does not change
+          <tt>s</tt></li> 
+      <li>if <tt>s.isEmpty()</tt> then <tt>s.size() == 0</tt> </li>
+      <li>if <tt>s.size() == <i>n</i></tt> then after <tt> s.push(o), s.size() == <i>n</i>+1</tt></li>
+      <li>if <tt>&not;s.isEmpty()</tt> and <tt>s.size() == <i>n</i></tt> then after <tt>s.pop(o), s.size() ==
+          <i>n</i>-1.</tt> </li>
+</ol>
+
+<p><i>What is the relationship of stacks to method execution in the Java Virtual Machine?</i></p>
+<p><i>What is the relationship of stacks to recursion?</i></p>
+
+<h3>Array Implementation</h3> 
+
+<p>Assume instance variables (fields) of object array <tt>S</tt> and <tt>int top</tt>. The three
+essential operations follow. (I am modifying the book's pseudocode slightly.)</p>
+
+<img src="Topic-04/Fig-10-1-a-Stack.jpg" align="right"> 
+<pre>
+  boolean <b>isEmpty</b> ( ) 
+  1     if top == 0 
+  2       return TRUE
+  3     else
+  4       return FALSE
+
+  void <b>push</b>(Object o)
+  1     top = top + 1
+  2     S[top] = o                // what might happen here?
+
+  Object <b>pop</b>( )
+  1     if isEmpty()
+  2       error "stack underflow" // or throw new StackException (...) 
+  3     else
+  4       top = top - 1
+  5       return S[top+1]         // we comment on this later 
+</pre>
+
+<p><i>What is the asymptotic complexity of these operations?</i></p>
+
+<p>The potential error in <tt>push</tt> is an implementation concern outside of the scope of the
+<em>logical</em> definition of the stack ADT. How might it be handled?</p>
+
+<h4>Example</h4>
+
+<p>Let's start with this stack:</p> 
+<img src="Topic-04/Fig-10-1-a-Stack.jpg"><br><br>
+<table width="90%" border="0">
+  <tr>
+    <td>Push 17, and then 3:</td>
+    <td>Pop once:</td>
+  </tr>
+  <tr>
+    <td> <img src="Topic-04/Fig-10-1-b-Stack.jpg"> </td>
+    <td> <img src="Topic-04/Fig-10-1-c-Stack.jpg"> </td>
+  </tr>
+</table>
+
+<p><i>What is the status of S[top+1] after pop returns? Why might that be a problem?</i></p>
+
+<h4> An Improvement </h4>
+
+<pre>
+  Object <b>pop</b>( )  // version that dereferences objects for garbage collection
+  1     if isEmpty()
+  2       error "stack underflow" 
+  3     else
+  4       o = S[top]
+  5       S[top] = null  // don't keep references to objects not really there 
+  6       top = top - 1
+  7       return o 
+</pre>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Queues</h2>
+
+<p>Queues operate in a <b>First In, First Out (FIFO)</b>, like what the British call a "queue" at
+the post office or bank. They are also very useful for managing prioritization of tasks in
+computing. </p> 
+
+<h3>Queue ADT</h3>
+<p>Again, expressed as a simple Java interface:</p> 
+<pre>
+  public interface <b>Queue</b>{
+  // ADT that stores and retrieves Objects in a FIFO manner
+
+    public <b>Queue</b>( ); 
+    // Create an instance of ADT Queue and initialize it to the empty queue.
+
+    public void <b>enqueue</b>(Object o); 
+    // Insert object o at the rear of the queue.
+
+    public Object <b>dequeue</b>( );
+    // Remove and return the frontmost (least recently queued) object from the queue. 
+    // queue. Error occurs if the queue is empty.
+
+    public int <b>size</b>( ); 
+    // Return the number of objects in the queue.
+
+    public boolean <b>isEmpty</b>( ); 
+    // Return a boolean indicating whether the queue is empty.
+
+    public Object <b>front</b>( ); 
+    // Return the front (least recently queued) object in the queue, without 
+    // removing it. Error occurs if the queue is empty.
+  }
+</pre> 
+<p><b>Properties</b> (given <tt>q</tt> a queue instance): are very similar to those for Stack,
+    except for operations where ordering matters (FIFO rather than LIFO). Replace the first two
+    properties for Stack with:</p>
+<ol>
+  <li>if <tt>q.enqueue(o1) </tt> occurs before <tt>q.enqueue(o2)</tt> then successive
+      <tt>q.dequeue()</tt> returns <tt>o1</tt> before <tt>o2</tt></li> 
+  <li><tt>q.front() </tt> returns the least recently enqueued element that has not been dequeued.</li>
+</ol>
+
+<p>Then rewrite the other properties with substitution <tt>{enqueue/push, dequeue/pop,
+    front/top}</tt>. </p> 
+
+<h3> Array Implementation</h3>
+
+<p>Assume three instance variables (fields): object array <tt>Q</tt>; <tt>int head</tt> indexing the next element to
+dequeue; and <tt>int tail</tt> indexing the next place a new element may be placed.</p>
+
+<img src="Topic-04/Fig-10-2-a-Queue.jpg" align = "right">
+
+<pre>
+  boolean <b>isEmpty</b> ( ) 
+  1     if head == tail
+  2       return TRUE
+  3     else
+  4       return FALSE
+  
+  void <b>enqueue</b>(Object o) 
+  1     Q[tail] = o
+  2     if tail == length  
+  3       tail = 1           // wrap around
+  4     else
+  5       tail = tail + 1
+  
+  Object <b>dequeue</b>( )     
+  1     o = Q[head]
+  2     if head == length
+  3       head = 1
+  4     else 
+  5       head = head + 1
+  6     return o
+</pre>
+
+<p>The queue is full when <tt>head == tail + 1</tt>; an error results if enqueue is called (again,
+this is an implementation concern outside the logical definition of the ADT).</p>
+
+<h4>Example</h4>
+
+<p>Beginning with this Queue: </p> 
+<img src="Topic-04/Fig-10-2-a-Queue.jpg"><br><br>
+
+<table width="90%" border="0">
+  <tr>
+    <td>Enqueue 17, 3 and 5 (notice wrap-around): </td>
+    <td>Dequeue once:  </td>
+  </tr>
+  <tr>
+    <td><img src="Topic-04/Fig-10-2-b-Queue.jpg"></td>
+    <td><img src="Topic-04/Fig-10-2-c-Queue.jpg"></td>
+  </tr>
+</table>
+
+<p>The same issue concerning object dereferencing applies.</p>
+
+<h4>Variation using modular arithmetic</h4>
+
+<p>This version handles dereferencing but does not check for overflow or underflow. It assumes that
+the array index starts with 0, but can be changed for 1-based indexing. </p>
+
+<pre>
+  void <b>enqueue</b>(Object o) 
+  1     Q[tail] = o
+  2     tail = (tail + 1) mod length // mod is % in Java 
+  
+  Object <b>dequeue</b>( )
+  1     o = Q[head]
+  2     Q[head] = null               // allow garbage collection!
+  3     head = (head + 1) mod length 
+  4     return o
+</pre>
+<p><i>What is the asymptotic complexity of these operations?</i></p>
+
+<h3>Deques</h3>
+
+<p>One can combine the stack and queue concepts into a double-ended queue (deque) that allows
+insertion and deletion at both ends. O(1) procedures are possible for all insertion and deletion
+algorithms. </p> 
+
+<a name="lists">&nbsp;</a> 
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Lists </h2>
+
+<p>Lists store objects in linear order.  We will assume that list elements have a <tt>key</tt> and
+may have other satellite data. </p>
+
+<p>In an <b>unsorted</b> list, we assume no particular order to the elements (the order is
+arbitrary). In a <b>sorted</b> list or set, the elements are ordered by key.</p>
+
+<p>A suitable ADT for lists will be given later, in the form of <tt>DynamicSet</tt>. </p> 
+
+<h3>Linked Lists</h3>
+
+<p><b>Linked lists</b> use list element objects to hold the data (here in the form of a
+<tt>key</tt>), and record the linear order using <tt>next</tt> pointers.  <b>Doubly linked lists</b>
+also have <tt>prev</tt> pointers.</p>
+
+<ul>
+  <li><tt>L.head</tt> points to the first element in the list.</li>
+  <li>If <tt>x.next == nil</tt> then x is the last element of the list.</li>
+  <li>If <tt>x.prev == nil</tt> then x is the first element of the list.</li>
+</ul>
+
+<p><i>What are the advantages of adding <tt>prev</tt> pointers?</i></p> 
+
+<p>Our examples will assume List instance variables for <tt>head</tt> and <tt>tail</tt>, and
+ListElement instance variables <tt>key</tt>, <tt>next</tt>, and <tt>prev</tt>. (Note: public
+interfaces for ADTs would probably not expose listElement: see discussion under Dynamic Sets
+later.)</p>
+
+<h3>Searching</h3>
+
+<p>The procedure for seaching is the same for singly and doubly linked lists:</p>
+
+<pre>
+  ListElement <b>listSearch</b>(Key k)
+  1     e = head
+  2     while e &ne; null and e.key &ne; k
+  3       e = e.next 
+  4     return e
+</pre>
+
+<img src="Topic-04/Fig-10-3-a-DLL.jpg">
+
+<p><i>What is returned if <tt>k</tt> is not in the list?</i></p>
+
+<p><i>What is the worst case complexity of this algorithm?</i></p>
+
+<h3>Inserting and Deleting</h3>
+
+<p>Since you are familiar with singularly linked lists from your previous studies, we'll go direct
+to doubly linked lists, but recall that with singly linked lists you had to be careful to keep track
+of the tail end of the list that you had "snipped off" during an insertion or deletion. The same
+applies here, but we also have to manage prev pointers. </p>
+
+<pre>
+  void <b>listInsert</b>(ListElement e) // inserts at beginning of list
+  1     e.next = head
+  2     if head &ne; null
+  3       head.prev = e 
+  4     head = e
+  5     e.prev = null
+</pre>
+
+<p>Inserting 25: <br> <img src="Topic-04/Fig-10-3-b-DLL.jpg"></p>
+
+<pre>
+  void <b>listDelete</b>(ListElement e) // removes from list, wherever it is 
+  1     if e.prev &ne; null
+  2       e.prev.next = e.next
+  3     else 
+  4       head = e.next 
+  5     if e.next &ne; null
+  6       e.next.prev = e.prev
+</pre>
+
+<p>Deleting the element keyed by 4: <br><img src="Topic-04/Fig-10-3-c-DLL.jpg"></p> 
+
+<p><i>What is the worst case complexity of these algorithms?</i></p>
+
+<p><i>What about garbage collection in listDelete? Same problem as for pop and dequeue?</i></p>
+
+<h3>Circular DLLs with Sentinels</h3>
+
+<p>CLRS discuss adding an extra <b>sentinel</b> element that marks the beginning of the list
+and making the linked list circular so that we don't have to check for null (falling off the end of
+the list). It also enables us to get to the end of the list quickly</p>
+
+<p>Sentinels remove the need for a conditional test, but this only speeds up operations a small
+constant, at the cost of an extra listElement object per every list. Their use is more compelling if
+you often need to go to the end of the list.</p>
+
+<p>For example, here is the above list as a circular doubly linked list. (<tt>L.nil</tt> references
+the sentinel.)</p> 
+
+<img src="Topic-04/Fig-10-4-b-DLL-Sentinel.jpg">
+
+<pre> 
+  void <b>listInsert</b>(ListElement e) // Sentinel version 
+  1     e.next = nil.next           
+  2     nil.next.prev = e 
+  3     nil.next = e 
+  5     e.prev = nil
+</pre>
+
+<p>Insert 25: <img src="Topic-04/Fig-10-4-c-DLL-Sentinel.jpg"></p> 
+
+<p><i>Let's insert something into the empty list ...</i><br>
+<img src="Topic-04/Fig-10-4-a-DLL-Sentinel.jpg"></p>
+<p>(Left for you to try.)</p>
+
+<p>You might check your understanding by doing exercises 10.2-1, 10.2-2 and 10.2-3.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Array Representations of Lists</h2>
+
+<p>We generally do not need to be concerned with the topic of this section in modern programming
+languages, but if you ever have to program in FORTRAN, the section shows how to store objects such
+as listElement in arrays:</p>
+
+<img src="Topic-04/Fig-10-5-DLL-Array.jpg">
+
+<p>... and how to manage your own <b>free list</b> of available listElements (languages like Java
+and LISP do this automatically, but (cue old fart voice) "when I was your age ..."). Here is an
+array with both a DLL and a free list embedded in it:</p>
+
+<p><img src="Topic-04/Fig-10-7-a-Allocate-Free.jpg"></p>
+
+<table width="100%" border="0">
+  <tr>
+    <td>After allocating one free cell to add 7 to the front of the list: </td>
+    <td>After deleting list item 2 at array position 5: </td>
+  </tr>
+  <tr>
+    <td><img src="Topic-04/Fig-10-7-b-Allocate-Free.jpg"> </td>
+    <td><img src="Topic-04/Fig-10-7-c-Allocate-Free.jpg"></td>
+  </tr>
+</table>
+
+<p>Of course, someone has to implement the memory management, and there is a large literature on
+methods of <b>garbage collection</b>.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Binary Trees (A First Look) </h2>
+
+<p>Trees in general and binary trees in particular are <em>hugely</em> important data structures in
+computer science. There are many ways to represent them. A linked represention provides great
+flexibility and is widely used. In a few weeks we'll also see how trees can be embedded in
+arrays.</p>
+
+<p>Assume that class <tt>BinaryTree</tt> has instance variable <tt>root</tt>, and it consists of
+vertices of class <tt>TreeNode</tt> with instance variables <tt>parent</tt>, <tt>left</tt> and
+<tt>right</tt>, as well as possibly other data.</p>
+
+<img src="Topic-04/Fig-10-9-Binary-Tree.jpg"> 
+
+<p>In a few weeks we will study methods for search, insertion and deletion in special types of tree,
+<b>heaps</b> and <b>binary search trees</b>.</p>
+
+<p><i>Do you have any thoughts on what insertion and deletion might involve, in general?</i></p>
+
+<p><i>Exercises:</i> <br>
+10.4-2: write an O(n) recursive procedure to visit (e.g., print out) the nodes of the tree. <br>
+10.4-3: write an O(n) non-recursive procedure to visit the nodes of the tree. Use a stack.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>N-ary Trees </h2>
+
+<p>We can represent n-ary trees by providing each node with a fixed number <i>n</i> child fields
+(child<sub>1</sub>, child<sub>2</sub>, child<sub>3</sub> ... child<sub>n</sub>). An equivalent
+approach is used for <b>b-trees,</b> which are used for efficient disk access. </p>
+
+<p> But a fixed <i>n</i> is only viable if we can bound the number of children, and can be wasteful
+of memory if many nodes do not have <i>n</i> children.</p>
+
+<p> An alternative representation allows each TreeNode to have an arbitrary number of children while
+still using O(n) space.</p>
+
+<h3>Left-Child Right-Sibling Representation</h3>
+
+<p>This implementation has instance variable <tt>root</tt>, but consists of vertices that are
+instances of a class we'll call LCRSTreeNode with instance variables <tt>parent</tt>,
+<tt>left-child</tt> and <tt>right-sibling</tt>, as well as possibly other data. (Alternatively, we
+can just use TreeNode, but understand <tt>left</tt> to refer to the left-child and <tt>right</tt> to
+refer to the right sibling.) </p>
+
+<img src="Topic-04/Fig-10-10-LC-RS-Tree.jpg">
+
+<p>A good practice problem is to write a procedure for visiting (printing out) all the
+nodes of these kinds of trees.</p>
+
+<a name="dynamicsetadt">&nbsp;</a>
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Dynamic Set ADT</h2>
+
+<p>Above we have been reviewing basic data structures for keeping track of objects under specific
+organizational schemes (e.g., FIFO, LIFO, sequential, and hierarchical). </p>
+
+<p>Another organizational scheme is the <b>set</b> or <b>ordered set</b>. We often need to keep
+track of a set of objects, query it for membership, and possibly modify the set dynamically. Other
+operations are also possible if the elements of the set are ordered.</p>
+
+<p>These capabilities can be implemented in different ways. The Dynamic Set ADT captures the
+requirements that implementations must meet. Many of the ADTs (and their implementations as data
+structures and algorithms) we will study can be seen as specializations of the Dynamic Set ADT.</p>
+
+<h3>Text's Dynamic Set ADT</h3>
+
+<p>The introduction to Part III of the textbook, page 230, gives this specification:</p>
+
+<table border="1">
+  <tr>
+    <td>
+<dl>
+  
+  <dt>SEARCH(S; k)</dt>
+  <dd>A query that, given a set S and a key value k, returns a pointer x to an element
+    in S such that x.key = k, or NIL if no such element belongs to S.</dd>
+    <br>
+    <dt>INSERT(S; x)</dt>
+    <dd>A modifying operation that augments the set S with the element pointed to by x. We usually
+        assume that any attributes in element x needed by the set implementation have already been
+        initialized.</dd> 
+    <br>
+    <dt>DELETE(S; x)</dt>
+    <dd>A modifying operation that, given a pointer x to an element in the set S, removes
+        x from S. (Note that this operation takes a pointer to an element x, not
+        a key value.)</dd> 
+    <br>
+    <dt>MINIMUM(S)</dt>
+    <dd>A query on a totally ordered set S that returns a pointer to the element of S
+        with the smallest key.</dd> 
+    <br>
+    <dt>MAXIMUM(S)</dt>
+    <dd>A query on a totally ordered set S that returns a pointer to the element of S
+        with the largest key.</dd> 
+    <br>
+    <dt>SUCCESSOR(S; x)</dt>
+    <dd>A query that, given an element x whose key is from a totally ordered set S,
+        returns a pointer to the next larger element in S, or NIL if x is the maximum
+        element.</dd> 
+    <br>
+    <dt>PREDECESSOR(S; x)</dt>
+    <dd>A query that, given an element x whose key is from a totally ordered set S,
+        returns a pointer to the next smaller element in S, or NIL if x is the minimum
+        element.</dd> 
+</dl> 
+    </td>
+  </tr>
+</table>
+
+<p>There are some issues with this specification, particularly in the use of x.</p>
+<ul>
+  <li> The specification seems to require that the client know about the the internal implementation
+       of the set ("We usually assume that any attributes in element x needed by the set
+       implementation have already been initialized").</li>
+  <li> Alternatively, if the elements are client objects, the set implementation would have to know
+       how to access these to get the key. </li> 
+</ul>
+
+<p>A safer specification would give INSERT and DELETE the key k rather than the element x,
+hiding implementation details and reducing dependencies between client and ADT. This in turn leads
+to a performance problem, dicussed below, but it can be resolved. </p>
+
+<h3>Encapsulated Dynamic Set ADT</h3>
+
+<p>An encapsulated version of the ADT is given as a Java interface below. It communicates
+with clients primarily through keys and associated elements that only the client need
+understand. </p>
+
+<table border="1">
+  <tr>
+    <td>
+
+<pre>
+
+  public interface <b>DynamicSet</b> {
+  // ADT that stores and retrieves Objects according to keys of type KeyType
+ 
+     public <b>DynamicSet</b>( ); 
+     // Creates an instance of ADT DynamicSet and initializes it to the empty set. &nbsp; 
+ 
+     public void <b>insert</b>(KeyType k; Object e); 
+     // Inserts element e in the set under key k.
+ 
+     public void <b>delete</b>(KeyType k); 
+     // Given a key k, removes elements indexed by k from the set.
+ 
+     public Object <b>search</b>(KeyType k); 
+     // Finds an Object with key k and returns a pointer to it,
+     // or null if not found. 
+ 
+     // The following operations apply when there is a total ordering on KeyType &nbsp; 
+ 
+     public Object <b>minimum</b>( ); 
+     // Finds an Object that has the smallest key, and returns a pointer to it,
+     // or null if the set is empty. 
+ 
+     public Object <b>maximum</b>( ); 
+     // Finds an Object that has the largest key, and returns a pointer to it,
+     // or null if the set is empty.
+ 
+     public Object <b>successor</b>(KeyType k); 
+     // Finds an Object that has the next larger key in the set above k, 
+     // and returns a pointer to it, or null if k is the maximum element.
+ 
+     public Object <b>predecessor</b>(KeyType k); 
+     // Finds an Object that has the next smaller key in the set below k,
+     // and returns a pointer to it, or null if k is the minimum element.
+ }
+</pre>
+    </td>
+  </tr>
+</table>
+
+
+<p>As hinted above, we may pay a cost for proper encapsulation. For example, suppose an application
+must frequently pair <tt>search</tt> and <tt>delete</tt> operations to find elements we want to
+remove. If <tt>search</tt> cannot communicate the location found in the underlying datastructure to
+<tt>delete</tt>, then <tt>delete</tt> will have to search again to find what to operate on.</p>
+
+<p>This inefficiency could be eliminated by abstracting the concept of a <b>position</b> in a data
+structure, and passing around position objects that hide implementation details. This solution is
+not discussed here as it is more of a software engineering rather than algorithm design and analysis
+concern: see Goodrich &amp; Tamassia's Algorithms textbook for one approach. </p>
+
+<h3>Alternative Dynamic Set Implementations</h3>
+
+<p>Linked lists can be used to support a viable Dynamic Set implementation for small sets, for
+example using <tt>listInsert</tt> and <tt>listSearch</tt> to implement <tt>insert</tt> and
+<tt>search</tt>, respectively. </p>
+
+<p>Future Topics will present Hash Tables, Binary Search Trees, and Red-Black Trees as alternative
+implementations of DynamicSet. You will use some of these in your assignments (and often as a
+working professional), so need to understand them well.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Sat Jan 25 04:28:16 HST 2014 <!-- hhmts end -->
+<br>Images are from Cormen et al. Introduction to Algorithms, Third Edition.</br> 
+</body>
+</html>

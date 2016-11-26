@@ -1,0 +1,160 @@
+import org.ics432.raytracer.ABunchOfSpheres;
+
+import java.lang.ArrayIndexOutOfBoundsException;
+import java.lang.NumberFormatException;
+import java.util.HashMap;
+
+public class MakeMovieConcurrent {
+    /* A hashmap of <name, system time in millis>. */
+    public static HashMap<String, Long> times = new HashMap();
+    /* The thing we used to render images. */
+    private ABunchOfSpheres movie;
+    /* An array to hold some threads. */
+    private Renderer[] renderer; 
+    private int num_frames;    
+    private int num_threads;
+    private int current_frame;
+
+    public MakeMovieConcurrent(int frames, int threads) {
+        num_frames = frames;
+        num_threads = threads;
+        // Create a movie object
+        movie = new ABunchOfSpheres(); 
+        /* Define our threads. */
+        renderer = new Renderer[num_threads];
+        for(int i = 0; i < num_threads; i++){
+            renderer[i] = new Renderer();
+        }
+    }
+
+    private synchronized int incrementFrame(){
+        int temp = current_frame;
+        current_frame++;
+
+        return temp;
+    } 
+
+    public void makeMovieSync(){
+        /* Start all the inital threads. */
+        for(int i = 0; i < num_threads; i++){
+            renderer[i].start();
+        }
+    }
+
+    //public void makeMovie(){
+    //    // Render the frames
+    //    for (int count = 0; count < num_frames; count++) {
+    //    deadThreadFound:
+    //        /* Wait for any thread to finish. */
+    //        while(true){
+    //            /* Which thread is not busy? */
+    //            for(int i = 0; i < num_threads; i++){
+    //                if(!renderer[i].isAlive()){
+    //                    renderer[i] = new Renderer();
+    //                    renderer[i].start();
+    //                    break deadThreadFound;
+    //                } 
+    //           }
+    //            /* Yield our main thread to the working threads when no
+    //             * dead threads are found. */
+    //            Thread.currentThread().yield();
+    //        }
+    //    }
+    //    
+    //    /* Wait for the last few threads to complete. */
+    //    try{
+    //        for(int i = 0; i < num_threads; i++){
+    //            renderer[i].join();
+    //        }
+    //    } catch (InterruptedException e){
+    //        e.printStackTrace();
+    //    }
+    //}
+
+    private static void abort(String message) {
+        System.err.println(message);
+        System.exit(1);
+    }
+
+    public void printExecutionTimes(){
+        double t = 0;
+        for(int i = 0; i < num_frames; i++){
+            t = times.get("Frame " + i + " Finish") 
+                - times.get("Frame " + i + " Start");
+            t = t/1000.0;
+            System.out.println("Frame " + i + ": " + String.format("%.2fs", t)); 
+        }
+
+        t = times.get("Program Finish") - times.get("Program Start");
+        t = t/1000.0;
+        System.out.println("Program Total: " + String.format("%.2fs", t)); 
+    }
+
+    public static void main(String[] args) {
+        int num_frames = 0;
+        int num_threads = 0;
+        
+        /* Get arguments. */
+        try {
+             num_frames = Integer.parseInt(args[0]);
+             num_threads = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            abort("Invalid number of frames or threads (should be an integer)");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            abort("Usage: java MakeMovieConcurrent <num of frames> <num of threads>");
+        }
+        if (num_frames < 0) {
+            abort("Invalid number of frames (should be positive)");
+        }
+        if (num_threads < 0) {
+            abort("Invalid number of threads (should be positive)");
+        }
+
+        /* Start making the movie. */
+        times.put("Program Start", System.currentTimeMillis());
+        MakeMovieConcurrent mmc = new MakeMovieConcurrent(num_frames, num_threads);
+        mmc.makeMovieSync();
+    }
+    
+    public class Renderer extends Thread{
+        private final int frame_id;
+        
+        public Renderer(){
+            frame_id = incrementFrame();
+            setPriority(MIN_PRIORITY);
+        }
+        @Override
+        public void run(){
+            if(frame_id < num_frames){
+                times.put("Frame " + frame_id + " Start", 
+                           System.currentTimeMillis());
+                movie.render_scene("./frame_" + String.format("%05d", frame_id) 
+                                              + ".png", frame_id);
+                times.put("Frame " + frame_id + " Finish",
+                           System.currentTimeMillis());
+                              
+
+                if(frame_id == num_frames - 1){
+                    try{
+                        for(Renderer r: renderer){
+                            if(r != this){
+                                r.join();
+                            }
+                        }
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                    times.put("Program Finish", System.currentTimeMillis());
+                    printExecutionTimes();
+                }else{
+                    for(int i = 0; i < num_threads; i++){
+                        if(renderer[i] == this){
+                            renderer[i] = new Renderer();
+                            renderer[i].start();
+                        }
+                    }
+                }
+            } 
+        }
+    }
+}

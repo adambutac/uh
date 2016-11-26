@@ -1,0 +1,12 @@
+#!/bin/bash
+
+FILE_PRE="Topic-"
+FILE_SUF=".html"
+for i in `seq 1 25`
+do
+    if [ "$i" -lt "10" ]
+    then
+       wkhtmltopdf -B 10 -T 10 -s Letter $FILE_PRE"0"$i$FILE_SUF  
+    fi
+    wkhtmltopdf -B 10 -T 10 -s Letter $FILE_PRE"0"$i$FILE_SUF  
+done

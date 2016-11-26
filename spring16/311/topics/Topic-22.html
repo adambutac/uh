@@ -1,0 +1,500 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #22:Multithreaded Algorithms </title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #22: Multithreaded Algorithms </h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+<ol>
+  <li>Concepts of Dynamic Multithreading </li>
+  <li>Modeling and Measuring Dynamic Multithreading </li>
+  <li>Analysis of Multithreaded Algorithms </li>
+  <li>Example: Matrix Multiplication</li>
+  <li>Example: Merge Sort</li> 
+</ol>
+  
+<h2>Readings</h2>
+<ul>
+  <li>CLRS 3rd Ed. Chapter 27.</li>
+  <li>Screencasts not available</li>
+</ul> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Concepts of Dynamic Multithreading </h2>
+
+<p>Multithreading is a crucial topic for modern computing. There are two granularities: parallel
+algorithms or multithreading a single algorithm, which is our emphasis here and in CLRS; and
+scheduling and managing multiple algorithms, each running concurrently in their own thread and
+possibly sharing resources, as studied in courses on operating systems and concurrent and high
+performance computing.</p>
+
+<p>Parallel machines are getting cheaper and in fact are now ubiquitous ...</p>
+<ul>
+  <li>supercomputers: custom architectures and networks</li>
+  <li>computer clusters with dedicated networks (distributed memory)</li>
+  <li>multi-core integrated circuit chips (shared memory)</li>
+  <li>GPUs (graphics processing units) with multiple processors </li> 
+</ul>
+
+<!-- -------------------------------- -->
+<h3>Dynamic Multithreading</h3>
+
+<p><b>Static threading</b> provides the programmer with an abstraction of virtual processors that
+are managed explicitly ("static" because they specify in advance how many processors to use at each
+point).</p>
+
+<p>But rather than managing threads explicitly, our model is <b>dynamic multithreading</b> in which
+programmers specify opportunities for parallelism and a <b>concurrency platform</b> manages the
+decisions of mapping these to static threads (load balancing, communication, etc.).</p>
+
+<h4>Concurrency Constructs:</h4>
+<p>Three keywords are added, reflecting current parallel-computing practice:</p> 
+<ul>
+  <li><b>parallel</b>: add to loop construct such as <tt>for</tt> to indicate each iteration can be
+    executed in parallel.</li>
+  <li><b>spawn</b>: create a parallel subprocess, then keep executing the current process (parallel
+    procedure call).</li>
+  <li><b>sync</b>: wait here until all active parallel threads created by this instance of the
+    program finish.</li> 
+</ul>
+
+<p>These keywords specify opportunities for parallelism without affecting whether the corresponding
+sequential program obtained by removing them is correct. We exploit this in analysis. </p>
+
+<!-- -------------------------------- -->
+<h3>Example: Parallel Fibonacci</h3> 
+
+<p>For illustration, we take a really slow algorithm and make it parallel. (There are much better
+ways to compute Fibonacci numbers; this is just for illustration.) Here is the definition of
+Fibonacci numbers:</p>
+
+<blockquote>
+F<sub>0</sub> = 0.<br>
+F<sub>1</sub> = 1.<br>
+F<sub><i>i</i></sub> = F<sub><i>i-1</i></sub> + F<sub><i>i-2</i></sub>, for <i>i</i> &ge; 2.
+</blockquote>
+
+<p>Here is a recursive non-parallel algorithm for computing Fibonacci numbers modeled on the above
+definition, along with its recursion tree:</p>
+<img src="Topic-22/code-Fib.jpg">
+<img src="Topic-22/Fig-27-1-Fib-Recursion-Tree-Small.jpg" align ="right">
+
+<p><b><tt>Fib</tt></b> has recurrence relation T(<i>n</i>) = T(<i>n</i> - 1) + T(<i>n</i> - 2) +
+&Theta;(1), which has the solution T(<i>n</i>) = &Theta;(F<sub><i>n</i></sub>) (see the text for
+substitution method proof). This grows exponentially in <i>n</i>, so it's not very efficient. (A
+straightforward iterative algorithm is much better.) </p>
+
+<p>Noticing that the recursive calls operate independently of each other, let's see what improvement
+we can get by computing the two recursive calls in parallel. This will illustrate the concurrency
+keywords and also be an example for analysis:</p>
+<img src="Topic-22/code-P-Fib.jpg">
+
+<p>Notice that without the keywords it is still a valid serial program.</p>
+<p><b>Logical Parallelism</b>: The <b>spawn</b> keyword does not force parallelism: it just says
+that it is permissible. A scheduler will make the decision concerning allocation to
+processors.</p>
+<p>However, if parallelism is used, <b>sync</b> must be respected. For safety, there is an implicit
+sync at the end of every procedure.</p> 
+
+<p>We will return to this example when we analyze multithreading.</p>
+
+<!-- -------------------------------- -->
+<h3>Scheduling</h3> 
+<p>Scheduling parallel computations is a complex problem: see the text for some theorems concerning
+the performance of a greedy centralized scheduler (i.e., one that has information on the global
+state of computation, but must make decisions on-line rather than in batch).</p>
+<p>Professor Henri Casanova does research in this area, and would be an excellent person to talk to if you
+want to get involved.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Modeling and Measuring Dynamic Multithreading </h2>
+
+<p>First we need a formal model to describe parallel computations.</p>
+
+<!-- -------------------------------- -->
+<h3>A Model of Multithreaded Execution</h3>
+<img src="Topic-22/code-P-Fib.jpg" align="right">
+<p>We will model a multithreaded computation as a <b>computation dag</b> (directed acyclic graph)
+<i>G</i> = (<i>V</i>, <i>E</i>); an example for P-Fib(4) is shown:</p>
+<img src="Topic-22/Fig-27-2-P-Fib.jpg" align = "right">
+
+<p>Vertices in <i>V</i> are instructions, or <b>strands</b> = sequences of non-parallel instructions.</p>
+<p>Edges in <i>E</i> represent dependencies between instructions or strands: (<i>u</i>, <i>v</i>)
+  &in; <i>E</i> means <i>u</i> must execute before <i>v</i>.
+    <ul>
+      <li><b>Continuation Edges</b> (<i>u</i>, <i>v</i>) are drawn horizontally and indicate that <i>v</i>
+          is the successor to <i>u</i> in the sequential procedure.</li>
+      <li><b>Call Edges</b> (<i>u</i>, <i>v</i>) point downwards, indicating that <i>u</i> called
+          <i>v</i> as a normal subprocedure call.</li> 
+      <li><b>Spawn Edges</b> (<i>u</i>, <i>v</i>) point downwards, indicating that <i>u</i> spawned
+          <i>v</i> in parallel.</li>
+      <li><b>Return edges</b> point upwards to indicate the next strand executed after returning
+          from a normal procedure call, or after parallel spawning at a sync point.</li>
+   </ul>
+</p>
+<p>A strand with multiple successors means all but one of them must have spawned. A strand with
+multiple predecessors means they join at a sync statement.</p>
+<p>If <i>G</i> has a directed path from <i>u</i> to <i>v</i> they are logically in <b>series</b>;
+otherwise they are logically <b>parallel</b>.</p>
+
+<p>We assume an ideal parallel computer with <b>sequentially consistent</b> memory, meaning it
+behaves as if the instructions were executed sequentially in some full ordering consistent with
+orderings within each thread (i.e., consistent with the partial ordering of the computation dag). </p>
+
+<!-- -------------------------------- -->
+<h3>Performance Measures</h3>
+
+<p>We write <i>T</i><sub><i>P</i></sub> to indicate the running time of an algorithm on <i>P</i>
+processors. Then we define these measures and laws: </p>
+
+<h4>Work</h4> 
+<p><b><i>T</i><sub>1</sub></b> = the total time to execute an algorithm on one processor. This is called
+<i>work</i> in analogy to work in physics: the total amount of computational work that gets done.</p>
+
+<p>An ideal parallel computer with <i>P</i> processors can do at most <i>P</i> units of work in one
+time step. So, in <i>T</i><sub><i>P</i></sub> time it can do at most
+<i>P</i>&sdot;<i>T</i><sub><i>P</i></sub> work. Since the total work is <i>T</i><sub>1</sub>, &nbsp;
+<i>P</i>&sdot;<i>T</i><sub><i>P</i></sub> &ge; <i>T</i><sub>1</sub>, &nbsp; or dividing by P we get
+the <b>work law:</b></p>
+
+<blockquote>
+   <i>T</i><sub><i>P</i></sub>&nbsp; &ge; &nbsp; <i>T</i><sub>1</sub> / <i>P</i>
+</blockquote>
+
+<p>The work law can be read as saying that the speedup for <i>P</i> processors can be no better than the
+time with one processor divided by <i>P</i> (i.e., parallelism at best gives constant speedup where the
+constant is 1/<i>P,</i>). 
+
+<h4>Span</h4> 
+<p><b><i>T</i><sub>&infin;</sub></b> = the total time to execute an algorithm on an infinite number of
+processors (or, more practically speaking, on just as many processors as are needed to allow
+parallelism wherever it is possible).</p>
+
+<img src="Topic-22/Fig-27-2-P-Fib.jpg" align = "right">
+
+<p><i>T</i><sub>&infin;</sub> is called the <i>span</i> because it corresponds to the longest time
+to execute the strands along any path in the computation dag (the biggest computational span across
+the dag). It is the fastest we can possibly expect -- an &Omega; bound -- because no matter how many
+processors you have, the algorithm must take this long.</p>
+
+<p>Hence the <b>span law</b> states that a <i>P</i>-processor ideal parallel computer cannot run
+faster than one with an infinite number of processors:</p> 
+<blockquote>
+<i>T</i><sub><i>P</i></sub> &nbsp; &ge; &nbsp; <i>T</i><sub>&infin;</sub>
+</blockquote>
+<p>This is because at some point the span will limit the speedup possible, no matter how many
+processors you add.</p>
+
+<p><i>What is the work and span of the computation dag for P-Fib shown?</i> </p>
+
+<h4>Speedup</h4>
+<p>The ratio <b><i>T</i><sub>1</sub> / <i>T</i><sub><i>P</i></sub></b> defines how much <i>speedup</i> you
+get with <i>P</i> processors as compared to one.</p>
+<p>By the work law, <i>T</i><sub><i>P</i></sub> &ge; <i>T</i><sub>1</sub> / <i>P</i>, so
+<i>T</i><sub>1</sub> / <i>T</i><sub><i>P</i></sub> &le; <i>P</i>: one cannot have any more speedup
+than the number of processors.</p>
+
+<p>This is important: <b><i>parallelism provides only constant time improvements</i></b> (the constant
+being the number of processors) to any algorithm! <b><i>Parallelism cannot move an algorithm from a higher
+to lower complexity class (e.g., exponential to polynomial, or quadratic to linear).</i></b> Parallelism is
+not a silver bullet: good algorithm design and analysis is still needed. </p>
+
+<p>When the speedup <i>T</i><sub>1</sub> / <i>T</i><sub><i>P</i></sub> = &Theta;(<i>P</i>) we have
+<b>linear speedup</b>, and when <i>T</i><sub>1</sub> / <i>T</i><sub><i>P</i></sub> = <i>P</i> we
+have <b>perfect linear speedup</b>. </p> 
+
+<h4>Parallelism</h4>
+<p>The ratio <b><i>T</i><sub>1</sub> / <i>T</i><sub>&infin;</sub></b> of the work to the span gives the
+potential parallelism of the computation. It can be interpreted in three ways:</p> 
+<ul>
+  <li><i>Ratio </i>: The average amount of work that can be performed for each step of parallel
+      execution time.</li> 
+  <li><i>Upper Bound </i>: the maximum possible speedup that can be achieved on any number of
+      processors.</li> 
+  <li><i>Limit</i>: The limit on the possibility of attaining perfect linear speedup. Once the
+      number of processors exceeds the parallelism, the computation cannot possibly achieve perfect
+      linear speedup. The more processors we use beyond parallelism, the less perfect the speedup.</li>
+</ul>
+
+<p>This latter point leads to the concept of <b>parallel slackness</b>,</p>
+<blockquote>
+  (<i>T</i><sub>1</sub> / <i>T</i><sub>&infin;</sub>) / <i>P</i> &nbsp; = &nbsp; <i>T</i><sub>1</sub> /
+  (<i>P</i>&sdot;<i>T</i><sub>&infin;</sub>),
+</blockquote>
+<p> the factor by which the parallelism of the computation
+exceeds the number of processors in the machine. If slackness is less than 1 then perfect linear
+speedup is not possible: you have more processors than you can make use of. If slackness is greater
+than 1, then the work per processor is the limiting constraint and a scheduler can strive for linear
+speedup by distributing the work across more processors.</p>
+
+<p><i>What is the parallelism of the computation dag for P-Fib shown previously? What are the
+prospects for speedup at *this* n? What happens to work and span as n grows?</i> </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Analysis of Multithreaded Algorithms</h2>
+
+<p>Analyzing <i>work</i> is simple: ignore the parallel constructs and analyze the serial
+algorithm. For example, the work of P-Fib(<i>n</i>) is T<sub>1</sub>(<i>n</i>) = T(<i>n</i>) =
+&Theta;(F<sub><i>n</i></sub>). Analyzing <i>span</i> requires more work.</p>
+
+<!-- -------------------------------- -->
+<h3>Analyzing Span</h3> 
+
+<p>If in series, the span is the sum of the spans of the subcomputations. (This is similar to normal
+sequential analysis.) </p>
+
+<p>If in parallel, the span is the <u>maximum</u> of the spans of the subcomputations. (This is
+where analysis of multithreaded algorithms differs.) </p>
+
+<img src="Topic-22/Fig-27-3-Composed-Subcomputations.jpg">
+
+<p>Returning to our example, the span of the parallel recursive calls of P-Fib(<i>n</i>) is:</p>
+
+<blockquote>
+  <i>T</i><sub>&infin;</sub> (<i>n</i>) &nbsp; = &nbsp;
+    max(T</i><sub>&infin;</sub>(<i>n</i>&minus;1), T</i><sub>&infin;</sub> (<i>n</i>&minus;2))
+    + &Theta;(1) <br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; = &nbsp; T</i><sub>&infin;</sub>(<i>n</i>&minus;1) +
+  &Theta;(1). 
+</blockquote>
+
+<p>which has solution &Theta;(<i>n</i>).</p>
+
+<p>The parallelism of P-Fib(<i>n</i>) in general (not the specific case we computed earlier) is
+T<sub>1</sub>(<i>n</i>) / T<sub>&infin;</sub> &nbsp; = &nbsp;
+&Theta;(F<sub><i>n</i></sub>/<i>n</i>), which grows dramatically, as F<sub><i>n</i></sub> grows much
+faster than <i>n</i>. </p>
+
+<p>There is considerable parallel slackness, so above small <i>n</i> there is potential for near
+perfect linear speedup: there is likely to be something for additional processors to do.</p>
+
+<!-- -------------------------------- -->
+<h3>Parallel Loops</h3> 
+
+<p>So far we have used spawn, but not the <b>parallel</b> keyword, which is used with loop
+constructs such as <b>for</b>. Here is an example. </p>
+
+<p>Suppose we want to multiply an <i>n</i> x <i>n</i> matrix <i>A</i> =
+(<i>a</i><sub><i>ij</i></sub>) by an <i>n</i>-vector <i>x</i> = (<i>x</i><sub><i>j</i></sub>). This
+yields an <i>n</i>-vector <i>y</i> = (<i>y</i><sub><i>i</i></sub>) where:</p>
+<img src="Topic-22/equation-matrix-vector-mult.jpg">
+
+<p>The following algoirthm does this in parallel:</p> 
+<img src="Topic-22/code-Mat-Vec.jpg">
+<p>The <b>parallel for</b> keywords indicate that each iteration of the loop can be executed
+concurrently. (Notice that the inner <b>for</b> loop is not parallel; a possible point of
+improvement to be discussed.)</p> 
+
+<!-- *** This section might need further explanation. *** -->
+
+<h4>Implementing Parallel Loops</h4> 
+<p>It is not realistic to think that all <i>n</i> subcomputations in these loops can be spawned
+immediately with no extra work. (For some operations on some hardware up to a constant <i>n</i> this
+may be possible; e.g., hardware designed for matrix operations; but we are concerned with the
+general case.) How might this parallel spawning be done, and how does this affect the analysis?</p>
+
+<p>This can be accomplished by a compiler with a divide and conquer approach, itself implemented
+with parallelism. The procedure shown below is called with Mat-Vec-Main-Loop(<i>A</i>, <i>x</i>, <i>y</i>, <i>n</i>, 1,
+<i>n</i>). Lines 2 and 3 are the lines originally within the loop.</p>
+<img src="Topic-22/code-Mat-Vec-Main-Loop.jpg">
+<img src="Topic-22/Fig-27-4-Mat-Vec-Main-Loop-small.jpg" align="right">
+
+<p>The computation dag is also shown. It appears that a lot of work is being done to spawn the
+<i>n</i> leaf node computations, but the increase is not asymptotic.</p>
+
+<p>The <i>work</i> of Mat-Vec is T<sub>1</sub>(<i>n</i>) = &Theta;(<i>n</i><sup>2</sup>) due to the
+nested loops in 5-7.</p>
+
+<p>Since the tree is a full binary tree, the number of internal nodes is 1 fewer than the leaf
+nodes, so this extra work is also &Theta;(<i>n</i>).</p>
+
+<p>So, the work of recursive spawning contributes a constant factor when amortized across the work
+of the iterations.</p>
+
+<p>However, concurrency platforms sometimes coarsen the recursion tree by executing several
+iterations in each leaf, reducing the amount of recursive spawning.</p>
+
+<p>The span is increased by &Theta;(lg <i>n</i>) due to the tree. In some cases (such as this one),
+this increase is washed out by other dominating factors (e.g., the doubly nested loops). </p>
+
+<h4>Nested Parallelism</h4>
+
+<p>Returning to our example, the span is &Theta;(<i>n</i>) because even with full utilization of
+parallelism the inner <b>for</b> loop still requires &Theta;(<i>n</i>). Since the work is
+&Theta;(<i>n</i><sup>2</sup>) the parallelism is &Theta;(<i>n</i>). Can we improve on this?</p>
+
+<p>Perhaps we could make the inner <b>for</b> loop parallel as well? Compare the original to this
+revised version:</p>
+<img src="Topic-22/code-Mat-Vec.jpg">
+<img src="Topic-22/code-Mat-Vec-Prime.jpg" align = "right">
+<p>Would it work? We need to introduce a new issue ...</p> 
+
+<!-- -------------------------------- -->
+<h3>Race Conditions</h3>
+
+<p><b>Deterministic</b> algorithms do the same thing on the same input; while <b>
+nondeterministic</b> algorithms may give different results on different runs.</p>
+
+<p>The above Mat-Vec' algorithm is subject to a potential problem called a <b>determinancy race</b>:
+when the outcome of a computation could be nondeterministic (unpredictable). This can happen when
+two logically parallel computations access the same memory and one performs a write. </p>
+
+<p>Determinancy races are hard to detect with empirical testing: many execution sequences would give
+correct results. This kind of software bug is consequential: Race condition bugs caused the
+Therac-25 radiation machine to overdose patients, killing three; and caused the North American
+Blackout of 2003.</p>
+
+<img src="Topic-22/Fig-27-5-Race-Condition.jpg" align="right"> 
+<p>For example, the code shown below might output 1 or 2 depending on the order in which access to
+<i>x</i> is interleaved by the two threads:</p>
+<img src="Topic-22/code-Race-Example.jpg">
+
+<br>
+
+<p>After we understand that simple example, let's look at our (renamed) matrix-vector example
+again:</p>
+
+<img src="Topic-22/code-Mat-Vec-Wrong.jpg">
+
+<p>Do you see how <i>y<sub>i</sub></i>  might be updated differently depending on the order in which
+parallel invocations of line 7 (including access to current value of <i>y<sub>i</sub></i> and
+writing new ones) are executed?</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Example: Matrix Multiplication </h2>
+
+<h4> Multithreading the basic algorithm</h4>
+
+<p>Here is an algorithm for multithreaded matrix multiplication, based on the
+T<sub>1</sub>(<i>n</i>)  =  &Theta;(<i>n</i><sup>3</sup>) algorithm:</p>
+<img src="Topic-22/code-P-Square-Matrix-Multiply.jpg">
+
+<p><i>How does this procedure compare to MAT-VEC-WRONG? Is is also subject to a race condition? Why
+or why not? </i></p> 
+
+<p>The span of this algorithm is T<sub>&infin;</sub>(<i>n</i>) &nbsp; = &nbsp; &Theta;(<i>n</i>),
+due to the path for spawning the outer and inner parallel loop executions and then the <i>n</i>
+executions of the innermost <b>for</b> loop. So the parallelism is T<sub>1</sub>(<i>n</i>) /
+T<sub>&infin;</sub>(<i>n</i>)  &nbsp; = &nbsp; &Theta;(<i>n</i><sup>3</sup>) / &Theta;(<i>n</i>)
+ &nbsp; = &nbsp; &Theta;(<i>n</i><sup>2</sup>)</p>
+
+<p><i>Could we get the span down to &Theta;(1) if we parallelized the inner <b>for</b> with
+<b>parallel for</b>?</i></p>
+
+<h4>Multithreading the divide and conquer algorithm</h4>
+
+<p>Here is a parallel version of the divide and conquer algorithm from Chapter 4:</p>
+<img src="Topic-22/code-P-Matrix-Multiply-Recursive.jpg">
+
+<p>See the text for analysis, which concludes that the work is &Theta;(<i>n</i><sup>3</sup>), while
+the span is &Theta;(lg<sup>2</sup><i>n</i>). Thus, while the work is the same as the basic algorithm
+the parallelism is &Theta;(<i>n</i><sup>3</sup>) / &Theta;(lg<sup>2</sup><i>n</i>), which makes good
+use of parallel resources.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Example: Merge Sort </h2>
+
+<p>Divide and conquer algorithms are good candidates for parallelism, because they break the problem
+into independent subproblems that can be solved separately. We look briefly at merge sort.</p>
+
+<h4>Parallelizing Merge-Sort</h4> 
+<p>The dividing is in the main procedure <tt>MERGE-SORT</tt>, and we can parallelize it by spawning
+the first recursive call:</p>
+<img src="Topic-22/code-Merge-Sort-Prime.jpg">
+
+<p><tt>MERGE</tt> remains a serial algorithm, so its work and span are &Theta;(<i>n</i>) as
+before. </p>
+
+<p>The recurrence for the <i>work</i> MS'<sub>1</sub>(<i>n</i>) of <tt>MERGE-SORT'</tt> is the same
+as the serial version:</p>
+<img src="Topic-22/equation-Merge-Sort-Prime-work.jpg">
+
+<p>The recurrence for the <i>span</i> MS'<sub>&infin;</sub>(<i>n</i>) of <tt>MERGE-SORT'</tt> is
+based on the fact that the recursive calls run in parallel, so there is only one <i>n</i>/2
+term:</p>
+<img src="Topic-22/equation-Merge-Sort-Prime-span.jpg">
+
+<p>The <i>parallelism</i> is thus MS'<sub>1</sub>(<i>n</i>) /  MS'<sub>&infin;</sub>(<i>n</i>)
+&nbsp; = &nbsp; &Theta;(<i>n</i> lg <i>n</i> / <i>n</i>) &nbsp; = &nbsp; &Theta;(lg <i>n</i>). </p>
+
+<p>This is low parallelism, meaning that even for large input we would not benefit from having
+hundreds of processors. How about speeding up the serial <tt>MERGE</tt>? </p>
+
+<h4>Parallelizing Merge</h4>
+<p><tt>MERGE</tt> takes two sorted lists and steps through them together to construct a single
+sorted list. This seems intrinsically serial, but there is a clever way to make it parallel.</p>
+<p> A divide-and-conquer strategy can rely on the fact that they are sorted to break the
+lists into four lists, two of which will be merged to form the head of the final list and the other
+two merged to form the tail.</p>
+
+<p>To find the four lists for which this works, we 
+<ol>
+  <li>Choose the longer list to be the first list, T[<i>p</i><sub>1</sub> .. <i>r</i><sub>1</sub>]
+      in the figure below.</li> 
+  <li>Find the middle element (median) of the first list (<i>x</i> at <i>q</i><sub>1</sub>).</li>
+  <li>Use binary search to find the position (<i>q</i><sub>2</sub>) of this element if it were to be
+  inserted in the second list T[<i>p</i><sub>2</sub> .. <i>r</i><sub>2</sub>].</li>
+  <li>Recursively merge 
+      <ul>
+        <li>The first list up to just before the median T[<i>p</i><sub>1</sub> ..
+        <i>q</i><sub>1</sub>-1] and the second list up to the insertion
+            point T[<i>p</i><sub>2</sub> .. <i>q</i><sub>2</sub>-1].</li> 
+        <li>The first list from just after the median T[<i>q</i><sub>1</sub>+1 ..
+            <i>r</i><sub>1</sub>] and the second list after the insertion point
+            T[<i>q</i><sub>2</sub> .. <i>r</i><sub>2</sub>].</li> 
+      </ul>
+    </li>
+  <li>Assemble the results with the median element placed between them, as shown below.</li>
+</ol>
+<img src="Topic-22/Fig-27-6-Multithreaded-Merge.jpg">
+
+<p>The text presents the <tt>BINARY-SEARCH</tt> pseudocode and analysis of &Theta;(lg <i>n</i>) worst
+case; this should be review for you. It then assembles these ideas into a parallel merge
+procedure that merges into a second array Z at location <i>p</i><sub>3</sub> (<i>r</i><sub>3</sub>
+is not provided as it can be computed from the other parameters):</p> 
+<img src="Topic-22/code-P-Merge.jpg">
+
+<h4>Analysis</h4> 
+<p>My main purpose in showing this to you is to see that even apparently serial algorithms sometimes
+have a parallel alternative, so we won't get into details, but here is an outline of the analysis:</p>
+
+<p>The span of <tt>P-MERGE</tt> is the maximum span of a parallel recursive call. Notice that
+although we divide the first list in half, it could turn out that <i>x</i>'s insertion point
+<i>q</i><sub>2</sub> is at the beginning or end of the second list. Thus (informally), the maximum
+recursive span is 3<i>n</i>/4 (as at best we have "chopped off" 1/4 of the first list).</p>
+
+<p>The text derives the recurrence shown below; it does not meet the Master Theorem, so an approach
+from a prior exercise is used to solve it: </p>
+<img src="Topic-22/equation-P-Merge-span.jpg">
+
+<p>Given 1/4 &le; &alpha; &le; 3/4 for the unknown dividing of the second array, the work recurrence
+turns out to be:</p>
+<img src="Topic-22/equation-P-Merge-work.jpg">
+
+<p>With some more work, PM<sub>1</sub>(<i>n</i>) = &Theta;(n) is derived. Thus the parallelism is
+&Theta;(n / lg<sup>2</sup><i>n</i>)</p> 
+
+<p>Some adjustment to the <tt>MERGE-SORT'</tt> code is needed to use this <tt>P-MERGE</tt>; see the
+text. Further analysis shows that the work for the new sort, <tt>P-MERGE-SORT</tt>, is
+PMS<sub>1</sub>(<i>n</i> lg <i>n</i>) = &Theta;(<i>n</i>), and the span
+PMS<sub>&infin;</sub>(<i>n</i>) = &Theta;(lg<sup>3</sup><i>n</i>). This gives parallelism of
+&Theta;(<i>n</i> / lg<sup>2</sup><i>n</i>), which is much better than &Theta;(lg <i>n</i>) in terms
+of the potential use of additional processors as <i>n</i> grows.</p>
+
+<p>The chapter ends with a comment on coarsening the parallelism by using an ordinary serial sort
+once the lists get small. One might consider whether <tt>P-MERGE-SORT</tt> is still a stable sort,
+and choose the serial sort to retain this property if it is desirable.</p>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Sun Apr 12 02:17:14 HST 2015 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition.</br> 
+</body>
+</html>

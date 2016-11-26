@@ -1,0 +1,1 @@
+javac -cp ics432_raytracer.jar MakeMovieConcurrent.java

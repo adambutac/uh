@@ -1,0 +1,621 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #23: String Matching </title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #23: String Matching </h1><hr> 
+
+<h2>Spring 2014:</h4> 
+
+<p>This will be presented in half-day "special topic" format. There will be no screencast, quiz or
+problem set. We will have a brief lecture followed by an in-class activity, based on sections 32.1
+(the naive algorithm) and 32.3 (string matching with finite state automata), both of
+which are reviewd in these notes.</p>
+
+<p>While you are not likely to need to design or implement a string matching algorithm (they are
+built into modern software tools), questions about string matching algorithms reportedly still show
+up in job interviews (study KMP section 32.4 for this). It is also worth being familiar with this
+topic for the concept of finite-state automata as a form of table-driven algorithm, and how
+algorithms can be written to write other algorithms (the FSA). </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Outline</h2> 
+<ol>
+  <li>String Matching Introduction </li>
+  <li>Naive (Brute Force) String Matching </li>
+  <li>Matching with Finite State Automata </li>
+  <li>Knuth-Morris-Pratt Algorithm </li>
+  <li>FYI: Rabin-Karp Algorithm</li>
+</ol>
+  
+<h2>Readings and Screencasts</h2>
+<ul>
+  <li>CLRS 3rd Ed. Chapter 32, with emphasis on KMP</li>
+  <li>Screencasts not available </li>
+</ul> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> String Matching Introduction </h2>
+
+<p>The <b>string matching problem</b> is the problem of finding all occurrences of a string
+<i>P</i> (the <b>pattern</b>) in a target text <i>T</i>, also a string.</p>
+
+<p>We treat both <i>T</i> and <i>P</i> as arrays <i>T</i>[1 .. <i>n</i>] and <i>P</i>[1 .. <i>m</i>],
+where <i>m</i> &le; <i>n</i>. The elements of the arrays are members of a finite alphabet
+&Sigma;.</p>
+
+<p>More precisely, we say that <i>P</i> occurs with <b>shift</b> <i>s</i> in <i>T</i> (<i>P</i>
+occurs beginning at position <i>s</i> + 1 in <i>T</i>) if </p>
+<blockquote>
+0 &nbsp; &le; &nbsp; <i>s</i> &nbsp; &le; &nbsp; <i>n</i> &minus; <i>m</i>
+  &nbsp; &nbsp; <i>(one cannot fall off the end of T),</i> and <br>
+T[<i>s</i> + 1 .. <i>s</i> + <i>m</i>] &nbsp; = &nbsp; <i>P</i>[1 .. <i>m</i>].
+</blockquote>
+
+<p>The <b>string matching problem</b> is the problem of finding <i><b>all valid
+shifts</b></i>.</p> 
+
+<p>A simple example:</p>
+<img src="Topic-23/Fig-32-1-string-matching-example.jpg">
+
+<h3>Applications</h3>
+
+<p>String matching is obviously important for implementing search in <i><b>text editing</b></i>
+programs, and for <i><b>document search</b></i>, whether searching within a single document or
+searching multiple documents for a topic of interest. This latter application extends to
+<i><b>internet search engines</b></i>. Other specialized applications include processing <i><b>DNA
+sequences</b></i> in bioinformatics.</p>
+
+
+<h3>Brief History</h3>
+
+<p> In 1970 Cook proved that an O(<i>M</i>+<i>N</i>) machine is possible. His theorem was not
+intended to be practical, but Knuth and Pratt followed the structure of the theorem to design an
+algorithm. Around the same time, Morris derived the algorithm independently as part of his design of
+a text editor. Eventually they found out about each other's work and published it in 1976. Also in
+1976, Boyer and Moore found another efficient algorithm not covered here: see the Sedgewick book. In
+1980 Rabin & Karp came up with a modification to brute force that searches on chunks of text of size
+<i>M</i> using a hash function. Researchers continue to come up with new algorithms.</p>
+
+<h3>Algorithms</h3>
+
+<p>There are a surprising number of variations on string searching algorithms. See <a
+  href="http://www-igm.univ-mlv.fr/~lecroq/string/index.html">
+ http://www-igm.univ-mlv.fr/~lecroq/string/index.html</a> for summary descriptions, code and
+ animations in Java. Find out what a "<b>Backward Nondeterministic Dawg Matching</b>" algorithm
+ is!</p>
+
+<p>Most algorithms require <b>preprocessing</b> of the pattern before entering the <b>matching</b>
+ phase. Analysis must consider both costs, and applications must determine whether the preprocessing
+ is worth the speedup in matching. </p>
+
+<p>The algorithms we cover are summarized by this table from the text:</p>
+<img src="Topic-23/Fig-32-2-algorithms.jpg">
+
+<img src="Topic-23/no-lemmings.jpg" align="right"> 
+<p>Today we will cover how these algorithms work, but not any proofs of correctness, which you may
+find in the text.</p> 
+
+<h3>Notation and Terminology</h3>
+
+<p><b>Prefix:</b> <i>p</i> &sqsub; <i>t</i>  (<i>p</i> is a prefix of <i>t</i>) if <i>t</i> =
+<i>pw</i> for some <i>w</i> &in; &Sigma;<sup>*</sup></p>
+
+<p><b>Suffix:</b> <i>s</i> &sqsup; <i>t</i>  (<i>s</i> is a suffix of <i>t</i>) if <i>t</i> =
+<i>ws</i> for some <i>w</i> &in; &Sigma;<sup>*</sup></p>
+
+<p>The <b>empty string</b> is denoted &epsilon;. </p>
+
+<p>The <b><i>k</i>-character prefix</b> <i>T</i>[1 .. k] of any text or pattern <i>T</i> is denoted
+<i>T<sub>k</sub></i>.</p>
+
+<p><b>Comment on String Matching Time:</b>
+The test of whether "<i>x</i> == <i>y</i>" takes &Theta;(<i>t</i> + 1) time, where <i>t</i> is
+the length of the longest string <i>z</i> such that <i>z</i> &sqsub; <i>x</i> and <i>z</i> &sqsub;
+<i>y</i>. (The "1" is included to cover the case where <i>t</i> = 0, since a positive amount
+of time must be expended to determine this fact.) This comparison loop will be implicit in some of
+our pseudocode.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Naive (Brute Force) String Matching </h2>
+
+<p>It is often instructive to start with a brute force algorithm, that we can then examine for
+possible improvements and also use as a baseline for comparison.</p>
+
+<p>The obvious approach is to start at the first character of <i>T</i>, <i>T</i>[1], and then step
+through <i>T</i> and <i>P</i> together, checking to see whether the characters match.</p>
+
+<p>Once <i>P</i> has been match at any given shift <i>T</i>[<i>s</i>], then go on to checking at
+<i>T</i>[<i>s</i>+1] (since we are looking for all matches), up until <i>s</i> = |<i>T</i>| &minus;
+|<i>P</i>| (which is <i>n</i> &minus; <i>m</i>). </p>
+
+<img src="Topic-23/code-naive-string-matcher.jpg">
+
+<!-- -------------------------- -->
+<h3>Example </h3>
+<p>Suppose <i>P</i> = <big><tt>aab</tt></big> and <i>T</i> = <big><tt>acaabc</tt></big>. There are
+four passes:</p>
+<img src="Topic-23/Fig-32-4-naive-string-matcher-a.jpg">
+<img src="Topic-23/Fig-32-4-naive-string-matcher-b.jpg">
+<img src="Topic-23/Fig-32-4-naive-string-matcher-c.jpg">
+<img src="Topic-23/Fig-32-4-naive-string-matcher-d.jpg">
+
+<p>You an see C code and a Java applet animation at <a
+ href="http://www-igm.univ-mlv.fr/~lecroq/string/node3.html">
+http://www-igm.univ-mlv.fr/~lecroq/string/node3.html</a></p>
+
+<!-- -------------------------- -->
+<h3>Analysis</h3>
+<img src="Topic-23/code-naive-string-matcher.jpg" align="right">
+<p>No preprocessing is required.</p> 
+
+<p>For each of <i>n</i> &minus; <i>m</i> + 1 start positions, potentially <i>m</i> pattern characters are
+compared to the target text in the matching phase. Thus, the naive algorithm is <b>O((<i>n</i> -
+<i>m</i> + 1)<i>m</i>)</b> in the worst case.</p>
+
+<!-- -------------------------- -->
+<h3>Inefficiencies</h3>
+
+<p>The brute force method does not use information about what has been matched, and does not use
+information about recurrences within the pattern itself. Consideration of these factors leads to
+improvements.</p>
+
+<p>For example, when we matched <i>P</i> = <big><tt>aab</tt></big> at <i>s</i> = 2, we found that
+<i>T</i>[5] = <big><tt>b</tt></big>: </p>
+
+<img src="Topic-23/Fig-32-4-naive-string-matcher-c.jpg">
+
+<p>Then it is not possible for a shift of <i>s</i> = 3 (or <i>s</i> = 4 if <i>T</i> were longer) to be
+valid, beause these shifts juxtapose <i>P</i>[2] = <big><tt>a</tt></big> (and
+<i>P</i>[1] = <big><tt>a</tt></big> if applicable) against <i>T</i>[5] = <big><tt>b</tt></big>:</p>
+
+<img src="Topic-23/Fig-32-4-naive-string-matcher-d.jpg">
+
+<p>This information is used in the finite state automata and Knuth-Morris-Pratt approaches.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Matching with Finite State Automata </h2>
+
+<p>Finite state automata are machines that have a finite number of states, and move between states
+as they read input one symbol at a time.</p>
+
+<p>Algorithms that construct (or simulate) finite state automata can be very efficient matchers, but
+they require some preprocessing to construct.</p>
+
+<!-- -------------------------- -->
+<h3>Finite State Automata</h3>
+
+<p>Finite state automata are widely used in computability theory as well as in practical
+algorithms. It's worth knowing about them even if you are not doing string matching. </p>
+
+<p>A <b>finite state automaton (FSA) </b> or <b>finite automaton</b> <i>M</i> is a 5-tuple
+(<i>Q</i>, <i>q<sub>0</sub></i>, <i>A</i>, &Sigma;, &delta;) where </p>
+<ul>
+  <li><b><i>Q</i></b> is a finite set of <i><b>states</b></i> </li><br>
+  <li><b><i>q<sub>0</sub></i></b> &in; <i>Q</i> is the <i><b>start state</b></i> </li><br>
+  <li><b><i>A</i></b> &sube; <i>Q</i> is a set of <i><b>accepting states</b></i> </li><br>
+  <li><b>&Sigma;</b> is a finite <i><b>input alphabet</b></i> </li><br>
+  <li><b>&delta;</b> : <i>Q</i> x &Sigma; &rarr; <i>Q</i> is the <i><b>transition function</b></i>
+  of <i>M</i>.  </li>
+</ul>
+
+<p>The FSA starts in state <i>q<sub>0</sub></i>. As each character (symbol) of the input string is
+read, it uses &delta; to determine what state to transition into. Whenever <i>M</i> is in a state of
+<i>A</i>, the input read so far is <b>accepted</b>. </p>
+
+<p>Here is a simple example: &nbsp; <i>q<sub>0</sub></i> = 0 and <i>A</i> = {1}.
+&nbsp; (<i>What are Q, &Sigma;, and &delta;?</i>)</p> 
+<img src="Topic-23/Fig-32-6-simple-fsa.jpg">
+<p> <i>What strings does this FSA accept?</i></p>
+
+<p>We define the <b>final state function &phi;</b> : &Sigma;<sup>*</sup> &rarr; <i>Q</i> such that
+&phi;(<i>w</i>) is the final state <i>M</i> ends up in after reading <i>w</i>: </p>
+<blockquote>
+&phi;(&epsilon;) &nbsp; = &nbsp; <i>q</i><sub>0</sub><br>
+&phi;(<i>wa</i>) &nbsp; = &nbsp; &delta;(&phi;(<i>w</i>), <i>a</i>) &nbsp; for <i>w</i> &in;
+&Sigma;<sup>*</sup>, <i>a</i> &in; &Sigma; 
+</blockquote> 
+
+<!-- -------------------------- -->
+<h3>String Matching Automata</h3>
+
+<p>Let's see how they work by an example. This is the string matching automaton for <i>P</i> =
+<big><tt>ababaca</tt></big>: </p>
+<img src="Topic-23/Fig-32-7-ababaca-fsa-a.jpg">
+
+<img src="Topic-23/Fig-32-7-ababaca-fsa-b.jpg" align="right">
+
+<p>The start state is 0 and the only accepting state is 7. Any transitions not shown (e.g., if
+<big><tt>c</tt></big> is read while in states 1, 2, 3, 4, 6, and 7) are assumed to go back to state 0. </p> 
+
+<p>This automaton can be represented with the table to the right. The shading shows the sequence of
+states through which a successful match transitions. These transitions correspond to the darkened
+arrows in the diagram.</p>
+
+<p>We can run this automaton continuously on a text <i>T</i>, and if and when state 7 is entered
+output the relevant positions: the match will start with shift <i>i</i> &minus; <i>m</i> or at position
+<i>i</i> &minus; <i>m</i> + 1.</p>
+
+<p>The following code simulates any FSA on input text <i>T</i>, given the FSA's table &delta; and
+pattern length <i>m</i>: </p>
+
+<img src="Topic-23/code-finite-automaton-matcher.jpg">
+
+<p> For example, below is a run on <i>T</i> = <big><tt>abababacaba</tt></big>, which includes
+<i>P</i> = <big><tt>ababaca</tt></big> starting at position 3: <big><tt>ab ababaca
+ba</tt></big>.</p>
+
+<img src="Topic-23/Fig-32-7-ababaca-fsa-c.jpg">
+<img src="Topic-23/Fig-32-7-ababaca-fsa-b.jpg" align="right">
+
+<p>State 7 is reached at <i>i</i> = 9, so the pattern occurs starting at <i>i</i> &minus; <i>m</i> + 1, or
+9 &minus; 7 + 1 = 3. The FSA keeps going after a match, as it may find other occurrences of the
+pattern.</p> 
+
+<p>Unlike the brute force approach, past work is not thrown away: the transitions following either
+failure to match a character or success to match the entire pattern pick up with the input read so
+far.</p>
+
+
+<p>For example,</p>
+<img src="Topic-23/Fig-32-7-ababaca-fsa-a-small.jpg" align="right">
+<ul>
+  
+  <li> <i>After Failure:</i> At <i>i</i> = 5, <big><tt>ababa</tt></big> has been matched in
+       <i>T</i>[1 .. 5] and <big><tt>c</tt></big> was expected but not found at <i>T</i>[6]. Rather
+       than starting over, the FSA transitions to state &delta;(5, <big><tt>b</tt></big>) = 4 to
+       indicate that the pattern prefix <i>P</i><sub>4</sub> = <big><tt>abab</tt></big> has matched 
+       the present text suffix <i>T</i>[3 .. 6]. </li> <br> 
+       
+  <li> <i>After Success:</i> At, <i>i</i> = 9, we are in state 7 (success), and a
+       <big><tt>b</tt></big> is seen. We need not start over: the FSA transitions to state &delta;(7,
+       <big><tt>b</tt></big>) = 2 to reflect the fact that there is already a match to the prefix
+       <i>P</i><sub>2</sub> = <big><tt>ab</tt></big> at <i>T</i>[9 .. 11].</li>
+       
+</ul> 
+
+<p>This makes FSAs much more efficient than brute force in the matching phase. In fact, matching is
+&Theta;(<i>n</i>). But how do we build them?</p>
+
+<!-- -------------------------- -->
+<h3>Constructing Finite State Automata (Preprocessing Phase)</h3>
+
+<p>In general, the FSA is constructed so that the state number tells us how much of a prefix of
+<i>P</i> has been matched.</p>
+<ul>
+  <li> If the pattern <i>P</i> is of length <i>m</i> and the FSA is in state
+       <i>m</i>, then the pattern has been matched.</li><br>
+  <li> If the state number is smaller than <i>m</i>, then the state number is the length
+       of the prefix of <i>P</i> matched.</li>
+</ul>
+<p>Another definition is needed to formalize this.</p>
+
+<h4>Definitions and Strategy</h4>
+
+<p>The <b>suffix function</b> corresponding to <i>P</i> of length <i>m</i> is
+&sigma;<sub><i>P</i></sub> : &Sigma;<sup>*</sup> &rarr; {0, 1, ... <i>m</i>} such that
+&sigma;<sub><i>P</i></sub> (<i>w</i>) is the length of the longest prefix of <i>P</i> that is also a
+suffix of <i>x</i>:</p>
+
+<blockquote>
+&sigma;<sub><i>P</i></sub>(<i>w</i>) = max {<i>k</i> : <i>P<sub>k</sub></i> &sqsup; <i>w</i>}. 
+</blockquote> 
+
+<p>For example, if <i>P</i> = <big><tt>ab</tt></big> then </p>
+<ul>
+  <li>&sigma;(&epsilon;) = 0</li>
+  <li>&sigma;(<big><tt>ccaca</tt></big>) = 1</li>
+  <li>&sigma;(<big><tt>ccab</tt></big>) = 2</li>
+</ul>
+
+<p>(For simplicity, we leave out the subscript <i>P</i> when it is clear from the context.)
+Then we can define the automaton for pattern <i>P</i>[1 .. <i>m</i>] as: </p>
+
+<ul>
+  <li><i>Q</i> = {0, 1 .. <i>m</i>}</li><br>
+  <li><i>q<sub>0</sub></i> = 0</li><br>
+  <li><i>A</i> = {<i>m</i>}</li><br>
+  <li>&Sigma; is a superset of the characters in <i>P</i></li><br> 
+  <li><b>&delta;(<i>q</i>, <i>a</i>) = &sigma;(<i>P<sub>q</sub> </i><i>a</i>)</b> for any state
+  <i>q</i> and character <i>a</i>. (<i>P<sub>q</sub> </i><i>a</i> is the concatenation of the first <i>q</i>
+  characters of <i>P</i> with the character <i>a</i>.) </li>
+</ul>
+<p>By defining &delta;(<i>q</i>, <i>a</i>) = &sigma;(<i>P<sub>q</sub> </i><i>a</i>), the state of
+the FSA keeps track of the longest prefix of the pattern <i>P</i> that has matched the input text
+<i>T</i> so far.</p>
+
+<p>In order for a substring of <i>T</i> ending at <i>T</i>[<i>i</i>] to match some prefix
+<i>P<sub>j</sub></i>, then this prefix <i>P<sub>j</sub></i> must be a suffix of
+<i>T</i>[<i>i</i>]. </p>
+
+<p>We design &delta; such that the state <i>q</i> = &phi;(<i>T</i>[<i>i</i>]) gives the length of
+the longest prefix of <i>P</i> that matches a suffix of <i>T</i>. We have:</p>
+<blockquote>
+ <i>q</i> = &phi;(<i>T<sub>i</sub></i>) = &sigma;(<i>T<sub>i</sub></i>), and <i>P<sub>q</sub></i>
+  &sqsup; <i>T<sub>i</sub></i> (<i>P<sub>q</sub></i> is a suffix of <i>T<sub>i</sub></i>). 
+</blockquote>
+
+<p>Given a match so far to <i>P<sub>q</sub></i> (which may be &epsilon;) and reading character
+<i>a</i>, there are two kinds of transitions: </p>
+<ul>
+ <li>When <i>a</i> = <i>P</i>[<i>q</i> + 1], <i>a</i> continues to match the pattern, so
+      &delta;(<i>q</i>, a) = <i>q</i> + 1 (going along the dark "spine" arrows of the
+  example).</li><br> 
+ <li>When <i>a</i> &ne; <i>P</i>[<i>q</i> + 1], <i>a</i> fails to match the pattern. The
+      preprocessing algorithm given below <b><i>matches the pattern against itself</i></b> to
+      identify the longest smaller prefix of <i>P</i> that is still matched. </li>
+</ul>
+<img src="Topic-23/Fig-32-7-ababaca-fsa-a-small.jpg" align="right">
+<p>An example of this second case was already noted above for &delta;(5, <big><tt>b</tt></big>) =
+4. </p>
+
+<h4>Preprocessing Procedure</h4>
+<p>The following procedure computes the transition function &delta; from a pattern <i>P</i>[1
+.. <i>m</i>].</p>
+
+<img src="Topic-23/code-compute-transition-function.jpg">
+
+<p>The nested loops process all combinations of states <i>q</i> and characters <i>a</i> needed
+      for the cells of the table representing &delta;.</p>
+
+<p>Lines 4-8 set &delta;(<i>q</i>, <i>a</i>) to the largest <i>k</i> such that
+      <i>P<sub>k</sub></i> &sqsup; <i>P<sub>q</sub>a</i>.
+<ul>
+  <li> The preprocessor is <i>matching P against itself</i>.</li>
+  <li> Thus, knowledge of the structure of P is used to retain information about the match so
+       far, even when matches fail.</li>
+  <li> By starting at the largest possible value of <i>k</i> (line 4) and working down (lines 5-7)
+       we guarantee that we get the longest prefix of <i>P</i> that has been matched so far.
+     <ul> 
+        <li> If the match succeeds at <i>k</i> = <i>q</i> + 1 then this transition indicates a
+             successful match for the current <i>q</i> and <i>a</i>. </li>
+        <li> The loop is guaranteed to end at <i>k</i> = 0, because <i>P<sub>0</sub></i> = &epsilon; is
+             a suffix of any string.</li>
+     </ul>
+   </li> 
+</ul> 
+</p>
+
+<h4>Analysis</h4>
+<img src="Topic-23/code-compute-transition-function.jpg" align="right">
+
+<p><tt>Compute-Transition-Function</tt> requires <i>m</i>*|&Sigma;| for the nested outer
+loops.</p>
+
+<p>Within these loops, the inner <tt>repeat</tt> runs at most <i>m</i> + 1 times; and the test on
+line 7 can require comparing up to <i>m</i> characters. Together lines 5-7 contribute
+O(<i>m</i><sup>2</sup>). </p>
+
+<p>Therefore, <tt>Compute-Transition-Function</tt> is <b>O(<i>m</i><sup>3</sup> |&Sigma;|)</b>. This is
+rather expensive preprocessing, but the &Theta;(<i>n</i>) matching is the best that can be
+expected.</p>
+
+<p>You an see C code and a Java applet animation at <a
+ href="http://www-igm.univ-mlv.fr/~lecroq/string/node4.html">
+http://www-igm.univ-mlv.fr/~lecroq/string/nod43.html</a></p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Knuth-Morris-Pratt Algorithm </h2>
+
+<p>The Knuth-Morris-Pratt algorithm improves on the FSA algorithm by avoiding computation of
+&delta;.</p>
+
+<p>Instead it precomputes an auxiliary <b>prefix function &pi;<sub><i>P</i></sub></b>, represented as an
+array &pi;<sub><i>P</i></sub>[1 .. <i>m</i>], that can be computed from a pattern <i>P</i> of length
+<i>m</i> in &Theta;(<i>m</i>) time. (We'll leave off the <i>P</i> subscript from now on.)</p>
+
+<p>&pi;[<i>q</i>] is the length of the longest prefix of <i>P</i> that is a proper suffix of
+<i>P<sub>q</sub></i>. This information enables fast amortized computation of &delta;(<i>q</i>,
+<i>a</i>) on the fly.</p>
+
+<p>The KMP matcher operates like the FSA matcher, but using &pi; instead of &delta;. There is some
+additional overhead at matching time, but asymptotic performance of matching remains
+&Theta;(<i>n</i>).</p>
+
+<h3>How &pi; Works</h3>
+
+<p>Given <i>P</i>[1 .. <i>m</i>], the prefix function &pi; for <i>P</i> is  &pi; : {1, 2 ...,
+<i>m</i>} &rarr; {0, 1, ..., <i>m</i>-1} such that </p>
+
+<blockquote>
+&pi;[<i>q</i>] = max{<i>k</i> : <i>k</i> &lt; <i>q</i> and <i>P<sub>k</sub></i> &sqsup;
+<i>P<sub>q</sub></i>} 
+</blockquote>
+
+<p>For example, for <i>P</i> = <big><tt>ababaca</tt></big>, &pi; is as follows (<i>let's use the
+formula above to explain a few of the entries below, particularly for i=5.</i>):</p>
+<img src="Topic-23/Fig-32-11-Lemma-32-5-a.jpg">
+
+<p>The table is structured such that a failure at a given position will drive the system to hop to
+the next smaller prefix that could be matched. (<i>Here I am skipping over the textbook's discussion
+of &pi;<sup>*</sup> and Lemma 32.5, and using examples instead</i>).</p>
+
+<p> For example, for <i>P</i> = <big><tt>ababaca</tt></big>, if <i>q</i> = 5 and we
+are reading the 6th character (to the right of the line), consider what happens when that character
+is <big><tt>c</tt></big>, <big><tt>b</tt></big> or <big><tt>a</tt></big>:</p>
+
+<img src="Topic-23/Fig-32-11-Lemma-32-5-b.jpg">
+
+<p>From <i>P</i>[6] we see that a <big><tt>c</tt></big> is expected next.</p>
+<img src="Topic-23/Fig-32-11-Lemma-32-5-a.jpg" align = "right"> 
+<ul>
+  <li> If a <big><tt>c</tt></big> is read, we go to state 6 and continue.</li>
+  <li> If an <big><tt>a</tt></big> or <big><tt>b</tt></big> is read, then there is a mismatch and we
+       need to figure out what prefix of <i>P</i> has still been matched. We look up &pi;[5], which
+       says to skip back to state 3.</li>
+  <li> Repeating the test at state 3, the next character expected is <i>P</i>[4] =
+      <big><tt>b</tt></big>. If we see a <big><tt>b</tt></big> we continue to state 4.</li>
+  <li> Otherwise (the next character is  <big><tt>a</tt></big>), we look up &pi;[3] and skip back to
+       state 1. Again, the next character does not match what is expected for state 1, and &pi;[1]
+       tells us to start over at state 0. In state 0,  an <big><tt>a</tt></big> is expected, so it
+       goes to state 1. </li> 
+</ul>
+<p>Thus, &pi; helps us retain information from prior comparisions, shifting back to the state for
+the maximum prefix matched so far, rather than starting over.</p> 
+
+
+<h3>The KMP Matcher</h3>
+
+<p>Both the KMP matcher and the algorithm for computing &pi; are similar to the FSA's
+<tt>Compute-Transition-Function</tt> (take the time to compare them when you read the text).</p>
+
+<p>The KMP matching code is below. We can see the "skipping" discussed above happening in lines 6-7,
+with successful matching of the next character handled in lines 8-9. After a successful match, we
+jump to the appropriate state to continue looking for the next item in line 12.</p>
+<img src="Topic-23/code-KMP-matcher-commented.jpg">
+
+<h3>Computing &pi;</h3> 
+
+<p>The code for computing &pi; is very similar to that of <tt>KMP-Matcher</tt>, because the
+constructor is matching <i>P</i> against itself:</p> 
+<img src="Topic-23/code-compute-prefix-function.jpg">
+
+<p>You an see C code and a Java applet animation at <a
+ href="http://www-igm.univ-mlv.fr/~lecroq/string/node8.html">
+http://www-igm.univ-mlv.fr/~lecroq/string/node8.html</a></p>
+
+<h3>Analysis and Correctness</h3>
+
+<p>The text presents an analysis showing that <tt>Compute-Prefix-Function</tt> is
+<b>&Theta;(<i>m</i>)</b> -- a considerable improvement over the FSA's O(<i>m</i><sup>3</sup>
+|&Sigma;|) -- and <tt>KMP-Matcher</tt> is <b>&Theta;(<i>n</i>)</b>. </p>
+
+<p>These are good results, but in practice the FSA approach is still used when a pattern will be
+used many times repeatedly, because of the greater simplicity of the
+<tt>Finite-Automaton-Matcher</tt> code.</p>
+
+<p>The proof of correctness is accomplished by showing how KMP-Matcher simulates the FSA matcher's
+operation. It's worth reading the informal discussion pages 1009-1010, even if you don't wade into
+the formal proof.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Rabin-Karp Algorithm </h2>
+
+<p>There is an entirely different approach that functions in some respects like the brute force
+approach, but instead of testing character by character it tests on whole substrings of length
+<i>m</i> by using a hash function. If the hash function matches, it then uses brute force checking
+to verify the match.</p>
+
+<h3>Comparing Strings as Radix-<i>d</i> Numbers</h3>
+
+<p>Given |&Sigma;| = <i>d</i>, Rabin-Karp algorithm treats each string in &Sigma;<sup>*</sup> as if
+it were a number in radix <i>d</i> notation.</p>
+<ul>
+  <li> For example, if &Sigma; = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} then <i>d</i> = 10, and we interpret
+       the string "274" to have value 2&sdot;d<sup>2</sup> + 7&sdot;d<sup>1</sup> +
+       4&sdot;d<sup>0</sup> = 2&sdot;100 +  7&sdot;10 + 4&sdot;1. </li><br>
+  <li>Similarly, if &Sigma; = {a, b} then <i>d</i> = 2, and we map the characters of {a, b} to
+      decimal values {0, 1}. Then "bab" = 1&sdot;d<sup>2</sup> + 0&sdot;d<sup>1</sup>
+       +1&sdot;d<sup>0</sup> = 1&sdot;4 + 0&sdot;2 +1&sdot;1. (This is of course a binary
+       representation of the decimal number 5.)  </li><br>  
+  <li>Hexadecimal notation uses &Sigma; = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F} and
+      <i>d</i> = 16.</li> 
+</ul> 
+<p>This idea can be extended to large but finite |&Sigma;|. </p>
+
+<p>Thus, we can treat <i>P</i>[1 .. <i>m</i>] and substrings <i>T</i>[<i>s</i>+1
+.. <i>s</i>+<i>m</i>] (0 &le; <i>s</i> &le; <i>n</i> &minus; <i>m</i>) as <i>m</i> digit numbers in
+radix-|&Sigma;|. </p>
+
+<p>Our running example will assume &Sigma; = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} and <i>d</i> = 10. </p>
+
+<p>If we can compare these numbers directly to each other, we can quickly determine whether
+<i>P</i>[1 .. <i>m</i>] matches <i>T</i>[<i>s</i>+1 .. <i>s</i>+<i>m</i>]. </p> 
+
+<p>Two modifications need to be made to make this method suitable for a string matching
+algorithm: shifting and hashing.</p> 
+
+<h3>Shifting</h3>
+
+<p>If a match to <i>T</i>[<i>s</i>+1 .. <i>s</i>+<i>m</i>] fails, we need to compute the next
+number for <i>T</i>[<i>s</i>+<b>2</b> .. <i>s</i>+<i>m</i>+1].</p>
+
+<p>Rather than recomputing the entire sum, this can be done efficiently by a mathematical "shift": </p>
+<ul>
+  <li>Subtract the value of the highest order digit <i>a</i>&sdot;<i>d</i><sup><i>m</i>-1</sup>.</li>
+  <li>Multiply the remaining value by <i>d</i> to shift the values of the digits up by one
+      position.</li>
+  <li>Add the value of the new character <i>T</i>[<i>s</i> + <i>m</i> + 1].</li>
+</ul>
+<p>An example is shown below, shifting a 5-digit number. (The mod will be explained below.)</p>
+<img src="Topic-23/Fig-32-5-Rabin-Karp-Examples-c.jpg">
+<img src="Topic-23/Fig-32-5-Rabin-Karp-Examples-d.jpg"> 
+
+<h3>Hashing</h3>
+
+<p>These numbers can get very large. Even on a machine that allows arbitrarily large numbers, this
+is still a problem: we can no longer assume that comparing two numbers takes constant time. </p>
+
+<p>The solution is to compute the numbers modulo the largest prime number <i>q</i> such that
+<i>dq</i> still fits in one computer word (which can be manipulated with one machine level
+instruction).</p>
+
+<p>Now you see why it is called "hashing:" it is like the division method of hashing.</p>
+
+<p>For example, suppose we are matching to a 5 digit pattern <i>P</i> = 31415 in radix <i>d</i> = 10
+we choose <i>q</i> = 13, and we are comparing to string 14142. The hash code for the pattern is 7,
+and for the target is 8, as shown in the previous example. The hashes do not match, so the two
+patterns cannot be the same.</p>
+
+<p>However, the converse is not necessarily true. Hashing introduces a secondary problem:
+collisions. Two different numbers may hash to the same value, as shown in the example below.</p>
+<img src="Topic-23/Fig-32-5-Rabin-Karp-Examples-b.jpg">
+
+<p>To solve this problem, when the hashes of <i>P</i>[1 .. <i>m</i>] and  <i>T</i>[<i>s</i>+1
+.. <i>s</i>+<i>m</i>] are equal, the Rabin-Karp algorithm verifies the match with a brute force
+comparison. </p>
+
+<p>This is still saving on comparisons over the brute force method, as we do not compare characters
+for failed hash matches: the strings cannot be the same. </p> 
+
+<h3>The Rabin-Karp Algorithm</h3>
+
+<p>Here is the pseudocode: </p>
+<img src="Topic-23/code-Rabin-Karp-matcher.jpg">
+
+<p>(The subscripts on <i>t</i> are just for exposition and can be ignored.)</p>
+<ul>
+  <li> Line 3 initializes <i>h</i> to the value of the highest order digit that will be subtracted
+       when shifting.</li>
+  <li> Lines 4-8 compute the hash code <i>p</i> for <i>P</i> and the initial hash code <i>t</i> for
+       the substring of T to be compared in each iteration (<i>t</i> will be updated by shifting
+       digits as discussed).</li>
+  <li> Like the brute-force algorithm, lines 9-14 iterate over all possible shifts <i>s</i>, but
+       instead of comparing character by character, at first the hash codes are compared. If they
+       match, brute force comparison is done.</li>
+</ul>
+
+<p>You an see C code and a Java applet animation at <a
+ href="http://www-igm.univ-mlv.fr/~lecroq/string/node5.html">
+http://www-igm.univ-mlv.fr/~lecroq/string/node5.html</a></p>
+
+<h3>Anaysis</h3>
+
+<p> Preprocessing is &Theta;(<i>m</i>): the loop 6-8 executes <i>m</i> times and with the modular
+arithmetic keeping the numbers within the size of one computer word the numerical work in the loop
+is O(1).</p> 
+
+<p> The worst case matching time is still &Theta;((<i>n</i> &minus; <i>m</i> + 1)<i>m</i>), like brute
+force, because it is possible that every hash code matches and therefore every brute force
+comparison has to be done.</p>
+
+<p>But this is highly unlikely in any realistic application (where we are searching for somewhat
+rare patterns in large texts). For constant number of valid shifts the text offers an argument that
+the expected time is O(<i>n</i> + <i>m</i>), or O(<i>n</i>) since <i>m</i> &le; <i>n</i>. </p>
+
+<h3>Extensions</h3>
+<p>A major advantage of Rabin-Karp is that it has natural extensions to other pattern matching
+problems, such as two-dimensional pattern matching (finding an <i>m</i> x <i>m</i> pattern in an
+array of <i>n</i> x <i>n</i> characters), or searching for multiple patterns at once. Therefore it
+remains an important pattern matching algorithm. </p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Wed Apr 23 00:32:05 HST 2014 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition.</br> 
+</body>
+</html>

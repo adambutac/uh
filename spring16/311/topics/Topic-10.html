@@ -1,0 +1,608 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"> <!-- : -->
+<html> <head>
+<title>ICS 311 #10: Quicksort, Theoretical Limits, and O(n) Sorts</title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #10: Quicksort, Theoretical Limits, and O(n) Sorts </h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+<ol>
+  <li>Quicksort </li>
+  <li>Analysis of Quicksort </li>
+  <li>Lower Bound for Comparison Sorts </li>
+  <li>O(n) Sorts (briefly)</li>
+</ol>
+
+<h2>Readings and Screencasts</h2>
+<ul> 
+  <li>CLRS 3rd ed. Chapter 7 (all) and skim Chapter 8 (very briefly covered so you are aware of the lower bound result
+and the cases in which we can do better).</li>
+  <li>Screencasts: <a href="http://youtu.be/v1ghdc_hwMI">10A</a>,
+                  <a href="http://youtu.be/qS9oMz4_kTU">10B</a>,
+                  <a href="http://youtu.be/gZmEYyqHefk">10C</a>
+                  (also in Laulima and iTunesU)</li>
+</ul>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Quicksort </h2>
+
+<!-- -------------------- --> 
+<h3>Motivations</h3>
+<p>Quicksort, like Mergesort, takes a divide and conquer approach, but on a different basis.</p> 
+
+<p>If we have done two comparisons among three keys and find that <i>x</i> &lt; <i>p</i> and
+<i>p</i> &lt; <i>y</i>, do we ever need to compare <i>x</i> to <i>y</i>? Where do the three belong
+relative to each other in the sorted array? </p>
+
+<p>Quicksort uses this idea to partition the set of keys to be sorted into those less than the pivot
+<i>p</i> and those greater than the pivot. (It can be generalized to allow keys equal to the pivot.)
+It then recurses on the two partitions.</p>
+<img src="Topic-10/quicksort-recursion.jpg">
+
+<p>Compare this to Mergesort.</p>
+<ul>
+  <li>Both take a recursive divide-and-conquer approach.</li>
+  <li>Mergesort does its work on the way back up the recursion tree (merging), while Quicksort does
+      its work on the way down the recursion tree (partitioning).</li>
+  <li>Mergesort always partitions in half; for Quicksort the size of the partitions depends on the
+      pivot (this results in &Theta;(<i>n</i><sup>2</sup>) worst case behavior, but expected case
+      remains &Theta;(<i>n</i> lg <i>n</i>).</li> 
+  <li>Mergesort requires axillary arrays to copy the data; while as we shall see Quicksort can
+      operate entirely within the given array: it is an <b>in-place sort</b>.</li>
+</ul> 
+
+<p>Quicksort performs well in practice, and is one of the most widely used sorts today.</p>
+
+<!-- -------------------- --> 
+<h3>The Quicksort Algorithm</h3>
+<p>To sort any subarray A[<i>p</i> .. <i>r</i>], &nbsp; <i>p</i> &lt; <i>r</i>: </p>
+<dl>
+  <dt><b><i>Divide:</i></b></dt>
+  <dd>Partition A[<i>p</i> .. <i>r</i>] into two (possibly empty) subarrays
+    <ul>
+      <li> A[<i>p</i> .. <i>q-1</i>], where every element is &le; A[<i>q</i>]</li>
+      <li> A[<i>q + 1</i> .. <i>r</i>], where A[<i>q</i>] &le; every element</li>
+    </ul>
+  </dd>
+  <dt><b><i>Conquer:</i></b></dt>
+  <dd>Sort the two subarrays by recursive calls</dd>
+  <dt><b><i>Combine:</i></b></dt>
+  <dd>No work is needed to combine: all subarrays (including the entire array) are sorted as soon as
+    recursion ends.</dd> 
+</dl>
+  
+<p>An array is sorted with a call to <tt>QUICKSORT(A, 1, A.length)</tt>:</p>
+<img src="Topic-10/pseudocode-quicksort.jpg">
+
+<p>The work is done in the PARTITION procedure. A[<i>r</i>] will be the pivot. (Note that the
+<em>end</em> element of the array is taken as the pivot. Given random data, the choice of the
+position of the pivot is arbitrary; working with an end element simplifies the code):</p>
+
+<img src="Topic-10/pseudocode-quicksort-partition.jpg">
+
+<p>PARTITION maintains four regions.</p>
+
+<img src="Topic-10/Fig-7-2-partition-regions.jpg">
+
+<p>Three of these are described by the following loop invariants,
+and the fourth (A[<i>j</i> .. <i>r</i>-1]) consists of elements that not yet been examined: </p>
+
+<blockquote>
+<b>Loop Invariant:</b>
+<ol>
+  <li> All entries in A[<i>p</i> .. <i>i</i>] are &le; pivot.</li>
+  <li> All entries in A[<i>i</i>+1 .. <i>j</i>-1] are &gt; pivot.</li>
+  <li> A[<i>r</i>] = pivot.
+</ol>
+</blockquote>
+
+<!-- -------------------- --> 
+<h3>Example Trace </h3>
+
+<p>It is worth taking some time to trace through and explain each step of this example of the
+PARTITION procedure, paying particular attention to the movement of the dark lines representing
+partition boundaries. </p>
+
+<img src="Topic-10/pseudocode-quicksort-partition.jpg" align="right">
+<img src="Topic-10/quicksort-trace-1.jpg">
+
+<p>Continuing ...</p>
+
+<img src="Topic-10/quicksort-trace-2.jpg">
+
+<p>Here is the <a href="http://www.youtube.com/watch?v=kDgvnbUIqT4">Hungarian Dance version of
+quicksort</a>, in case that helps to make sense of it! </p>
+
+<!-- -------------------- --> 
+<h3>Correctness</h3>
+
+<img src="Topic-10/pseudocode-quicksort-partition.jpg" align="right">
+
+<p>Here use the loop invariant to show correctness:</p> 
+<ol>
+  <li> All entries in A[<i>p</i> .. <i>i</i>] are &le; pivot.</li>
+  <li> All entries in A[<i>i</i>+1 .. <i>j</i> &minus;1] are &gt; pivot.</li>
+  <li> A[<i>r</i>] = pivot.
+</ol>
+
+<dl>
+  <dt><b><i>Initialization:</i></b></dt>
+  <dd>Before the loop starts, <i>x</i> is assigned the pivot A[<i>r</i>] (satisfying condition 3),
+    and the subarrays  a[<i>p</i> .. <i>i</i>] and A[<i>i</i>+1 .. <i>j</i>&minus;1] are empty (trivially
+    satisfying conditions 1 and 2). </dd>
+  <dt><b><i>Maintenance:</i></b></dt>
+  <dd>While the loop is running,
+    <ul>
+      <li>if A[<i>j</i>] &le; pivot, then <i>i</i> is incremented, A[<i>j</i>] and A[<i>i</i>] are
+          swapped, and <i>j</i> is incremented. Because of the swap, A[<i>i</i>] &le;
+          <i>x</i> for condition 1. The item swapped into A[<i>j</i>-1] &gt; <i>x</i> by the loop
+          invariant, for condition 2.</li>
+      <li>If A[<i>j</i>] &gt; pivot, then <i>j</i> is incremented, sustaining condition 2 (the
+          others are unchanged), as the element added was larger</li>
+   </ul>
+  </dd>
+  <dt><b><i>Termination:</i></b></dt>
+  <dd>The loop terminates when <i>j</i>=<i>r</i>, so all elements in A are partitioned into one of
+    three cases: A[<i>p</i> .. <i>i</i>] &le; pivot, A[<i>i</i>+1 .. <i>r</i>-1] &gt; pivot, and
+    A[<i>r</i>] = pivot. The last two lines fix the placement of A[<i>r</i>] by moving it between
+    the two subarrays.</dd> 
+</dl>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Informal Analysis </h2>
+
+<img src="Topic-10/pseudocode-quicksort-partition.jpg" align="right">
+<p>The formal analysis will be done on a randomized version of Quicksort. This informal analysis
+helps to motivate that randomization.</p>
+
+<p>First, PARTITION is &Theta;(<i>n</i>): We can easily see that its only component that grows with
+<i>n</i> is the <tt>for</tt> loop that iterates proportional to the number of elements in the
+subarray). </p>
+
+<p>The runtime depends on the partitioning of the subarrays:</p> 
+
+<!-- -------------------- --> 
+<h3>Worst Case</h3>
+
+<p>The worst case occurs when the subarrays are completely unbalanced, i.e., there are 0 elements in
+one subarray and <i>n</i>-1 elements in the other subarray (the single pivot is not processed in
+recursive calls). This gives a familiar recurrence (compare to that for insertion sort): </p>
+
+<img src="Topic-10/analysis-quicksort-worst-recurrence.jpg">
+
+<p>One example of data that leads to this behavior is when the data is already sorted: the pivot is
+always the maximum element, so we get partitions of size <i>n</i>&minus;1 and 0 each time.  Thus,
+<u>quicksort is O(<i>n</i><sup>2</sup>) on sorted data</u>.  Insertion sort actually does better on
+a sorted array!  (O(<i>n</i>))</p>
+
+<!-- -------------------- --> 
+<h3>Best Case</h3>
+
+<p>The best case occurs when the subarrays are completely balanced (the pivot is the median value):
+subarrays have about <i>n</i>/2 elements. The reucurrence is also familiar (compare to that for
+merge sort):</p>
+
+<img src="Topic-10/analysis-quicksort-best-recurrence.jpg">
+
+<!-- -------------------- --> 
+<h3>Effect of Unbalanced Partitioning</h3>
+
+<p>It turns out that expected behavior is closer to the best case than the worst case. Two examples
+suggest why expected case won't be that bad.</p> 
+
+<h4>Example: 1-to-9 split</h4>
+
+<p>Suppose each call splits the data into 1/10 and 9/10. This is highly unbalanced: won't it result
+in horrible performance?</p>
+<img src="Topic-10/Fig-7-4-quicksort-1-9-recursion-tree.jpg">
+
+<p>We have log<sub>10</sub><i>n</i> full levels and log<sub>10/9</sub><i>n</i> levels that are
+nonempty.</p>
+
+<p>As long as it's constant, the base of the log does not affect asymptotic results. Any
+split of constant proportionality will yield a recursion tree of depth &Theta;(lg <i>n</i>). In
+particular (using &asymp; to indicate truncation of low order digits),</p>
+
+<blockquote>
+  log<sub>10/9</sub><i>n</i> = (log<sub>2</sub><i>n</i>) / (log<sub>2</sub>10/9)
+      &nbsp; &nbsp; <i>by formula  3.15</i><br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &asymp;  (log<sub>2</sub><i>n</i>) / 0.152 <br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; = 1/0.152 (log<sub>2</sub><i>n</i>)<br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &asymp;  6.5788 (log<sub>2</sub><i>n</i>)<br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; = &Theta;(lg <i>n</i>), where <i>c</i> =  6.5788. 
+</blockquote> 
+
+<p>So the recurrence and its solution is:</p>
+<img src="Topic-10/analysis-quicksort-9-1-recurrence.jpg">
+
+<p>A general lesson that might be taken from this: sometimes, even very unbalanced divide and
+conquer can be useful.</p>
+
+<h4>Example: extreme cases cancel out</h4>
+
+<p>With random data there will usually be a mix of good and bad splits throughout the recursion
+tree.</p>
+
+<p>A mixture of worst case and best case splits is asymptotically the same as best case: </p>
+
+<img src="Topic-10/Fig-7-5-quicksort-unbalanced-splits.jpg">
+
+<p>Both these trees have the same two leaves. The extra level on the left hand side only increases
+the height by a factor of 2, and this constant disappears in the &Theta; analysis.</p>
+
+<p>Both result in O(<i>n</i> lg <i>n</i>), though with a larger constant for the left.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Randomized Quicksort </h2>
+
+<img src="Topic-10/no-badguy.jpg" align="right">
+
+<p>We expect good average case behavior if all input permutations are equally likely, but what if it
+is not?</p>
+
+<p>To get better performance on sorted or nearly sorted data -- and to foil our adversary! -- we can 
+randomize the algorithm to get the same effect as if the input data were random.</p> 
+
+<p>Instead of explicitly permuting the input data (which is expensive), randomization can be
+accomplished trivially by <b>random sampling</b> of one of the array elements as the pivot.</p>
+
+<p>If we swap the selected item with the last element, the existing PARTITION procedure applies:</p>  
+<img src="Topic-10/pseudocode-randomized-quicksort.jpg"><br> 
+<img src="Topic-10/pseudocode-randomized-partition.jpg">
+
+<p>Now, even an already sorted array will give us average behavior.</p> 
+<p><i>Curses! Foiled again!</i></p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Quicksort Analysis </h2>
+<p>The analysis assumes that all elements are unique, but with some work can be generalized to
+remove this assumption (Problem 7-2 in the text).</p> 
+
+<!-- -------------------- --> 
+<h3>Worst Case</h3>
+<p>The previous analysis was pretty convincing, but was based on an assumption about the worst case.
+This analysis proves that our selection of the worst case was correct, and also shows something
+interesting: we can solve a recurrence relation with a "max" term in it!</p>
+
+<p>PARTITION produces two subproblems, totaling size <i>n</i>-1. Suppose the partition takes place
+at index <i>q</i>. The recurrence for the worst case always selects the maximum cost among all
+possible ways of splitting the array (i.e., it always picks the worst possible <i>q</i>):</p>
+
+<img src="Topic-10/analysis-quicksort-worst-1.jpg">
+
+<p>Based on the informal analysis, we guess T(<i>n</i>) &le; <i>cn</i><sup>2</sup> for some
+<i>c</i>. Substitute this guess into the recurrence:</p>
+<img src="Topic-10/analysis-quicksort-worst-2.jpg">
+
+<p>The maximum value of <i>q</i><sup>2</sup> + (<i>n</i> - <i>q</i> - 1)<sup>2</sup> occurs when
+<i>q</i> is either 0 or <i>n</i>-1 (the second derivative is positive), and has value
+(<i>n</i> - 1)<sup>2</sup> in either case:</p>
+<img src="Topic-10/analysis-quicksort-worst-3.jpg">
+
+<p>Substituting this back into the reucrrence:</p>
+<img src="Topic-10/analysis-quicksort-worst-4.jpg"> 
+
+<p>We can pick <i>c</i> so that <i>c</i>(2<i>n</i> - 1) dominates &Theta;(<i>n</i>). Therefore, the worst case
+running time is O(<i>n</i><sup>2</sup>). </p>
+
+<p>One can also show that the recurrence is &Omega;(<i>n</i><sup>2</sup>), so worst case is
+&Theta;(<i>n</i><sup>2</sup>). </p>
+
+<!-- -------------------- --> 
+<h3>Average (Expected) Case</h3>
+
+<p>With a randomized algorithm, expected case analysis is much more informative than worst-case
+analysis. <em><a href="Topic-10/why-expected.txt">Why?</a></em> 
+
+<p>This analysis nicely demonstrates the use of indicator variables and two
+useful strategies.</lp>
+
+<h4>Setup</h4> 
+<p>The dominant cost of the algorithm is partitioning. PARTITION removes the pivot element from
+future consideration, so is called at most <i>n</i> times.</p>
+
+<p>QUICKSORT recurses on the partitions. The amount of work in each call is a constant plus the work
+done in the <tt>for</tt> loop. We can count the number of executions of the <tt>for</tt> loop by
+counting the number of comparisons performed in the loop.</p>
+
+<p>Rather than counting the number of comparisons in each call to QUICKSORT, it is easier to derive
+a bound on the number of comparisons across the entire execution.</p>
+
+<p>This is an example of a strategy that is often useful: <b>if it is hard to count one way</b>
+(e.g., "locally"), <b>then count another way</b> (e.g., "globally").</p>
+
+<p>Let <i>X</i> be the total number of comparisons in all calls to PARTITION. The total work done over the
+entire execution is O(<i>n</i> + <i>X</i>), since QUICKSORT does constant work setting up <i>n</i> calls to
+PARTITION, and the work in PARTITION is proportional to <i>X</i>. But what is <i>X</i>?</p>
+
+<h4>Counting comparisons</h4> 
+<p>For ease of analysis,</p>
+<ul>
+  <li>Call the elements of A <i>z</i><sub>1</sub>, <i>z</i><sub>2</sub>,
+      ... <i>z</i><sub><i>n</i></sub>, with  <i>z</i><sub><i>i</i></sub> being the <i>i</i>th
+      smallest element. </li>
+  <li>Define the set Z<sub><i>ij</i></sub> = {<i>z</i><sub><i>i</i></sub>,
+      <i>z</i><sub><i>i</i> + 1</sub>, ... <i>z</i><sub><i>j</i></sub>}  to be the set of
+      elements between  <i>z</i><sub><i>i</i></sub> and <i>z</i><sub><i>j</i></sub> inclusive. </li> 
+</ul> 
+
+<p>We want to count the number of comparisons. Each pair of elements is compared at most once,
+because elements are compared only to the pivot element and then the pivot element is never in any
+later call to PARTITION.</p> 
+
+<p>Indicator variables can be used to count the comparisons. (Recall that we are counting across all
+calls, not just during one partition.)</p>
+<blockquote>
+Let <i>X<sub>ij</sub></i> = I{ <i>z<sub>i</sub></i> is compared to <i>z<sub>j</sub></i> } 
+</blockquote> 
+
+<p>Since each pair is compared at most once, the total number of comparisons is: </p>
+
+<img src="Topic-10/analysis-quicksort-expected-1.jpg">
+
+<p>Taking the expectation of both sides, using linearity of expectation, and applying Lemma 5.1
+(which relates expected values to probabilities):</p>
+<img src="Topic-10/lemming.jpg" align="right"> 
+<img src="Topic-10/analysis-quicksort-expected-2.jpg">
+
+<h4>Probability of comparisons</h4>
+
+<p>What's the probability of comparing <i>z</i><sub>i</sub> to <i>z</i><sub>j</sub>? </p> 
+
+<p>Here we apply another useful strategy: <b>if it's hard to determine when something happens, think
+about when it does <em> not</em> happen</b>. </p>
+
+<p>Elements (keys) in separate partitions will not be compared. If we have done two comparisons
+among three elements and find that <i>z<sub>i</sub></i> &lt; <i>x</i> &lt;<i>z<sub>j</sub></i>, we
+do not need to compare <i>z<sub>i</sub></i> to <i>z<sub>j</sub></i> (no further information is
+gained), and QUICKSORT makes sure we do not by putting <i>z<sub>i</sub></i> and <i>z<sub>j</sub></i>
+in different partitions.</p>
+
+<p>On the other hand, if either <i>z<sub>i</sub></i> or <i>z<sub>j</sub></i> is chosen as the pivot
+before any other element in Z<sub><i>ij</i></sub>, then that element (as the pivot) will be compared
+to <em>all</em> of the elements of Z<sub><i>ij</i></sub> except itself. </p>
+<ul>
+  <li>The probability that <i>z<sub>i</sub></i> is compared to <i>z<sub>j</sub></i> is the
+      probability that either is the first element chosen.</li>
+  <li> Since there are <i>j</i> - <i>i</i> + 1 elements in Z<sub><i>ij</i></sub>, and pivots are chosen
+      randomly and independently, the probability that any one of them is chosen first is
+      1/(<i>j</i> - <i>i</i> + 1). </li>
+</ul> 
+<p>Therefore (using the fact that these are mutually exclusive events):</p> 
+<img src="Topic-10/analysis-quicksort-expected-3.jpg">
+
+<p>We can now substitute this probability into the analyis of E[<i>X</i>] above and continue it:</p>
+<img src="Topic-10/analysis-quicksort-expected-4.jpg">
+
+<p>This is solved by applying equation A.7 for harmonic series, which we can match by substituting
+<i>k</i> = <i>j</i> - <i>i</i> and shifting the summation indices down <i>i</i>: </p>
+<img src="Topic-10/analysis-quicksort-expected-5.jpg">
+
+<p>We can get rid of that pesky "+ 1" in the denominator by dropping it and switching to inequality
+(after all, this is an upper bound analysis), and now A7 (shown in box) applies: </p>
+
+<img src="Topic-10/A7-Harmonic-Series.jpg" align="right" border="1">
+<img src="Topic-10/analysis-quicksort-expected-6.jpg">
+
+<p>Above we used the fact that logs of different bases (e.g., ln <i>n</i> and lg <i>n</i>) grow the
+same asymptotically. </p>
+
+<p>To recap, we started by noting that the total cost is O(<i>n</i> + <i>X</i>) where <i>X</i> is
+the number of comparisons, and we have just shown that <i>X</i> = O(<i>n</i> lg <i>n</i>).</p>
+
+<p>Therefore, the <u>average running time of QUICKSORT on uniformly distributed permutations (random
+data)</u> and the <u>expected running time of randomized QUICKSORT</u> are both O(<i>n</i> +
+<i>n</i> lg <i>n</i>) = <b>O(<i>n</i> lg <i>n</i>)</b>. </p>
+
+<p>This is the same growth rate as merge sort and heap sort. <u>Empirical studies show quicksort to
+be a very efficient sort in practice (better than the other <i>n</i> lg <i>n</i> sorts) whenever
+data is not already ordered.</u> (When it is nearly ordered, such as only one item being out of
+order, insertion sort is a good choice.)</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Lower Bound for Comparison Sorts </h2>
+
+<p>We have been studying sorts in which the only operation that is used to gain information is
+pairwise comparisons between elements. So far, we have not found a sort faster than O(<i>n</i> lg
+<i>n</i>). </p> 
+
+<p>It turns out it is not possible to give a better guarantee than O(<i>n</i> lg <i>n</i>) in a
+comparison sort.</p>
+
+<p>The proof is an example of a different level of analysis: of all <em>possible</em> algorithms of
+a given type for a problem, rather than particular algorithms ... pretty powerful. </p>
+
+<!-- -------------------- --> 
+<h3>Decision Tree Model</h3>
+<p>A decision tree abstracts the structure of a comparison sort. A given tree represents the
+comparisons made by a specific sorting algorithm on inputs of a given size. Everything else is
+abstracted, and we count only comparisons. </p>
+
+<h4>Example Decision Tree</h4>
+
+<p>For example, here is a decision tree for insertion sort on 3 elements.</p>
+
+<img src="Topic-10/decision-tree-insertion-sort.jpg">
+
+<p>Each internal node represents a branch in the algorithm based on the information it determines
+by comparing between elements indexed by their original positions. For example, at the nodes
+labeled "2:3" we are comparing the item that was originally at position 2 with the item
+originally at position 3, although they may now be in different positions.</p>
+
+<p>Leaves represent permutations that result. For example, "&lang;2,3,1&rang;" is the permutation
+where the first element in the input was the largest and the third element was the second
+largest.</p> 
+
+<p> This is just an example of one tree for one sort algorithm on 3 elements. Any given comparison
+sort has one tree for each <i>n</i>. The tree models all possible execution traces for that
+algorithm on that input size: a path from the root to a leaf is one computation.</p>
+
+<h4>Reasoning over All Possible Decision Trees</h4>
+
+<p>We don't have to know the specific structure of the trees to do the following proof. We don't
+even have to specify the algorithm(s): the proof works for any algorithm that sorts by comparing
+pairs of keys. We don't need to know what these comparisons are. Here is why:</p>
+
+<ul>
+  <li> The root of the tree represents the unpermuted input data.</li> 
+  <li> The leaves of the tree represent the possible permuted (sorted) results.</li>
+  <li> The branch at each internal node of the tree represents the outcome of a comparision that
+       changes the state of the computation. </li> 
+  <li> The paths from the root to the leaves represent possible courses that the computation can
+       take: to get from the unsorted data at the root to the sorted result at a leaf, the algorithm
+       must traverse a path from the root to the correct leaf by making a series of comparisons (and
+       permuting the elements as needed) </li>
+  <li> The length of this path is the runtime of the algorithm on the given data.</li> 
+  <li> Therefore, if we can derive a lower bound on the height of <em>any</em> such tree, we have a
+       lower bound on the running time <em>any</em> comparison sort algorithm.
+</ul>
+
+<!-- -------------------- --> 
+<h3>Proof of Lower Bound</h3>
+
+<p>We get our result by showing that the number of leaves for a tree of input size <i>n</i> implies
+that the tree must have minimum height O(<i>n</i> lg <i>n</i>). This will be a lower bound on the
+running time of <em>any</em> comparison sort algorithm.</p>
+
+<ul>
+  <li>There are at least <i>n</i>! leaves because every permutation appears at least
+      once (the algorithm must correctly sort every possible permutation): <i>l</i> &ge; <i>n</i>! </li> 
+  <li>Any binary tree of height <i>h</i> has <i>l</i> &le; 2<sup><i>h</i></sup> 
+      leaves (<a href="Topic-08.html">Notes #8</a>)</li> 
+  <li>Putting these facts together: &nbsp; <i>n</i>! &le; <i>l</i> &le; 2<sup><i>h</i></sup> &nbsp;
+      or &nbsp; 2<sup><i>h</i></sup> &ge; <i>n</i>!</li>
+  <li>Taking logs: &nbsp; <i>h</i> &ge; lg(<i>n</i>!) </li>
+  <li>Using Sterling's approximation (formula 3.17): &nbsp;  <i>n</i>! &gt;
+      (<i>n</i>/<i>e</i>)<sup><i>n</i></sup> </li> 
+  <li>Substituting into the inequality:
+      <blockquote>
+        <i>h</i>  &nbsp; &ge;  &nbsp; lg(<i>n</i>/<i>e</i>)<sup><i>n</i></sup><br>
+        &nbsp; &nbsp; =  &nbsp; <i>n</i> lg(<i>n</i>/<i>e</i>)<br>
+        &nbsp; &nbsp; =  &nbsp; <i>n</i> lg <i>n</i> - <i>n</i> lg <i>e</i> <br>
+        &nbsp; &nbsp; =  &nbsp; &Omega; (<i>n</i> lg <i>n</i>). 
+      </blockquote>
+
+</ul>
+
+<p>Thus, the height of a decision tree that permutes <i>n</i> elements to all possible permutations
+cannot be less than <i>n</i> lg <i>n</i>.</p>
+
+<p>A path from the leaf to the root in the decision tree corresponds to a sequence of comparisons,
+so there will always be some input that requires at least O(<i>n</i> lg <i>n</i>) comparisions in
+<em>any</em> comparision based sort.</p>
+
+<p>There may be some specific paths from the root to a leaf that are shorter. For example, when
+insertion sort is given sorted data it follows an O(<i>n</i>) path. But to give an o(<i>n</i> lg
+<i>n</i>) guarantee (i.e, strictly better than O(<i>n</i> lg <i>n</i>)), one must show that <em>
+all</em> paths are shorter than O(<i>n</i> lg <i>n</i>), or that the tree height is o(<i>n</i> lg
+<i>n</i>) and we have just shown that this is impossible since it is &Omega;(<i>n</i> lg
+<i>n</i>). </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> O(n) Sorts </h2>
+
+<p>Under some conditions it is possible to sort data without comparing two elements to each
+other. If we know something about the structure of the data we can sometimes achieve O(n)
+sorting. Typically these algorithms work by using information about the keys themselves to put them
+"in their place" without comparisons. We only introduce these algorithms very briefly so you are
+aware that they exist. </p>
+
+<!-- -------------------- --> 
+<h3>Counting Sort</h3>
+
+<p>Assumes (requires) that keys to be sorted are integers in {0, 1, ... <i>k</i>}. </p>
+
+<p>For each element in the input, determines how many elements are less than that input.</p>
+
+<p>Then we can place the element directly in a position that leaves room for the elements below it. </p> 
+<img src="Topic-10/pseudocode-counting-sort.jpg">
+
+<p>An example ...</p>
+<img src="Topic-10/Fig-8-2-counting-sort-trace.jpg">
+
+<p>Counting sort is a <b>stable sort</b>, meaning that two elements that are equal under their key
+will stay in the same order as they were in the original sequence. This is a useful property ...</p> 
+
+<p>Counting sort requires &Theta;(<i>n</i> + <i>k</i>). Since <i>k</i> is constant in practice, this is
+&Theta;(<i>n</i>). </p> 
+
+<!-- -------------------- --> 
+<h3>Radix Sort</h3>
+<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Punch_card_sorter.JPG/320px-Punch_card_sorter.JPG" align="right">
+<p>Using a stable sort like counting sort, we can sort from least to most significant digit:</p>
+<img src="Topic-10/Fig-8-3-radix-sort-trace.jpg">
+
+<p>This is how punched card sorters used to work. <i> (When I was an undergraduate student my
+University still had punched cards, and we had to do an assignment using them mainly so that we
+would appreciate not having to use them!)</i> </p>
+
+<p>The code is trivial, but requires a stable sort and only works on <i>n</i> <i>d</i>-digit numbers
+in which each digit can take up to <i>k</i> possible values:</p>
+
+<img src="Topic-10/pseudocode-radix-sort.jpg">
+
+<p>If the stable sort used is &Theta;(<i>n</i> + <i>k</i>) time (like counting sort) then
+RADIX-SORT is &Theta;(<i>d</i>(<i>n</i> + <i>k</i>)) time.  </p> 
+
+<!-- -------------------- --> 
+<h3>Bucket Sort</h3>
+
+<p>This one is reminiscent of hashing with chaining.</p>
+<p>It maps the keys to the interval [0, 1), placing
+each of the <i>n</i> input elements into one of <i>n</i>-1 buckets. If there are collisions,
+chaining (linked lists) are used.</p>
+<p>Then it sorts the chains before concatenating them.</p>
+<p>It assumes
+that the input is from a random distribution, so that the chains are expected to be short (bounded
+by constant length).</p>
+
+<img src="Topic-10/pseudocode-bucket-sort.jpg">
+
+<h4>Example:</h4>
+
+<p>The numbers in the input array A are thrown into the buckets in B according to their
+magnitude. For example, 0.78 is put into bucket 7, which is for keys 0.7 &le; <i>k</i> &lt;
+0.8. Later on, 0.72 maps to the same bucket: like chaining in hash tables, we "push" it onto the
+beginning of the linked list. </p>
+
+<img src="Topic-10/Fig-8-4-bucket-sort-trace.jpg">
+
+<p>At the end, we sort the lists (B shows the lists after they are sorted; otherwise we would have
+0.23, 0.21, 0.26) and then copy the values from the lists back into an array.</p>
+
+<p>But sorting linked lists is awkward, and I am not sure why CLRS's pseudocode and figure imply
+that one does this. In an alternate implementation, steps 7-9 can be done simultaneously: scan each
+linked list in order, inserting the values into the array and keeping track of the next free
+position. Insert the next value at this position and then scan back to find where it belongs,
+swapping if needed as in insertion sort. </p>
+
+<p>Since the values are already partially sorted, an insertion procedure won't have to scan back
+very far.  For example, suppose 0.78 had been inserted after 0.72. The insertion would only have to
+scan over one item to put 0.78 in its place, as all values in lists 0..6 are smaller.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Comparing the Sorts</h2>
+
+<img src="Topic-10/comparing-sorts.jpg">
+
+<p>You can also compare some of the sorts with these animations (set to 50 elements):
+<a href="http://www.sorting-algorithms.com/">http://www.sorting-algorithms.com/</a>.
+Do the algorithms make more sense now? </p>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Next</h2>
+
+<p> We return to the study of trees, with balanced trees. </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Wed Feb 19 02:14:38 HST 2014 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition, and from Wikipedia commons.</br> 
+</body>
+</html>

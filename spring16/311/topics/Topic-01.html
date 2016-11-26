@@ -1,0 +1,445 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #1: Introduction</title>
+</head>
+
+<body>
+<hr><h1><a href="../index.html">ICS 311</a> Topic #1: Introduction to Algorithms</h1><hr> 
+
+<h2>Outline</h2> 
+<ol>
+  <li>Syllabus</li> 
+  <li>Algorithms and Programs</li>
+  <li>Algorithm Design & Analysis</li> 
+  <li>Computational Complexity</li> 
+  <li>Abstract Data Types</li>
+</ol> 
+
+<hr><h2> Syllabus </h2>
+
+<ol>
+  <li> <a href="../Syllabus/Course-Info.html">General Course Information</a></li>
+  <li> <a href="../Syllabus/Topic-Plan.html">Topic Overview</a></li>
+  <li> <a href="../Syllabus/Format.html">Format</a> </li>
+  <li> <a href="../Syllabus/Podcasts.html">Podcasts</a> </li>
+  <li> <a href="../Syllabus/Assessment.html">Assessment</a> (Grading) </li>
+  <li> <a href="../Syllabus/Assignments.html">Assignments</a></li> 
+  <li> <a href="../Syllabus/Policies.html">Policies</a> </li>
+</ol>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Algorithms and Programs</h2>
+
+<p>By now you have a working idea of what a "program" is because you have written many. Programs are
+particular instructions that work on specific machines. </p> 
+
+<p>In this course we work with an abstraction of programs: algorithms.</p> 
+
+<h3>Algorithms</h3>
+
+<p>Informally, an algorithm is a well-defined computational procedure that takes some value(s) as
+input and produces some value(s) as output.</p>
+
+<p>Somewhat more formally, an algorithm is a finite sequence of instructions chosen from a finite,
+fixed set of instructions, where the sequence of instructions satisfies the following criteria:</p>
+
+<ul> 
+  <li> <b>Input:</b>  It has zero or more input parameters. </li>
+  <li> <b>Output:</b> It produces at least one output parameter. </li>
+  <li> <b>Definiteness:</b>  Each instruction must be clear and unambiguous. </li>
+  <li> <b>Finiteness:</b>    For every input, it executes only a finite
+  number of instructions (it eventually halts). </li>
+  <li> <b>Effectiveness:</b> Every instruction must be sufficiently basic
+  so that a machine can execute the instruction.</li> 
+</ul> 
+
+<p><i>Discussion:</i> What is the difference between an algorithm and a program?</p>
+
+<p><i>Discussion:</i> What kinds of algorithms do you think are needed when you use your smartphone
+(or any mobile phone for that matter?)</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Algorithm Design & Analysis</h2>
+
+<p>Here is how algorithm design is situated within the phases of problem solving in software
+development:</p>
+
+<blockquote> 
+<dl> 
+  <dt>Phase 1: <b>Formulation of the Problem</b> (Requirements Specification) </dt>
+  <dd>To understand a real problem, <b>model it mathematically</b>, and specify input and output of the
+  problem clearly.</dd> 
+
+  <br>
+  <dt>Phase 2: <b>Design and Analysis of an Algorithm</b> for the Problem (our focus) </dt>
+  <dd>
+    <ul> 
+      <li> Step 1: <b>Specification</b> of an Algorithm - <b>what is it?</b> </li>
+      <li> Step 2: <b>Verification</b> of the Algorithm - <b>is it correct?</b> </li>
+      <li>Step 3:  <b>Analysis</b> of the Algorithms - <b>what is its time and space complexity?</b></li>
+    </ul> 
+  </dd>
+
+  <br> 
+  <dt>Phase 3: <b>Implementation of the Algorithm</b> </dt>
+  <dd>Design data structures and realize the algorithm as executable code for a targeted platform (lower
+    level abstraction).
+  </dd>
+
+  <br> 
+  <dt>Phase 4: <b>Performance Evaluation of the Implementation</b> (Testing) </dt>
+  <dd>The predicted performance of the algorithm can be evaluated/verified by empirical
+  testing.
+  </dd> 
+
+</dl> 
+
+</blockquote>
+
+<p>Algorithms are often specified in <b>pseudocode</b>, a mixture of programming language control
+structures, mathematical notation, and natural language written to be as unambiguous as
+possible. Examples will be given in the next lecture.  In this course, we will use mostly the
+notation used in the book.</p>
+
+
+<h3> Why not just test programs?</h3>
+
+<p>Why not just run experimental studies on programs? We can implement the
+  algorithms of interest, run them on a modern computer on various input sizes, and compare the
+  results. Why bother with all this math in the book?</p>
+
+<p>I find the math painful too, but there are three major limitations to
+  experimental studies:</p>
+<ul>
+
+  <li> To run experiments, you have to implement and run the algorithm. Implementation takes time,
+  and some of these runs may take a long time.</li>
+  
+  <li> Experiments can only be done on a limited set of test inputs. Are you
+  sure your results generalize to all possible inputs? </li>
+  
+  <li> It is difficult to compare the efficency of tests run on one hardware and
+  software environment to what will happen on others. Are you sure that your results generalize
+  across platforms? </li> 
+
+</ul>
+<p> Formal analysis of algorithms:</p>
+
+<ul>
+  <li> Can be performed on a high-level description of the algorithm without implementation.</li>
+  <li> Takes into account all possible inputs. </li>
+  <li> Allows comparisons of algorithms independently of hardware and software.</li>
+</ul>
+
+<p>So, there is a good reason ICS 311 is THE central course of the ICS
+  curriculum! Stick with us.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Computational Complexity</h2>
+
+<h3>Input Size</h3>
+
+<p>The computational complexity of an algorithm generally depends on the amount of information given
+as input to the algorithm.</p> 
+
+<p> This amount can be formally defined as the <b>number of bits</b> needed to represent the input
+information with a reasonable, non-redundant coding scheme.</p>
+
+<p> To simplify things, we often analyze algorithms in terms of larger constant-sized <b>data
+units</b> (e.g., signed integer, floating point number, string of bounded length, or data record).
+
+<p>These units are a <em>constant factor</em> larger than a single bit, and are operated on as a
+unit, so the result of the analysis is the same.</p>
+
+<h3>Measures of Complexity</h3> 
+
+<p>The choice of algorithms and data structures has a critical impact on the 
+    following, both of which are used as measures of computational complexity:</p>
+<ul> 
+  <li> Run <b>time</b> to solve a problem of a given input size</li>
+  <li> Storage <b>space</b> for data, including auxiliary structures</li> 
+</ul>
+
+<h3> Example (preview of next lecture) </h3> 
+<p>For example, suppose you have an input size of n elements, such as n strings to be sorted in
+lexicographic order. Suppose further that you have two algorithms at your disposal (these algorithms
+will be examined in detail in the next lecture):</p> 
+<dl>
+  <dt> <b>Insertion sort</b>:</dt>
+  <dd>
+    <ol> 
+      <li> start with an empty list </li> 
+      <li> take each item to be sorted and insert it in its proper location </li>
+    </ol>
+  </dd>
+  <br> 
+  <dt><b>Merge sort</b>:</dt>
+  <dd>
+    <ol> 
+      <li> if the list has only one item, return it </li> 
+      <li> otherwise, split the list in half, sort each half with this procedure, and 
+      then merge the results </li>
+    </ol>
+  </dd>
+</dl>
+
+<p> We will see that given <i>n</i> items to be sorted (it does not matter what they are as long as
+they are bounded by a constant size and can be compared by an &lt; operator), </p>
+
+<ul>
+  
+  <li> <i>Insertion sort</i> takes time proportional to <i>c</i><sub>1</sub><i>n</i><sup>2</sup> steps,
+  where <i>c</i><sub>1</sub> is a constant depending on the implementation, and requires space
+  proportional to <i>n</i>.</li><br>
+
+  <li> <i>Merge sort</i> takes <i>c</i><sub>2</sub><i>n</i> lg(<i>n</i>) steps, where <i>c</i><sub>2</sub>
+  is another constant depending on the merge sort implementation, and requires space
+  proportional to 2<i>n</i>. </li>
+</ul>
+
+<p><i>Exercise:</i> This would be a good place for you to pause and do excercise 1.2-2, page
+  14:</p>
+  
+<blockquote>
+Suppose we are comparing implementations of insertion sort and merge sort on the
+  same machine, where c<sub>1</sub>=8 and c<sub>2</sub>=16. For which values of
+  n does insertion sort beat merge sort?
+</blockquote> 
+
+<p>Constants matter for small input sizes, but since constants don't grow we
+  ignore them when concerned with the time complexity of large inputs: it is the
+  growth in terms of <i>n</i> that matters.</p>
+
+<p>In the example above, ignoring the constants and factoring out the common n in each term shows
+  that the difference in growth rate is <i>n</i> versus lg(<i>n</i>). For one million items to sort,
+  this would be a time factor of one million for insertion sort, but about 20 for merge sort.</p>
+
+<h3>Models of Computation</h3>
+  
+<p>Rather than bother with determining the constant factors for any given implementation or
+  computer, algorithms for a problem are analyzed by using an abstract machine called a <b>model of
+  computation</b>.</p>
+
+<p> Many models of computation have been proposed, but they are essentially equivalent to each other
+  (Church-Turing Thesis) as long as computation executed on them are <em>deterministic</em> and
+  <em>sequential</em>.  Commonly used models are <em>Turing Machines</em> and <em>Random Access
+  Machines</em> (see Section 2.2 of the textbook).</p>
+
+<h3>Run Times for Different Complexities</h3>
+  
+<p>In general, suppose that you have a computer of speed 10<sup>7</sup> steps per second. The
+  running time of algorithms of the given complexity (rows) as a function of <i>n</i> would be:</p>
+<pre>
+  --------------------------------------------------------------------
+  size n    10       20       30       50      100       1000    10000
+  --------------------------------------------------------------------
+  n         0.001ms  0.002ms  0.003ms  0.005ms  0.01ms   0.1ms     1ms
+  n lg n    0.003ms  0.008ms  0.015ms  0.03ms   0.07ms   1ms      13ms
+  n^2       0.01ms   0.04ms   0.09ms   0.25ms   1ms      100ms    10s
+  n^3       0.1ms    0.8ms    2.7ms    12.5ms   100ms    100s     28h
+
+  ...................................................................
+
+  2^n       0.1ms    0.1s     100s     3yr      3x10^13c  inf     inf
+  --------------------------------------------------------------------
+</pre>
+<p><i>Discussion:</i> What is the difference between analysis of an algorithm
+  and analysis of an implementation (a program)?</p>
+
+<p><i>Discussion:</i> What is the relationship between the efficiency of an algorithm and the
+difficulty of the problem to be solved by that algorithm? (We return to this in the last two topics
+of the semester, but see also below.)</p>
+
+<p>Consider the example above: the problem of sorting a list of items. We saw
+two algorithms for solving the problem, one more efficient than the other. Is it
+possible to make a statement about the time efficiency of <em>any possible</em>
+algorithm for the problem of sorting? (We address this question in Topic #10.)</p>
+
+<h3>Easy vs Hard Problems</h3>
+
+<p>Theoretical computer science has made substantial progress on understanding
+the intrinsic difficulty of <em>problems</em> (across all possible algorithms),
+although there are still significant open questions (one in particular).</p>
+
+<p>First of all, there are problems that we cannot solve, i.e., problems for which there does not
+  exist any algorithm.  Those problems are called <b>unsolvable</b> (or <b>undecidable</b> or
+  <b>incomputable</b>), and include the <em>Halting Problem</em> (refer to Section 3.1 pp. 176-177
+  of the textbook for ICS141 & 241).</p>
+
+<p>Within the problems that can be solved, there is a hierarchy of <b>complexity classes</b>
+  according to how difficult they are. Difficulty is based on proofs of the minimum complexity of
+  <em>any</em> algorithm that solves the problem, and on proofs of equivalences between problems (translating
+  one into another). Here is a graphic:</p>
+
+<img src = "Topic-01/Complexity-Hierarchy.jpg"> 
+
+<p>(Although algorithms can be ranked by this hierarchy, the
+above figure refers to problem classes, not algorithms.)</p>
+
+<p>Sometimes small differences in a problem specification can make a big
+difference in complexity.</p>
+
+<p>For example, suppose you use a graph of vertices representing cities and weighted edges between
+the vertices representing the distance via the best road traveling directly between the cities.</p>
+<ul>
+
+  <li> The <b>Single Pair Shortest Paths</b> problem: what is the shortest path between a single
+  pair of vertices (from one start vertex to one destination vertex) in the weighted graph? </li>
+
+  <li> The <b>Shortest Paths</b> problem: what is the shortest path from one vertex to all of the
+  other vertices in the weighted graph? </li>
+
+  <li> The <b>All Pairs Shortest Paths</b> problem: what is the shortest path between every pair of
+  vertices in the weighted graph? </li>
+
+  <li> The <b>Traveling Salesman</b> problem: what is the shortest path that starts
+  at given vertex in a weighted graph and visits all (or a specified set of)
+  other vertices once before returning to the start vertex?</li>
+
+</ul>
+
+<p><i>Discussion:</i> How do these problems differ from each other? Which are easier and which are
+harder? Which are tractable (e.g., can be computed in polynomial time) and which are potentially
+intractable (e.g, require exponential time)?</p>
+
+<p>Complexity theory will be the topic of our second to last lecture.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Abstract Data Types </h3>
+
+<p> Algorithms and data structures go together. We often study algorithms in the context of
+Abstract Data Types (ADTs). But let's start with Data Structures.</p>
+
+<h3>Data Structures</h3> 
+
+<p>You are already familiar with Data Structures. They are defined by:</p>
+
+<ul> 
+  <li> <b>Operations:</b>  Specifications of external appearance of
+       a data structure.
+  </li>
+
+  <li> <b>Storage Structures:</b> Organizations of data implemented in lower level data
+         structures. (We are almost always building abstractions on layers of abstractions above the
+         actual physical implementation.)
+  </li>
+
+  <li> <b>Algorithms:</b> Description of how to manipulate information in the storage structures to
+         obtain the results defined for the operations
+  </li>
+</ul>
+
+<p>The definition of a data structure requires that you specify implementation details such as
+storage structures and algorithms. It would be better to hide these details until we are ready to
+deal with them. </p>
+
+<p> Also we may want to write a specification in terms of desired behavior (Operations) and then compare alternative
+storage structures and algorithms as possible solutions meeting those specifications. Data structures don't work because
+they already assume a given solution. Abstract Data Types or ADTs let us
+do this by abstracting the representations and algorithms. </p> 
+
+<h3>Definition of Abstract Data Types (ADTs)</h3> 
+
+<p> An ADT is a class of instances (i.e., data objects) with a set of the operations that can be
+applied to the data objects.</p>
+
+<p>An ADT tells us <em>what to do</em> instead of how to do it. This provides the specifications
+againsts which we can design different algorithms: the <em>how</em> part.</p>
+
+<p>An ADT is specified by</p>
+<ol>
+  <li> <b>the type(s) of data objects involved </b></li> 
+  <li> <b>a set of operations that can be applied to those objects</b>, and </li> 
+  <li> <b>a set of properties (called axioms) that all the objects and
+       operations must satisfy</b>.</li> 
+</ol>
+
+<h3>Example: Stack ADT</h3> 
+<dl>
+  <dt>Objects:</dt>
+  <dd>Stack, and Elements (of arbitrary type)
+  </dd>
+  <br>
+  
+  <dt>Operations (categorized into three types):</dt>
+  <dd>
+    <dl>
+      <dt>Constructor</dt>
+      <dd><tt>new()</tt> creates the empty stack and returns it.</dd> 
+   </dl>
+    
+    <dl>  
+     <dt>Accessors</dt>
+     <dd>
+       <tt>empty(<i>s</i>)</tt>  returns whether stack <i>s</i> is empty.<br> 
+       <tt>top(<i>s</i>)</tt> returns the element of stack <i>s</i> that has been inserted into s
+        last. 
+    </dd> 
+     <dt>Mutators (or Modifiers)</dt>
+     <dd>
+        <tt>push(<i>s</i>,<i>e</i>)</tt> inserts an element <i>e</i> into <i>s</i>.<br> 
+        <tt>pop(<i>s</i>)</tt> deletes the top element from stack <i>s</i>.
+     </dd> 
+     <br>
+   </dl>
+   
+  <dt>Properties:</dt>
+  <dd>
+    <ul>
+      <li><tt>top(push(<i>s</i>,<i>e</i>)) returns value <i>e</i></tt> </li>
+      <li><tt>pop(push(<i>s</i>,<i>e</i>)) leaves <i>s</i></tt> in the same state </li> 
+      <li><tt>empty(new()) = true </tt></li>
+      <li><tt>empty(push(<i>s</i>,<i>i</i>)) = false </tt></li>
+      <li><tt>pop(new()) is an error </tt></li>
+      <li><tt>top(new()) is an error </tt> </li>
+    </ul> 
+  </dd> 
+</dl>
+
+<h3>Specification and Implementation</h3>
+
+<p>ADTs can be specified in different languages:</p>
+<ul>
+  <li>formal languages (axiomatic, algebraic, functional, denotational semantics, etc.)</li> 
+  <li> natural language</li> 
+</ul>
+
+<p>Implementation of an ADT requires</p>
+<ul>
+  <li>defining the storage for the data structures</li>
+  <li>implementing the algorithms for the operations</li>
+</ul> 
+
+<h3>Advantages of ADTs</h3>
+
+<dl>
+  <dt> Modularity (Encapsulation)</dt>
+  <dd>
+    Abstract operations mean a program using an ADT are isolated from (need not know about or be
+    affected by) the implementation of the ADT. 
+    <br> &rarr; Implementation of ADT can be changed without modifying
+    programs using ADT.
+    <br> &rarr; Makes a program smaller, simpler, and have less side effects
+    <br> &rarr; Helps to construct correct programs
+  </dd>
+  <br>
+   
+   <dt> Hierarchical Specification</dt> 
+   <dd> Supports Top-Down Design and Stepwise Refinement</dd> 
+   <br>
+   
+   <dt> Implementation </dt> 
+   <dd>ADTs map well to Object-Oriented Programming Languages</dd>
+</dl> 
+
+<p><i>Discussion:</i> What is the difference between an ADT and a data structure?</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<p><i>Some of the material in this page was adopted with permission (and significant editing)
+from Kazuo Sugihara's spring 2011 Lecture Notes #02</a>.</i></p>
+
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Fri Aug 26 02:18:27 HST 2011 <!-- -->
+<!--hhmts end -->
+</body> </html>

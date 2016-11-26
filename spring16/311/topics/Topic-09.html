@@ -1,0 +1,443 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #09: Heaps </title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #09: Heaps, Heapsort, and Priority Queues </h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+<ol>
+  <li> Heaps and their Properties</li>
+  <li> Building and Maintaining Heaps</li>
+  <li> Application to Sorting</li>
+  <li> Application to Priority Queues</li> 
+</ol>
+
+<h2>Readings and Screencasts</h2>
+<ul> 
+  <li>CLRS 3rd Ed. Chapter 6 (all)</li>
+  <li>Screencasts <a href="http://youtu.be/0zh4IiKaVN0">9A</a>,
+                  <a href="http://youtu.be/oAfSx7aRkZM">9B</a>, 
+                  <a href="http://youtu.be/gMwtzAPDupI">9C</a>,
+                  <a href="http://youtu.be/8O5iBigvDIw">9D</a>
+                  (also in Laulima and iTunesU)</li>
+</ul>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Heaps and their Properties </h2>
+
+<p>Heaps are a useful data structure with applications to sorting and priority queues.</p>
+
+<p>They are <i>nearly complete binary trees</i> that satisfy a <i>heap property</i> that organizes
+data under a partial ordering of their keys, enabling access to elements with maximum (or minimum)
+keys without having to pay the cost of fully sorting the keys.</p>
+<p>Heaps are not to be confused with garbage collected storage (a heap of garbage)!</p>
+
+<!-- -------------------------------------- --> 
+<h3>Heaps as Nearly Complete Binary Trees</h3>
+
+<p>Conceptually, heaps are <b>nearly complete binary trees</b>: they have leaves on at most two
+adjacent levels <i>l-1</i> and <i>l</i> and in which the leaves at the bottommost level <i>l</i> lie
+in the leftmost positions of <i>l</i>: </p> <img src="Topic-09/Fig-6-1-max-heap-tree.jpg">
+
+<p>These quantitative properties concerning full and nearly complete binary trees will be
+useful:</p>
+
+<h4>Number of elements in nearly complete binary trees of height <i>h</i> (6.1-1) </h4>
+
+<img src="Topic-09/diagram-tree-heights-wide.jpg" align="right" border="1">
+
+<p>As discussed in <a href="Topic-08.html#binarytrees">Topic 8</a>, a <b>complete binary tree</b>
+has at most 2<sup><i>h</i>+1</sup> &minus; 1 nodes (vertices). We can see this by adding up the
+number of elements at each level: 2<sup>0</sup> + 2<sup>1</sup> + ... + 2<sup>h</sup> for a complete
+binary tree of height <i>h</i>. Then apply formula A.5 with <i>x</i>=2 and <i>n</i>=<i>h</i>:</p>
+
+<img src="Topic-09/formula-A-5.jpg">
+
+<p>You get (2<sup><i>h</i>+1</sup> &minus; 1) / (2 &minus; 1) = 2<sup><i>h</i>+1</sup> &minus; 1. 
+
+<p>So, a <em>nearly</em> complete binary tree has <em>at most</em> 2<sup><i>h</i>+1</sup> &minus; 1
+elements (if it is complete, as analyzed above). The <em>fewest</em> number of elements it can have
+at height <i>h</i> is when the last level has just 1 element and the level before it is complete. So
+do the math for a complete binary tree of height <i>h</i>&minus;1: there are exactly
+2<sup><i>h</i></sup> &minus; 1 elements in levels 1 to <i>l</i>&minus;1 and one more element in the
+<i>l</i>th level, for a total of 2<sup><i>h</i></sup> elements.
+
+<h4>Height of an <i>n</i>-element nearly complete binary tree (6.1-2) </h4>
+
+<p>Given an <i>n</i>-element nearly complete binary tree of height <i>h</i>, from 6.1-1:</p>
+<blockquote>
+2<sup><i>h</i></sup> &nbsp; &le; &nbsp; <i>n</i> &nbsp; &le; &nbsp; 2<sup><i>h+1</i></sup> &minus; 1
+&nbsp; &lt; &nbsp; 2<sup><i>h+1</i></sup>
+</blockquote>
+
+<p>Taking the log of the first, second and last terms, </p>
+
+<blockquote>
+<i>h</i> &nbsp; &le; &nbsp; lg <i>n</i> &nbsp; &lt; &nbsp; <i>h</i> + 1
+</blockquote>
+
+<p>Since <i>h</i> is an integer, <i>h</i> = <sub><big>&lfloor;</big></sub>lg
+<i>n</i><sub><big>&rfloor;</big></sub> &nbsp; &nbsp; <i>(Notice the "floor" notation.)</i></p>
+
+<h4>Number of leaves </h4>
+
+<p>An <i>n</i>-element nearly complete binary tree has
+<sup><big>&lceil;</big></sup>n/2<sup><big>&rceil;</big></sup> leaves. &nbsp; &nbsp; <i>(Notice the
+"ceiling" notation. Left as exercise.)</i></p>
+
+<img src="Topic-09/diagram-node-heights.jpg" align="right" border="1">
+
+<h4> Nodes of height <i>h</i> in a nearly complete binary tree (6.3-3)</h4>
+
+<p>The <b> height of a node</b> is the number of edges on the longest downward path from the node
+to a leaf.</p>
+
+<p>There are at most <sup><big>&lceil;</big></sup>n/2<sup>h+1</sup><sup><big>&rceil;</big></sup>
+nodes of height <i>h</i> in a nearly complete binary tree. (A proof by contradiction is
+possible.) For example, in the tree shown there are
+<sup><big>&lceil;</big></sup>15/2<sup>2+1</sup><sup><big>&rceil;</big></sup> =
+<sup><big>&lceil;</big></sup>15/8</sup><sup><big>&rceil;</big></sup> = 2 nodes of height 2. </p>
+
+<!-- ------------------ --> 
+<h3>The Heap Property</h3>
+
+<p>Depending on whether it is a <i>max heap</i> or a <i>min heap</i>, to be a heap the binary tree
+must also satisfy a heap property:</p>
+<dl>
+  <dt><b>Max Heap Property:</b></dt><br>
+  <dd>For all nodes <i>i</i>, excluding the root, key(parent(<i>i</i>)) &ge; key(<i>i</i>).<br><br>
+    By induction and transitivity of &ge;, the max heap property guarantees that the maximum element
+    of a max-heap is at the root. </dd><br> 
+  <dt><b>Min Heap Property:</b></dt><br>
+  <dd>For all nodes <i>i</i>, excluding the root, key(parent(<i>i</i>)) &le; key(<i>i</i>).<br><br>
+    By induction and transitivity of &le;, the min heap property guarantees that the minimum element
+    of a min heap is at the root.
+  </dd>
+</dl>
+
+<!-- ----------------------- --> 
+<h3>Array Representation</h3>
+<p>Heaps are usually represented using arrays, following the mapping shown by the indices in the
+tree:</p>
+<img src="Topic-09/Fig-6-1-max-heap-tree-array-indices.jpg">
+<img src="Topic-09/Fig-6-1-max-heap-array.jpg"><br>
+
+<p>The fact that we can see a heap both as a binary tree and as an array is an example of a powerful
+idea in computer science: mapping between an implementation representation that has efficient
+computational properties and a conceptual representation that fits how we think about a problem.</p> 
+<img src="Topic-09/code-parent-children.jpg" align="right">
+
+<p>If a heap is stored in array <tt>A</tt>, then movement in the tree is easy:</p> 
+<ul>
+  <li> Root of the tree is <tt>A[1]</tt></li>
+  <li> Parent of <tt>A[<i>i</i>]</tt> is
+       <tt>A[<sub><big>&lfloor;</big></sub><i>i</i>/2<sub><big>&rfloor;</big></sub>]</tt>
+       &nbsp; &nbsp; <i>(Notice we are taking the floor of <i>i</i>/2)</i>.</li>
+  <li> Left Child of <tt>A[<i>i</i>]</tt> is <tt>A[<i>2i</i>]</tt></li>
+  <li> Right Child of <tt>A[<i>i</i>]</tt> is <tt>A[<i>2i+1</i>]</tt></li>
+  <li> Index operations are fast in binary (left and right shifts and setting the low order bit).</li>
+</ul>
+
+<h4>Indices of leaves (6.1-7)  </h4>
+
+<p>By the number of leaves fact, when an <i>n</i>-element heap is stored in the array
+representation, the leaves are the nodes indexed by
+<sub><big>&lfloor;</big></sub>n/2<sub><big>&rfloor;</big></sub> + 1,
+<sub><big>&lfloor;</big></sub>n/2<sub><big>&rfloor;</big></sub> + 2, ..., <i>n</i>.  (Left as
+exercise.) </p>
+
+<p>This fact will be used in algorithms that only need to process either the leaves or the internal
+nodes of a heap.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Building and Maintaining Heaps </h2>
+
+<h3>Maintaining the Heap Property</h3>
+<p>MAX-HEAPIFY is used to maintain the max-heap property by addressing a possible violation at node
+<tt>A[<i>i</i>]</tt>:</p> 
+<ul>
+  <li>MAX-HEAPIFY assumes that the left and right subtrees of <i>i</i> are max-heaps.</li>
+  <li>When called, <tt>A[<i>i</i>]</tt> may (or may not) be smaller than its children, violating the
+      max-heap property if it is.</li>
+  <li>After MAX-HEAPIFY, the subtree rooted at <i>i</i> will be a heap. </li>
+</ul>
+<img src="Topic-09/code-max-heapify.jpg">
+
+<p>It works by comparing <tt>A[<i>i</i>]</tt> with its left and right children (lines 3-7), and if
+necessary swapping <tt>A[<i>i</i>]</tt> with the larger of the two children to preserve the heap
+property (lines 8-9). <i>Tail recursion</i> after the swap propagates this change until the subtree
+is a heap (line 10).</p>
+
+<h4>Example</h4>
+<p> Max-Heapify from the node at index 2 (containing 4):</p> 
+<img src="Topic-09/Fig-6-2-max-heapify.jpg">
+
+<h4>Analysis</h4>
+
+<p>It is easy to see that the body of each call before recursion is O(1), and the recursion repeats
+this for at most O(lg <i>n</i>) nodes on the path from the root to the leaves.</p>
+
+<p>More formally, the worst case is when the bottom level is exactly half full, and in this case,
+the <em>children's subtrees</em> can have at most 2<i>n</i>/3 nodes.  So, adding the cost to recurse
+on these subtrees plus &Theta;(1) cost for comparisons at a given node, we get the recurrence
+relation: </p>
+
+<blockquote>
+<i>T</i>(<i>n</i>) &nbsp;  &le; &nbsp; <i>T</i>(2<i>n</i>/3) + &Theta;(1). 
+</blockquote>
+
+<p>This fits case 2 of the Master Theorem (<i>a</i> = 1, <i>b</i> = 3/2 since 1/(3/2) = 2/3, and
+<i>f</i>(<i>n</i>) = 1 = O(<i>n</i><sup>log<sub>3/2</sub>1</sup>) = O(<i>n</i><sup>0</sup>)), giving
+&Theta;(lg <i>n</i>). </p>
+
+<h3>Building a Heap</h3> 
+<p>Suppose we load some keys into an array in arbitrary order from left to right, creating an almost
+complete binary tree that may not satisfy the heap property.</p>
+
+<p>Each leaf of the corresponding tree is trivially a heap. If we call MAX-HEAPIFY on the parents of
+the leaves, the assumption that the right and left subtrees are heaps is met. Once MAX-HEAPIFY
+returns, the parents are roots of heaps too, so we call it on <em>their</em> parents.</p>
+
+<p>Using the previously established result that the leaves begin in the array at index
+<sub><big>&lfloor;</big></sub>n/2<sub><big>&rfloor;</big></sub> + 1, so the last non-leaf node is at
+<sub><big>&lfloor;</big></sub>n/2<sub><big>&rfloor;</big></sub>, the implementation is trivial: </p>
+
+<img src="Topic-09/code-build-max-heap.jpg">
+
+<h4>Example</h4>
+<img src="Topic-09/Fig-6-3-build-max-heap-array.jpg" align="right">
+<p>Let's trace this on an array of size 10, for <i>i</i> = 5 downto 1:</p>
+
+<img src="Topic-09/Fig-6-3-build-max-heap-ab.jpg">
+
+<p>(a) The heap rooted at vertex or array index 5 is already a max heap: no change is made.</p>
+
+<p>(b) The heap rooted at index 4 is not a max heap: the value 2 is smaller than its children. We
+restore the max heap property by swapping 2 with the larger child key, 14 (see next figure for
+result). If we had swapped with 8, it would not be a max heap: this is why we always swap with the
+larger child.</p>
+
+<img src="Topic-09/Fig-6-3-build-max-heap-cd.jpg">
+
+<p>(c) Decrementing <i>i</i> to 3, there is another violation of the max heap property, and we swap
+value 3 at index 3 with value 10 at index 7 (the larger child). </p>
+
+<p>(d) The heap at index 2 violates the max heap property: we must propagate the value 1 down by
+swapping with 16, and then with 7 in a recursive call to Max-Heapify (see next figure). </p>
+
+<img src="Topic-09/Fig-6-3-build-max-heap-ef.jpg">
+
+<p>(e) Finally, checking the value at index 1 (value 4) against its children, we find we need to
+swap it with value 16 at index 2, and then with value 14 at index 4 and value 8 at index 9
+in two recursive calls to Max-Heapify. (f) shows the resulting max heap. </p>
+
+<h4>Correctness</h4>
+<img src="Topic-09/code-build-max-heap.jpg" align="right" border="1">
+<dl>
+  <dt><i><b>Loop Invariant:</b></i></dt>
+  <dd>At the start of every iteration of the <tt>for</tt> loop, each node <i>i</i>+1, <i>i</i>+2,
+    ..., <i>n</i> is a root of a max heap.</dd><br>
+  <dt><i><b>Initialization:</b></i></dt>
+  <dd>By Exercise 6.1-7, each node <sub><big>&lfloor;</big></sub>n/2<sub><big>&rfloor;</big></sub> +
+      1, <sub><big>&lfloor;</big></sub>n/2<sub><big>&rfloor;</big></sub> + 2, ..., <i>n</i> is a
+    leaf, which is the root of a trivial max-heap. Since <i>i</i> =
+    <sub><big>&lfloor;</big></sub>n/2<sub><big>&rfloor;</big></sub> before the first 
+    iteration of the <tt>for</tt> loop, the invariant is initially true. </dd><br>
+  <dt><i><b>Maintenance:</b></i></dt>
+  <dd>Children of node <i>i</i> are indexed higher than <i>i</i>, so by the loop invariant, they are
+     both roots of max-heaps. Thus the assumption of MAX-HEAPIFY is met, enabling it to make node
+     <i>i</i> a max-heap root. Decrementing <i>i</i> reestablishes the loop invariant at each
+    iteration.</dd><br>
+  <dt><i><b>Termination:</b></i></dt>
+  <dd>The loop terminates when <i>i</i> = 0. By the loop invariant, each node including the root
+    indexed by 1 is the root of a max-heap.</dd>
+</dl>
+
+<h4>Analysis</h4>
+<p>Sometimes a good approach is to prove an easy bound and then tighten it.</p>
+
+<p>It is easy to see that there are O(<i>n</i>) (about <i>n</i>/2) calls to MAX-HEAPIFY, and we
+already know that MAX-HEAPIFY on a tree of height O(lg <i>n</i>) is O(lg <i>n</i>). Therefore an
+upper bound is O(<i>n</i> lg <i>n</i>).</p>
+
+<p>However, only the root node and those near it are at height O(lg <i>n</i>). Many nodes are close
+to the leaves and we don't even process half of them. So let's try for a tighter bound ... </p>
+
+<p>There are no more than
+<sup><big>&lceil;</big></sup>n/2<sup>h+1</sup><sup><big>&rceil;</big></sup> nodes of height <i>h</i>
+(Exercise 6.3-3), and the heap is
+<sub><big>&lfloor;</big></sub>lg<i>n</i><sub><big>&rfloor;</big></sub> high (Exercise
+6.1-2). MAX-HEAPIFY called on a node of height <i>h</i> is O(<i>h</i>), so we need to sum this cost
+times the number of nodes at each <i>h</i> for all relevant <i>h</i>: </p>
+
+<img src="Topic-09/analysis-build-max-heap-1.jpg">
+
+<p>We can simplify this as follows: </p>
+<ol>
+  <li>Wrap big-O around the whole thing, leaving h behind.</li>
+  <li>Remove the ceiling (which does not affect big-O analysis).</li>
+  <li>Rewrite the resulting <i>nh</i>/2<sup><i>h</i>+1</sup> as (<i>n</i>/2)(h/2<sup><i>h</i></sup>).</li>
+  <li>Move <i>n</i>/2 out of the summation, as it does not involve <i>h</i>.</li>
+  <li>Eliminate the constant 1/2, as we are inside the magical world of big-O!</li> 
+</ol> 
+<p>Tricky, huh? Now maybe you can see why the text authors write that as:</p> 
+<img src="Topic-09/analysis-build-max-heap-2.jpg">
+
+<p>The above summation runs up to
+<sub><big>&lfloor;</big></sub>lg<i>n</i><sub><big>&rfloor;</big></sub>, but we would like to use a
+convenient formula A-8, shown below, which runs up to &infin;: </p>
+
+<img src="Topic-09/formula-A-8.jpg">
+
+<p> Since big-O implies an inequality (upper bound), we can go ahead and run the summation to
+&infin; instead of <sub><big>&lfloor;</big></sub>lg<i>n</i><sub><big>&rfloor;</big></sub>, because
+all of the additional terms are positive (and also very small), so the inequality will be
+maintained. Then, if we let <i>x</i> = 1/2 (since <i>h</i>/2<sup><i>h</i></sup> =
+<i>h</i>(1<sup><i>h</i></sup>/2<sup><i>h</i></sup>) can be written as h(1/2)<sup>h</sup>), we
+get:</p>
+
+<img src="Topic-09/analysis-build-max-heap-3.jpg">
+
+<p> Thus our big-O expression simplifies to O(<i>n</i>*2) = O(<i>n</i>), which is a tighter bound
+than O(<i>n</i> lg <i>n</i>). The same analysis appliles to the min-heap version.</p>
+
+<p>(You might wonder why we can build a heap in O(<i>n</i>) time when sorting takes O(<i>n</i> lg
+<i>n</i>), as will be proven in <a href="Topic-10.html">Topic 10</a>. This is because a heap is only
+a partial order, so less work needs to be done to guarantee the heap property.)</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Application to Sorting </h2>
+
+<p>Suppose <tt>A[1..<i>n</i>]</tt> contains keys to be sorted. If we call BUILD-MAX-HEAP on this
+array, the maximum element will be at <tt>A[1]</tt>. We can swap it with the item at
+<tt>A[<i>n</i>]</tt>, then repeat on <tt>A[1..<i>n</i>-1]</tt> (reducing the size of the heap by 1
+each iteration) until this reaches size 1. </p>
+
+<img src="Topic-09/code-heapsort.jpg">
+
+<h4>Analysis:</h4>
+<p>BUILD-MAX-HEAP is O(<i>n</i>) (by analysis above). The <tt>for</tt> loop executes <i>n</i>-1
+times, with O(1) exchange each iteration and a call to O(lg <i>n</i>) MAX-HEAPIFY. Thus heapsort is
+O(<i>n</i> lg <i>n</i>). </p>
+
+<h4>Example:</h4>
+
+<p>Suppose we have an array A with five integers. First, BUILD-MAX-HEAP is called on it, resulting
+in the array A = [7, 4, 3, 1, 2] shown as the tree in (a) below. </p>
+
+<img src="Topic-09/Fig-6-4-heapsort-alt-ab.jpg">
+
+<p> Then the loop of HEAPSORT successively takes out the maximum from the first index by swapping
+it with the last element in the heap, and calls MAX-HEAPIFY. So, 7 is swapped with 2, and then the
+heap (now one smaller) is reconstructed, resulting in the heap shown in (b): A = [4, 2, 3, 1, 7],
+with the first four elements being the heap.</p>
+
+<img src="Topic-09/Fig-6-4-heapsort-alt-cd.jpg">
+
+<p>The maximum element 4 (from b) was swapped with the minimum element 1 (removing 4 from the
+heap) and the heap restored, resulting in (c) A = [3, 2, 1, 4, 7] with the first three elements being
+the heap. Then in (d), the max element 3 was swapped with 1 and the heap restored by percolating 1
+down: A = [2, 1, 3, 4, 7] with the heap being the first two elements.</p>
+
+<img src="Topic-09/Fig-6-4-heapsort-alt-e.jpg">
+
+<p>(e) Finally, the maximum element 2 is removed by swapping with the only remaining element 1,
+resulting in the sorted array shown.</p> 
+
+<p>Here is a <a href="http://www.youtube.com/watch?v=WYII2Oau_VY">playing card demonstration</a> of
+heap sort, in case it helps. This demonstration is using a <em>min-heap</em> to sort the cards with
+the card of <em>maximum</em> value ending up at the top of the stack of cards. </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Application to Priority Queues </h2>
+
+<p>An important application of heaps is implementing <b>priority queues</b>. There are <i>min</i>
+and <i>max</i> versions.</p>
+<p>A <b>max-priority queue</b> is an ADT with the following operations: </p>
+<dl>
+  <dt>INSERT(S,<i>x</i>)</dt>
+  <dd>S &larr; S &cup; {<i>x</i>}</dd><br>
+  <dt>MAXIMUM(S)</dt>
+  <dd>Returns the element of S with the largest key.</dd><br>
+  <dt>EXTRACT-MAX(S)</dt>
+  <dd>Removes and returns the element of S with the largest key.</dd><br>
+  <dt>INCREASE-KEY(S,<i>x</i>,<i>k</i>)</dt>
+  <dd>Increases the value of <i>x</i>'s key to the new value <i>k</i> &ge; current key(<i>x</i>).</dd>
+</dl>
+
+<p>A <b>min-priority queue</b> has corresponding operations MINIMUM, EXTRACT-MIN, and
+DECREASE-KEY.</p>
+
+<p>Max-priority queues can be used in job scheduling: the highest priority job is always run next,
+but job priority can be increased as a job ages in the queue, or for other reasons.</p>
+
+<p>Min-priority queues will be very important in graph algorithms we cover later in the semester:
+efficient implementations of EXTRACT-MIN and DECREASE-KEY will be especially important.</p>
+
+<p>Min-priority queues also used in event-driven simulations, where an event may generate future
+events, and we need to simulate the events in chronological order.</p>
+
+<h4>Accessing Maximums</h4>
+
+<p>In the array representation, MAXIMUM is trival to implement in O(1) by returning the first
+element of the array. However, if we EXTRACT-MAX we need to restore the heap property afterwards. </p>
+
+<p>HEAP-EXTRACT-MAX takes the root out, replaces it with the last element in the heap <em>(stop and
+think: why this element?)</em>, and then uses MAX-HEAPIFY to propagate that element (which probably
+has a small key) down to its proper place:</p>
+
+<img src="Topic-09/code-heap-extract-max.jpg">
+
+<p>HEAP-EXTRACT-MAX is O(lg <i>n</i>) since there is only constant work added to the O(lg <i>n</i>)
+MAX-HEAPIFY. </p>
+
+<h4>Increasing keys</h4>
+
+<p>An increase to the key may require propagating the element <i>up</i> the tree (the opposite
+direction as compared to MAX-HEAPIFY):</p>
+<img src="Topic-09/code-heap-increase-key.jpg">
+
+<p>This is clearly O(lg <i>n</i>) due to following a simple path up the tree. Let's work this
+example, where the element at <i>i</i> has its key increased from 4 to 15, and then it is propagated
+up:</p>
+<img src="Topic-09/Fig-6-5-heap-increase-key.jpg">
+
+<p>This propagation follows the "Peter Principle": the claim that persons in a hierarchical
+organization are promoted through the ranks of management until they reach their level of
+incompetency!!!</p>
+
+<h4>Inserting New Elements</h4>
+
+<p>When inserting, we are going to have to make the heap bigger, so let's add the element at the end
+and propagate it up to where it belongs.</p>
+
+<p>HEAP-INCREASE-KEY already has the code for this propagation, so if we set the key to the smallest
+possible value and then try to increase it with HEAP-INCREASE-KEY, it will end up in the right
+place:</p>
+
+<img src="Topic-09/code-max-heap-insert.jpg">
+<p>Again, this is O(lg <i>n</i>). </p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Next</h2>
+
+<p>In <a href="Topic-10.html">Topic 10</a> we wrap up our examination of sort algorithms with
+Quicksort, a practical sort that performs well in practice and also illustrates the value of
+probabilistic analysis and random algorithms. </p>
+
+<p>We will return to other kinds of trees, in particular special kinds of binary search trees that
+are kept balanced to guarantee O(lg <i>n</i>) performance, in <a href="Topic-11.html">Topic
+11</a>. </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Mon Sep 14 21:55:10 HST 2015 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition.</br> 
+</body>
+</html>

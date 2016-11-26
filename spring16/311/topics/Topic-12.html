@@ -1,0 +1,715 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #12: Dynamic Programming </title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #12: Dynamic Programming </h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2>
+<ol>
+  <li> Problem Solving Methods and Optimization Problems </li>
+  <li> Introducing DP with the Rod Cutting Example </li>
+  <li> Illustrating DP with the Longest Common Subsequence Example </li>
+  <li> Summary and Comments on Optimal Substructure</li> 
+</ol> 
+
+<h2>Readings and Screencasts</h2>
+<ul>
+  <li> Read all of CLRS Chapter 15. The focus is on the problem solving strategy: Read the
+examples primarily to understand the Dynamic Programming strategy rather than to memorize the
+specifics of each problem (although you will be asked to trace through some of the algorithms). </li>
+  <li>I have also posted a chapter by Sedgewick in Laulima. In this case, I don't think that Sedgewick
+is any clearer than Cormen et al. The Rod-Cutting example in Cormen et al. illustrates the basics of
+DP quite well. Also, although usually it is easier to understand examples first, DP examples involve
+tedious combinations of subproblems, so you may be better off trying to understand the gist of the
+strategy first in this case.</li>
+  <li> Screencasts <a href="http://youtu.be/RYPsOJmhwgE">12A</a>,
+                  <a href="http://youtu.be/0tQ3ah0Fddw">12B</a>,
+                  <a href="http://youtu.be/dFObo5BeJ0k">12C</a>,
+                  <a href="http://youtu.be/QzgqDJIJtNY">12D</a>
+                  (also in Laulima and iTunesU)</li>
+</ul> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Setting the Context </h2>
+
+<h3>Problem Solving Methods </h3>
+
+<p>In this course we study many well defined algorithms, including (so far) those for ADTs, sorting
+and searching, and others to come to operate on graphs. Quality open source implementations exist:
+you often don't need to implement them.</p>
+
+<p>But we also study problem solving methods that guide the design of algorithms for your specific
+problem. Quality open source implementations may not exist for your specific problem: you may need
+to:</p>
+
+<ul>
+  <li>Understand and identify characteristics of your problem</li>
+  <li>Match these characteristics to algorithmic design patterns.</li>
+  <li>Use the chosen design patterns to design a custom algorithm.</li> 
+</ul>
+
+<p>Such problem solving methods include divide &amp; conquer, dynamic programming, and greedy
+algorithms (among others to come). </p>
+
+<!-- ------------------------------------ -->
+<h3>Optimization Problems</h3>
+
+<p>An <b>optimization problem</b> requires finding a/the "best" of a set of alternatives
+(alternative approaches or solutions) under some quality metric (which we wish to maximize) or cost
+metric (which we wish to minimize).</p>
+
+<p>Dynamic Programming is one of several methods we will examine. (Greedy algorithms and linear
+programming can also apply to optimization problems.)</p> 
+
+<!-- ------------------------------------ -->
+<h3>Basic Idea of Dynamic Programming</h3>
+
+<p>Dynamic programming solves optimization problems by combining solutions to subproblems.</p>
+
+<p>This sounds familiar: <b>divide and conquer</b> also combines solutions to subproblems, but
+<b><em>applies when the subproblems are disjoint</em></b>. For example, here is the recursion tree
+for merge sort on an array A[1..8]. Notice that the indices at each level do not overlap):</p>
+
+<img src="Topic-12/merge-sort-recursive-structure.jpg">
+
+<p><b>Dynamic programming <em>applies when the subproblems overlap</em></b>. For example, here is
+the recursion tree for a "rod cutting" problem to be discussed in the next section (numbers indicate
+lengths of rods). Notice that not only do lengths repeat, but also that there are entire subtrees
+repeating. It would be redundant to redo the computations in these subtrees. </p> 
+
+<!-- Could click to see Topic-12/Fig-15-3-alt-recursion-tree-annotated.jpg --> 
+<img src="Topic-12/Fig-15-3-alt-recursion-tree.jpg">
+
+<p><b>Dynamic programming <em>solves each subproblem just once, and saves its answer in a
+table</em></b>, to avoid the recomputation. It uses additional memory to save computation time: an
+example of a <b>time-memory tradeoff</b>.</p>
+
+<p>There are many examples of computations that require exponential time without dynamic programming
+but become polynomial with dynamic programming.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Example: Rod Cutting </h2>
+
+<p>This example nicely introduces key points about dynamic programming.</p>
+
+<p>Suppose you get different prices for steel rods of different lengths. Your supplier provides long
+rods; you want to know how to cut the rods into pieces in order to maximize revenue. Each cut is
+free. Rod lengths are always an integral number of length units (let's say they are
+centimeters). </p>
+
+<blockquote>
+<b>Input:</b> A length <i>n</i> and a table of prices <i>p<sub>i</sub></i> for <i>i</i> = 1, 2, ...,
+<i>n</i>. <br> <br>
+<b>Output:</b> The maximum revenue obtainable for rods whose lengths sum to <i>n</i>, computed as
+the sum of the prices for the individual rods.
+</blockquote>
+
+<p>We can choose to cut or not cut at each of the <i>n</i>-1 units of measurement. Therefore one can
+cut a rod in 2<sup><i>n</i>-1</sup> ways. </p>
+
+<p>If <i>p<sub>n</sub></i> is large enough, an optimal solution might require no cuts. </p>
+
+<!-- ------------------------------ -->
+<h3>Example problem instance</h3> 
+
+<img src="Topic-12/cut-rod-8-prices.jpg">
+
+<p>Suppose we have a rod of length 4. There are 2<sup><i>n</i>-1</sup> = 2<sup>3</sup> = 8 ways to
+cut it up (the numbers show the price we get for each length, from the chart above):</p> 
+
+<img src="Topic-12/Fig-15-2-alt-rod-cutting.jpg">
+
+<p>Having enumerated all the solutions, we can see that for a rod of length 4 we get the most
+revenue by dividing it into two units of length 2 each: <i>p</i><sub>2</sub> + <i>p</i><sub>2</sub>
+= 5 + 5 = 10. </p>
+
+<!-- ------------------------------ -->
+<h3> Optimal Substructure of Rod Cutting </h3>
+
+<p>Any optimal solution (other than the solution that makes no cuts) for a rod of length &gt; 2 results in
+at least one subproblem: a piece of length &gt; 1 remaining after the cut. </p>
+
+<p><i>Claim:</i> The optimal solution for
+the overall problem must include an optimal solution for this subproblem.</p>
+
+<p><i>Proof:</i> The proof is a "cut and
+paste" proof by contradiction: if the overall solution did not include an optimal solution for this
+problem, we could cut out the nonoptimal subproblem solution, paste in the optimal subproblem
+solution (which must have greater value), and thereby get a better overall solution, contradicting
+the assumption that the original cut was part of an optimal solution.</p> 
+
+<p>Therefore, rod cutting exhibits <b>optimal substructure: <em>The optimal solution to the original
+problem incorporates optimal solutions to the subproblems, which may be solved
+independently.</em></b> This is a hallmark of problems amenable to dynamic programming. (Not all
+problems have this property.)</p>
+
+<!-- ------------------------------ -->
+<h3> Continuing the example </h3>
+
+<img src="Topic-12/cut-rod-8-prices.jpg" align = "right">
+
+<p>Here is a table of <i>r<sub>i</sub></i>, the maximum revenue for a rod of length <i>i</i>, for
+this problem instance.</p>
+
+<img src="Topic-12/cut-rod-8-manual-solutions.jpg" align="right">
+
+<p>To solve a problem of size 7, find the best solution for subproblems of size 7; 1 and
+6; 2 and 5; or 3 and 4. Each of these subproblems also exhibits optimal substructue.</p>
+
+<p>One of the optimal solutions makes a cut at 3cm, giving two subproblems of lengths 3cm and
+4cm. We need to solve both optimally. The optimal solution for a 3cm rod is no cuts. As we saw
+above, the optimal solution for a 4cm rod involves cutting into 2 pieces, each of length 2cm. These
+subproblem optimal solutions are then used in the solution to the problem of a 7cm rod. </p>
+
+<!-- ------------------------------ -->
+<h3> Quantifying the value of an optimal solution </h3>
+
+<p>The next thing we want to do is write a general expression for the value of an optimal solution
+that captures its recursive structure.</p>
+
+<p> For any rod length <i>n</i>, we can determine the optimal revenues <i>r<sub>n</sub></i> by taking
+the maximum of: </p>
+<ul>
+  <li><i>p<sub>n</sub></i>: the price we get by not making a cut, </li>
+  <li><i>r</i><sub>1</sub> + <i>r</i><sub><i>n</i>-1</sub>: the maximum revenue from a rod of 1cm
+       and a rod of <i>n</i>-1cm, </li> 
+  <li><i>r</i><sub>2</sub> + <i>r</i><sub><i>n</i>-2</sub>: the maximum revenue from a rod of 2cm
+       and a rod of <i>n</i>-2cm, .... </li> 
+  <li> <i>r</i><sub><i>n</i>-1</sub> + <i>r</i><sub>1</sub></li> 
+</ul>
+
+<p>So, <i>r<sub>n</sub></i> = max (<i>p<sub>n</sub></i>, <i>r</i><sub>1</sub> +
+<i>r</i><sub><i>n</i>-1</sub>, <i>r</i><sub>2</sub> + <i>r</i><sub><i>n</i>-2</sub>,
+.... <i>r</i><sub><i>n</i>-1</sub> + <i>r</i><sub>1</sub>). </p>
+
+<p>There is redundancy in this equation: if we have solved for <i>r<sub>i</sub></i> and
+<i>r</i><sub><i>n</i>-<i>i</i></sub>, we don't also have to solve for
+<i>r</i><sub><i>n</i>-<i>i</i></sub> and <i>r<sub>i</sub></i>.</p> 
+
+<h4>A Simpler Decomposition</h4>
+
+<p>Rather than considering all ways to divide the rod in half, leaving two subproblems, consider all ways to cut off the
+first piece of length <i>i</i>, leaving only one subproblem of length <i>n</i> - <i>i</i>:</p>
+
+<img src="Topic-12/equation-cut-rod-decomposition.jpg">
+
+<p>We don't know in advance what the first piece of length <i>i</i> should be, but we do know that
+one of them must be the optimal choice, so we try all of them.</p>
+
+<!-- ------------------------------------ -->
+<h3>Recursive Top-Down Solution</h3>
+
+<p>The above equation leads immediately to a direct recursive implementation (<i>p</i> is the price
+vector; <i>n</i> the problem size): </p>
+
+<img src="Topic-12/code-cut-rod.jpg">
+
+<p>This works but is inefficient. It calls itself repeatedly on subproblems it has already
+solved (circled). Here is the recursion tree for <i>n</i> = 4: </p>
+<!-- ***** Use Fig-15-3-alt-recursion-tree.jpg if you want this to be a quiz question. --> 
+<img src="Topic-12/Fig-15-3-alt-recursion-tree-annotated.jpg">
+
+<p>In fact we can show that the growth is exponential. Let <i>T</i>(<i>n</i>) be the number of calls
+to Cut-Rod with the second parameter = <i>n</i>. </p>
+<img src="Topic-12/recurrence-rod-cutting.jpg">
+
+<p>This has solution 2<sup><i>n</i></sup>. (Use the inductive hypothesis that it holds for <i>j</i>
+&lt; <i>n</i> and then use formula A5 of Cormen et al. for an exponential series.) </p>
+
+<!-- ------------------------------------ -->
+<h3>Dynamic Programming Solutions</h3> 
+
+<p>Dynamic programming arranges to solve each sub-problem just once by saving the solutions in a
+table. There are two approaches.</p>
+
+<h4>Top-down with memoization</h4> 
+<p>Modify the recursive algorithm to store and look up results in a table <i>r</i>. <b>Memoizing</b>
+is remembering what we have computed previously.</p> 
+<img src="Topic-12/code-memoized-cut-rod.jpg">
+<img src="Topic-12/code-memoized-cut-rod-aux.jpg">
+
+<p>The top-down approach has the advantages that it is easy to write given the recursive structure
+of the problem, and only those subproblems that are actually needed will be computed. It has the
+disadvantage of the overhead of recursion.</p>
+
+<h4>Bottom-up</h4> 
+<p>One can also sort the subproblems by "size" (where size is defined according to which problems
+use which other ones as subproblems), and solve the smaller ones first.</p>
+<img src="Topic-12/code-bottom-up-cut-rod.jpg">
+
+<p>The bottom-up approach requires extra thought to ensure we arrange to solve the subproblems
+before they are needed. (Here, the array reference <i>r</i>[<i>j</i> - <i>i</i>] ensures that we
+only reference subproblems smaller than <i>j</i>, the one we are currently working on.)</p>
+
+<p>The bottom-up approach can be more efficient due to the iterative implementation (and with
+careful analysis, unnecessary subproblems can be excluded). </p>
+
+<h4>Asymptotic running time</h4>
+<p>Both the top-down and bottom-up versions run in &Theta;(<i>n</i><sup>2</sup>) time.</p>
+<ul>
+  <li><i>Bottom-up:</i> there are doubly nested loops, and the number of iterations for the inner loop
+      forms an arithmetic series. </li><br>
+
+  <li><i>Top-down:</i> Each subproblem is solved just once. Subproblems are solved for sizes 0, 1,
+      ... <i>n</i>. To solve a subproblem of size <i>n</i>, the <tt>for</tt> loop iterates <i>n</i>
+      times, so over all recursive calls the total number of iterations is an arithmetic
+      series. (This uses aggregate analysis, covered in a later lecture.) </li>
+
+</ul> 
+
+<!-- ------------------------------------ -->
+<h3>Constructing a Solution </h3> 
+
+<p>The above programs return the value of an optimal solution. To construct the solution itself, we
+need to record the choices that led to optimal solutions. Use a table <i>s</i> to record the place
+where the optimal cut was made (compare to Bottom-Up-Cut-Rod): </p>
+<img src="Topic-12/code-extended-bottom-up-cut-rod.jpg">
+
+<p>For our problem, the input data and the tables constructed are:</p>
+<img src="Topic-12/cut-rod-8-prices.jpg">
+<img src="Topic-12/cut-rod-8-computed-solutions.jpg">
+
+<p>We then trace the choices made back through the table <i>s</i> with this procedure:</p>
+<img src="Topic-12/code-print-cut-rod-solution.jpg">
+
+<p>Trace the calls made by <tt>Print-Cut-Rod-Solution(<i>p</i>, 8)</tt>...</p> 
+
+<!-- --------------------------------------------------------------------- -->
+<hr><h2>Four Steps of Problem Solving with Dynamic Programming</h2>
+
+<p>In general, we follow these steps when solving a problem with dynamic programming:</p>
+
+<ol>
+  <li><b>Characterize the structure of an optimal solution</b>:
+      <ul>
+        <li>How are optimal solutions composed of optimal solutions to subproblems?</li>
+        <li>Assume you have an optimal solution and show how it must decompose</li> 
+        <li>Sometimes it is useful to write a brute force solution, observe its redunancies, and
+            characterize a more refined solution</li> 
+        <li>e.g., our observation that a cut produces one to two smaller rods that can be solved
+            optimally</li> 
+      </ul>
+  </li> <br>
+  
+  <li><b>Recursively define the value of an optimal solution</b>:
+      <img src="Topic-12/equation-cut-rod-decomposition.jpg" align="right">
+      <ul>
+        <li>Write a recursive cost function that reflects the above structure</li>
+        <li>e.g., the recurrence relation shown</li> 
+      </ul>
+  </li><br>
+  
+  <li><b>Compute the value of an optimal solution</b>:
+      <ul><li>Write code to compute the recursive values, memoizing or solving smaller problems
+              first to avoid redundant computation</li>
+          <li>e.g., <tt>Bottom-Up-Cut-Rod</tt> </li> 
+      </ul>
+  </li><br>
+  
+  <li><b>Construct an optimal solution from the computed information</b>:
+      <ul>
+        <li>Augment the code as needed to record the structure of the solution</li>
+        <li>e.g., <tt>Extended-Bottom-Up-Cut-Rod</tt> and <tt>Print-Cut-Rod-Solution</tt> </li> 
+      </ul>
+  </li> 
+</ol>
+
+<p>The steps are illustrated in the next example.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Example: Longest Common Subsequence </h2>
+
+<p>A <b>subsequence</b> of sequence <i>S</i> leaves out zero or more elements but preserves
+order.</p>
+
+<p><i>Z</i> is a <b> common subsequence </b> of <i>X</i> and <i>Y</i> if <i>Z</i> is a subsequence
+of both <i>X</i> and <i>Y</i>.<br>
+<i>Z</i> is a <b>longest common subsequence</b> if it is a
+subsequence of maximal length.</p>
+
+<!-- ----------------- --> 
+<h3>The LCS Problem</h3>
+
+<p>Given two sequences
+<i>X</i> = &lang; <i>x</i><sub>1</sub>, ..., <i>x</i><sub><i>m</i></sub>
+&rang; and
+<i>Y</i> = &lang; <i>y</i><sub>1</sub>, ..., <i>y</i><sub><i>n</i></sub>
+&rang;, find a subsequence common to both whose length is longest. Solutions to this problem have
+applications to DNA analysis in bioinformatics. The analysis of optimal substructure is elegant.</p> 
+
+<h4>Examples</h4>
+<img src ="Topic-12/LCS-examples.jpg">
+
+<!-- ------------------------------------ -->
+<h3>Brute Force Algorithm </h3> 
+
+<p>For every subsequence of <i>X</i> = &lang; <i>x</i><sub>1</sub>, ..., <i>x</i><sub><i>m</i></sub>
+&rang;, check whether it is a subsequence of <i>Y</i> = &lang; <i>y</i><sub>1</sub>, ...,
+<i>y</i><sub><i>n</i></sub> &rang;, and record it if it is longer than the longest previously
+found.</p>
+
+<ul>
+  <li>There are 2<sup><i>m</i></sup> subsequences of <i>X</i> to check. </li>
+  <li>For each subsequence, scan <i>Y</i> for the first letter. From there scan for the second letter,
+  etc., up to the <i>n</i> letters of <i>Y</i>. </li>
+  <li> Therefore, &Theta;(<i>n</i>2<sup><i>m</i></sup>). 
+</ul> 
+
+<p>This involves a lot of redundant work.</p>
+<ul>
+  <li>If a subsequence <i>Z</i> of <i>X</i> fails to match <i>Y</i>, then any subsequence having
+      <i>Z</i> as a prefix will also fail. </li>
+  <li>If a subsequence <i>Z</i> of <i>X</i> matches <i>Y</i>, then there is no need to check
+      prefixes of <i>Z</i>. </li>
+</ul> 
+
+<p>Many problems to which dynamic programming applies have exponential brute force solutions that
+can be improved on by exploiting redundancy in subproblem solutions.</p>
+
+<!-- -------------------------- --> 
+<h3>Step 1. Optimal Substructure of LCS</h3>
+
+<p>The first step is to characterize the structure of an optimal solution, hopefully to show it
+exhibits optiomal stubstructure. </p>
+
+<p>Often when solving a problem we start with what is known and then figure out how to contruct a
+solution. The optimal substructure analysis takes the reverse strategy: <u> <em>assume</em> you have
+found an optional solution</u> (Z below) <u>and figure out what you must have done to get it</u>!</p>
+
+<p>Notation:</p>
+<ul> 
+  <li><i>X<sub>i</sub></i> = prefix &lang; <i>x</i><sub>1</sub>, ..., <i>x</i><sub><i>i</i></sub>
+      &rang;</li>  
+  <li><i>Y<sub>i</sub></i> = prefix &lang; <i>y</i><sub>1</sub>, ..., <i>y</i><sub><i>i</i></sub>
+      &rang;</li> 
+</ul>
+
+<p><b><i>Theorem:</i> </b>
+Let <i>Z</i> = &lang; <i>z</i><sub>1</sub>, ..., <i>z</i><sub><i>k</i></sub> &rang; be any LCS of
+<i>X</i> = &lang; <i>x</i><sub>1</sub>, ..., <i>x</i><sub><i>m</i></sub>
+&rang; and <i>Y</i>  = &lang; <i>y</i><sub>1</sub>, ..., <i>y</i><sub><i>n</i></sub>
+&rang;. Then </p>
+<ol>
+  <li>If <i>x<sub>m</sub></i> = <i>y<sub>n</sub></i>,
+      then <i>z<sub>k</sub></i> = <i>x<sub>m</sub></i> = <i>y<sub>n</sub></i>,
+      and <i>Z</i><sub><i>k</i>-1</sub> is an LCS of <i>X</i><sub><i>m</i>-1</sub>
+      and <i>Y</i><sub><i>n</i>-1</sub>.</li>
+  <li>If <i>x<sub>m</sub></i> &ne; <i>y<sub>n</sub></i>,
+      then <i>z<sub>k</sub></i> &ne; <i>x<sub>m</sub></i> &rArr;
+      <i>Z</i> is an LCS of <i>X</i><sub><i>m</i>-1</sub> and <i>Y</i>. </li>
+  <li>If <i>x<sub>m</sub></i> &ne; <i>y<sub>n</sub></i>,
+      then <i>z<sub>k</sub></i> &ne; <i>y<sub>n</sub></i> &rArr;
+      <i>Z</i> is an LCS of <i>X</i> and <i>Y</i><sub><i>n</i>-1</sub>. </li>
+</ol>
+
+<p><i>Sketch of proofs:</i></p> 
+
+<p>(1) can be proven by contradiction: if the last characters of <i>X</i> and <i>Y</i> are not
+included in <i>Z</i>, then a longer LCS can be constructed by adding this character to <i>Z</i>, a
+contradiction.</p>
+
+<p>(2) and (3) have symmetric proofs: Suppose there exists a subsequence <i>W</i> of
+<i>X</i><sub><i>m</i>-1</sub> and <i>Y</i> (or of <i>X</i> and <i>Y</i><sub><i>n</i>-1</sub>) with
+length &gt; <i>k</i>. Then <i>W</i> is a common subsequence of <i>X</i> and <i>Y</i>, contradicting
+<i>Z</i> being an LCS.
+
+<p>Therefore, <b>an LCS of two sequences contains as prefix an LCS of prefixes of the sequences.</b>
+We can now use this fact construct a recursive formula for the value of an LCS.</p>
+
+<!-- ------------------------------------ -->
+<h3>Step 2. Recursive Formulation of Value of LCS</h3> 
+
+<p>Let <i>c</i>[<i>i</i>, <i>j</i>] be the length of the LCS of prefixes <i>X<sub>i</sub></i> and
+<i>Y<sub>j</sub></i>. The above recursive substructure leads to the definition of <i>c</i>:  </p>
+
+<img src="Topic-12/LCS-recursive-formulation.jpg">
+
+<p>We want to find <i>c</i>[<i>m</i>, <i>n</i>]. </p>
+
+<!-- ------------------------------------ -->
+<h3>Step 3. Compute Value of Optimal Solution to LCS</h3> 
+
+<p>A recursive algorithm based on this formulation would have lots of repeated subproblems, for
+example, on strings of length 4 and 3:</p> 
+
+<img src="Topic-12/LCS-4-3-recurrence-tree.jpg">
+
+<p><img src="Topic-12/LCS-recursive-formulation.jpg" align="right" border="1">
+Dynamic programming avoids the redundant computations by storing the results in a table. We use
+<i>c</i>[<i>i</i>,<i>j</i>] for the length of the LCS of prefixes <i>X<sub>i</sub></i> and
+<i>Y<sub>j</sub></i> (hence it must start at 0). (<i>b</i> is part of the third step and is
+explained next section.)</p>
+
+<p>Try to find the correspondence betweeen the code below and the recursive definition shown in the
+box above.</p>
+
+<img src="Topic-12/code-LCS-length.jpg">
+
+<p>This is a bottom-up solution: Indices <i>i</i> and <i>j</i> increase through the loops, and
+references to <i>c</i> always involve either <i>i</i>-1 or <i>j</i>-1, so the needed subproblems
+have already been computed.</p>
+
+<p>It is clearly <b>&Theta;(<i>m</i><i>n</i>)</b>; <u>much better than
+&Theta;(<i>n</i>2<sup><i>m</i></sup>)</u>!  </p>
+
+<!-- ------------------------------------ -->
+<h3>Step 4. Construct an Optimal Solution to LCS</h3>
+
+<p>In the process of computing the <em>value</em> of the optimal solution we can also record the
+<em>choices</em> that led to this solution. Step 4 is to add this latter record of choices and a way
+of recovering the optimal solution at the end.</p>
+
+<p>Table <i>b</i>[<i>i</i>, <i>j</i>] is updated above to remember whether each entry is</p>
+<ul>
+  <li> a common substring of <i>X</i><sub><i>i</i>-1</sub> and <i>Y</i><sub><i>j</i>-1</sub>
+       (diagonal arrow), in which case the common character <i>x<sub>i</sub></i> =
+       <i>y<sub>j</sub></i> is included in the LCS;</li>
+  <li> a common substring of <i>X</i><sub><i>i</i>-1</sub> and <i>Y</i> (&uarr;); or</li>
+  <li> a common substring of <i>X</i> and <i>Y</i><sub><i>j</i>-1</sub> (&larr;).</li>
+</ul> 
+
+<p>We reconstruct the path by calling Print-LCS(<i>b</i>, <i>X</i>, <i>n</i>, <i>m</i>) and
+following the arrows, printing out characters of <i>X</i> that correspond to the diagonal
+arrows (a &Theta;(<i>n</i> + <i>m</i>) traversal from the lower right of the matrix to the
+origin):</p> 
+
+<img src="Topic-12/code-print-LCS.jpg">
+
+<!-- ------------------------------------ -->
+<h3>Example of LCS</h3> 
+
+<p>What do "spanking" and "amputation" have in common?</p>
+
+<img src="Topic-12/LCS-spanking-amputation.jpg">
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Other Applications </h2>
+
+<p>Two other applications are covered in the Cormen et al. text, and many others in the Problems at
+the end of the chapter. I omit them to keep this lecture from being too long, and trust that the
+student will read them in the text.</p>
+
+<h3>Optimizing Matrix-Chain Multiplication </h3>
+
+<p>Many scientific and business applications involve multiplication of chains of matrices &lang;
+A<sub>1</sub>, A<sub>2</sub>, A<sub>3</sub>, ... A<sub><i>n</i></sub> &rang;. Since matrix
+multiplication is associative, the matrices can be multiplied with their neighbors in this sequence
+in any order. The order chosen can have a huge difference in the number of multiplications
+required. For example suppose you have A, a 2x100 matrix, B (100x100) and C (100x20). To compute
+A*B*C: </p> 
+<blockquote>
+(A*B) requires 2*100*100 = 20000 multiplications, and results in a 2x100 matrix. Then you need to multiply by C: 2*100*20 = 4000 multiplications, for a total of 24,000 multiplications (and a 2x20 result). 
+</blockquote>
+<blockquote>
+(B*C) requires 100x100x20 = 200000 multiplications, and results in a 100x20 matrix. Then you need to multiply by A: 2*100*20 = 4000 multiplications, for a total of 204,000 multiplications (and the same 2x20 result). 
+</blockquote>
+<p>The Matrix-Chain Multiplication problem is to determine the optimal order of
+multiplications (<em>not</em> to actually do the multiplications). For three matrices I was able to
+figure out the best sequence by hand, but some problems in science, business and other areas involve
+many matrices, and the number of combinations to be checked grows exponentially.</p>
+
+<p>Planning matrix multiplication is perhaps the most "canonical" example of dynamic programming: it
+is used in most introductory presentations. I chose to present LCS instead because matrix
+multiplication optimization will be built into turnkey software, and current students will more
+likely be interested in bioinformatics applications </p>
+
+<h3> Optimal Binary Search Tree </h3>
+
+<p>We saw in <a href="Topic-08.html">Topic 8</a> that an unfortunate order of insertions of keys
+into a binary search tree (BST) can result in poor performance (e.g., linear in <i>n</i>). If we
+know all the keys in advance and also the probability that they will be searched, we can optimize
+the construction of the BST to minimize search time in the aggregate over a series of queries. An
+example application is when we want to construct a dictionary from a set of terms that are known in
+advance along with their frequency in the language. The reader need only try problem 15.5-2 from the
+Cormen et al. text (manual simulation of the algorithm) to appreciate why we want to leave this
+tedium to computers! </p>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Further Observations Concerning Optimal Substructure </h2>
+
+<p> To use dynamic programming, we must show that any optimal solution involves making a choice that
+leaves one or more subproblems to solve, and the solutions to the subproblems used within the
+optimal solution must themselves be optimal.</p>
+
+<h3>The optimal choice is not known before solving the subproblems</h3>
+
+<p> We may not know what that first choice is. Consequently:</p>
+<ul>
+
+  <li> To show that there is optimal substructure, we suppose that the choice has been made, and
+       show that the subproblems that result must also be solved optimally. This argument is often
+       made using a cut-and-paste proof by contradiction.</li>
+
+  <li> Then when writing the code, we must ensure that enough potential choices and hence their
+       supbproblems are considered that we find the optimal first choice. This usually shows up as 
+       iteration in which we find the maximum or minimum according to some objective function across
+       all choices.</p> 
+
+</ul> 
+
+<h3>Optimal substructure varies across problem domains:</h3>
+
+<p>How many subproblems are used in an optimal solution may vary: </p> 
+<ul>
+  <li>Rod Cutting: 1 subproblem (of size <i>n</i> - <i>i</i>)</li>
+  <li>LCS: 1 subproblem (LCS of the prefix sequence(s).) </li>
+  <li>Optimal BST: 2 subproblems (given <i>k<sub>r</sub></i> has been chosen as the root,
+      <i>k<sub>i</sub></i> ..., <i>k</i><sub><i>r</i>-1</sub> 
+      and <i>k</i><sub><i>r</i>+1</sub> ..., <i>k<sub>j</sub></i>) </li> 
+</ul> 
+
+<p>How many choices in determining which subproblem(s) to use may vary:</p> 
+<ul>
+  <li>Rod cutting: <i>n</i> choices (for each value of <i>i</i>)</li>
+  <li>LCS: Either 1 choice (if <i>x<sub>i</sub></i> = <i>y<sub>j</sub></i>, take LCS of
+      <i>X</i><sub><i>i</i>-1</sub> and <i>Y</i><sub><i>j</i>-1</sub>), or 2 choices (if
+      <i>x<sub>i</sub></i> &ne; <i>y<sub>j</sub></i>, check both LCS of
+      <i>X</i><sub><i>i</i>-1</sub> and <i>Y</i>, and LCS of <i>X</i> and
+      <i>Y</i><sub><i>j</i>-1</sub>)</li>
+  <li>Optimal BST: <i>j</i> - <i>i</i> + 1 choices for the root <i>k<sub>r</sub></i> in
+      <i>k<sub>i</sub></i> ..., <i>k<sub>j</sub></i>: see text.</li> 
+</ul>
+
+<p>Informally, running time depends on (# of subproblems overall) x (# of choices). 
+<ul>
+  <li>Rod Cutting: &Theta;(<i>n</i>) subproblems overall, &le; <i>n</i> choices for each
+      &rArr; O(<i>n</i><sup>2</sup>) running time.</li> 
+  <li>LCS: &Theta;(<i>m</i><i>n</i>) subproblems overall; &le; 2 choices for each
+      &rArr; O(<i>m</i><i>n</i>) running time.</li>
+  <li>Optimal BST: &Theta;(<i>n</i><sup>2</sup>) subproblems overall; O(<i>n</i>) choices for
+      each &rArr; O(<i>n</i><sup>3</sup>) running time. </li> 
+</ul> 
+
+<p>(We'll have a better understanding of "overall" when we cover amortized analysis.)</p> 
+
+<h3>Not all optimization problems have optimal substructure</h3>
+
+<img src="Topic-12/shortest-path-optimal-substructure.jpg" align="right">
+
+<p>When we study graphs, we'll see that finding the <b>shortest path</b> between two vertices in a
+graph has optimal substructure: if <i>p</i> = <i>p</i><sub>1</sub> + <i>p</i><sub>2</sub> is a
+shortest path between <i>u</i> and <i>v</i> then <i>p</i><sub>1</sub> must be a shortest path
+between <i>u</i> and <i>w</i> (etc.). Proof by cut and paste. </p>
+
+<p>But finding the <b>longest simple path</b> (the longest path not repeating any edges) between two
+vertices is not likely to have optimal substructure. </p>
+
+<img src="Topic-12/longest-path-nonoptimal-substructure.jpg" align = "right"> 
+<p> For example, <i>q</i> &rarr; <i>s</i> &rarr; <i>t</i> &rarr; <i>r</i> is
+the longest simple path from <i>q</i> to <i>r</i>, but <i>q</i> &rarr; <i>s</i> is not the longest
+simple path for the supbproblem from <i>q</i> to <i>s</i>, so it does not exhibit optimal
+substructure. Also, if we try to compose optimal solutions <i>q</i> &rarr; <i>s</i> &rarr; <i>t</i>
+&rarr; <i>r</i> and <i>r</i> &rarr; <i>q</i> &rarr; <i>s</i>&rarr;
+<i>t</i> to get a longest simple path from <i>r</i> to <i>t</i>, the composed path is not even
+legal: the criterion of simplicity is violated. </p>
+
+<p> Dynamic programming requires <em>overlapping</em> yet <em>independently solveable</em>
+subproblems.</p> 
+
+<p> Longest simple path is NP-complete, a topic we will cover at the end of the semester, so is
+unlikely to have any efficient solution.</p> 
+
+<h3>Dynamic programming uses optimal substructure bottom up</h3>
+
+<p>Although we wrote the code both ways, in terms of the order in which solutions are found, dynamic
+programming <em>first</em> finds optimal solutions to subproblems and <em>then</em> choses which to
+use in an optimal solution to the problem. It applies when one cannot make the top level choice
+until subproblem solutions are known. </p>
+
+<p>In <a href="Topic-13.html">Topic 13</a>, we'll see that <b> greedy algorithms</b> work top down:
+<em>first</em> make a choice that looks best, <em>then</em> solve the resulting subproblem. Greedy
+algorithms apply when one can make the top level choice without knowing how subproblems will be
+solved.</p>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Summary </h2>
+
+<p>Dynamic Programming applies when the problem has these characteristics:</p>
+
+<dl>
+  <dt><b>Recursive Decomposition</b></dt>
+  <dd>The problem has recursive structure: it breaks down into smaller problems of the same type.
+      <i>This characterisic is shared with divide and conquer, but dynamic programming is
+      distinguished from divide and conquer by the next item.</i></dd> 
+  <dt><b>Overlapping Subproblems</b></dt>
+  <dd>The subproblems solved by a recursive solution overlap (the same subproblems are revisited
+      more than once). <i>This means we can save time by preventing the redundant
+      computations.</i></dd> 
+  <dt><b>Optimal Substructure</b></dt>
+  <dd>Any optimal solution involves making a choice that leaves one or more subproblems to solve,
+      and the solutions to the subproblems used within the optimal solution must themselves be
+      optimal. <i>This means that optimized recursive solutions can be used to construct optimized
+      larger solutions.</i></dd> <br>
+</dl> 
+
+<p>Dynamic programming can be approached top-down or bottom-up:</p>
+<dl>
+  
+  <dt><b>Top-Down with memoization:</b></dt>
+  <dd>Write a recursive procedure to solve the problem, computing
+  subproblems as needed. Each time a sub-problem is encountered, see whether you have stored it in a
+  table, and if not, solve it and store the solution.</dd><br>
+  
+  <dt><b>Bottom-Up:</b></dt>
+  <dd>Order the subproblems such that "smaller" problems are solved first, so their
+  solutions are available in the table before "larger" problems need them. (This ordering need not
+  be based on literal size.) </dd>
+  
+</dl>
+
+<p>Both have the same asympotic running time. The top-down procedure has the overhead of recursion,
+but computes only the subproblems that are actually needed. Bottom-up is used the most in
+practice.</p>
+
+<p>We problem solve with dynamic programming in four steps:</p>
+<ol>
+  <li><b>Characterize the structure of an optimal solution</b>:
+      <ul>
+        <li>How are optimal solutions composed of optimal solutions to subproblems?</li>
+      </ul>
+  </li> 
+  
+  <li><b>Recursively define the value of an optimal solution</b>:
+      <ul>
+        <li>Write a recursive cost function that reflects the above structure</li>
+      </ul>
+  </li>
+  
+  <li><b>Compute the value of an optimal solution</b>:
+      <ul><li>Write code to compute the recursive values, memoizing or solving smaller problems
+              first to avoid redundant computation</li>
+      </ul>
+  </li>
+  
+  <li><b>Construct an optimal solution from the computed information</b>:
+      <ul>
+        <li>Augment the code as needed to record the structure of the solution</li>
+      </ul>
+  </li> 
+</ol>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Wrapup</h2>
+
+<p>There is an online presentation focusing on LCS at
+<a href="http://www.csanimated.com/animation.php?t=Dynamic_programming">
+http://www.csanimated.com/animation.php?t=Dynamic_programming</a>.</p> 
+
+<p>In the next Topic 13 we look at a related optimization strategy: greedy algorithms. </p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Mon Mar  9 14:18:37 HST 2015 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition.</br> 
+</body>
+</html>

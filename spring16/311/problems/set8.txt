@@ -1,0 +1,108 @@
+                                                            Adam Butac
+                                                            03.29.16
+                                                            ICS 311
+
+                            Problem Set 8
+-----------------------------------------------------------------------
+
+#1. Peer Credit Assignment
+
+    2 Minchul Song
+    2 April Rose De Vera
+    2 Chris Yeager
+
+#2. DFS and Cycles (8)
+    
+    (a)
+        Adding an else if to the else clause at line 5 that checks
+        for the condition u.color == GRAY would allow the code to
+        check for back edges. We know that if a node is not WHITE
+        it has been visited, and if it is BLACK it must not be an
+        ancestor of the current node. Therefore, if it is GRAY it
+        must both be an ancestor and have a back-edge to it.
+
+    (b)
+        If there is a back edge, then there must also be a cycle.
+
+    (c)
+        The asymtotic runtime would be the same as the runetime before 
+        it was changed. O(|E|)
+
+    (d)
+        An undirected graph is the same as a directed graph that has a
+        back edge for each forward edge to a node. Therefore, there would be 
+        twice the number of edges in an equivelant undirected graph.
+
+        O(2|E|) = O(|E|)
+        
+
+#3. Bottom-Up Longest-Paths (8)
+
+    Longest-Path-Memoized(G, u, t, dist[], next[1..|V|])
+        if u = t
+            return 0
+        if dist[u] > -inf
+            return dist[u] 
+        else
+            for each v in G.Adj[u]
+                alt = w(u,v) + Longest-Path-Memoized(G, v, t, dist, next) 
+                if dist[u] < alt
+                    dist[u] = alt
+                    next[u] = v
+            return dist[u]
+ 
+    (a)
+        Longest-Path-Bottom-Up(G, u, t, dist[], next[1.. |V|])
+            sorted = topological-sort(G)
+        
+            return 
+
+#4. Counting Simple Paths in a DAG (8)
+
+    (a) 
+        Count-Simple-Paths(G,s,t)
+            count = 0  
+        
+            if s == t
+                return 1
+            if G.Adj[s] is empty
+                return 0 
+            for each v in G.Adj[s]
+                count = count + Count-Simple-Paths(G,v,t)                
+            return count
+
+    (b)
+        It works by iterating over every adjacent node until
+        there are no adjacent nodes, or t is found.
+
+        When node t is found, Count-Simple-Paths(G,s,t) will return
+        1, and count is incremented.
+        Otherwise, t was not found so no path was found, and 0 is returned.
+
+        Once all adjacent nodes have been visited count is equal
+        to the number of simple paths from s to t.
+ 
+    (c)
+        Since it iterates over every vertex between s and t
+        we know that runtime must be 
+        O(|V| + |E|)
+
+#5. Bad Networks (8)
+        
+    (a)
+        Using the code from #4...
+    
+        Bad-Networki-Memoized(G)
+        1   mem = 2D Array of sufficent size initialized with null elements
+        2   for s in G
+        3       for t in G
+        4           if mem[s][t] == null and mem[t][s] == null
+        5               mem[s][t] = Count-Simple-Paths(G,s,t)
+        6               if mem[s][t] <= 1
+        7                   print "$s to $t is a bad network!"
+    
+    (b)
+        The code uses nested loops to iterate over every node, and
+        comparing it with every node in the graph. By storing the result in
+        an a 2D array, nodes that have already been compared with each other are
+        not compared again. 

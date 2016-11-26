@@ -1,0 +1,152 @@
+                                                            Adam Butac
+                                                            02.02.16
+                                                            ICS 311
+
+                            Problem Set 2
+-----------------------------------------------------------------------
+
+#1. Peer Credit Assignment
+    
+    Azad    2
+    Sean    3
+    Minchul 1
+
+#2. Proofs of Asymptotic Bounds 
+
+(a) Show that the function f(n) = n^2 - n is Theta(n2).
+    
+        f(n) = Θ(g(n)) iff ∃ positive constants c1, c2, and n0 such that 0 ≤ c1g(n) ≤ f(n) ≤ c2g(n)∀ n ≥ n0
+
+        where f(n) = n^2 - n and g(n) = n^2.        
+
+        n^2 - n = Θ(n^2), with c1 = 1/2, and c2 = 2, and n0 = 1.
+        
+        0  ≤  (1/2)*n^2  ≤  n^2 - n  ≤  2n^2   for all n ≥ n0 
+
+        
+(b) "little o": Consider the following proposed proof that 3n^2 + n = o(n^2)
+        Let c=4, n0 = 2.
+        Then 3n^2 + n < 4n^2 = 3n^2 + n^2, for all n >= n0, since n < n^2 for all n > 1 
+We showed strict inequality. Is this a correct little-o proof? Why or why not?
+        
+        At first, this looks correct. The logic seems to be correct.
+        However, c is not defined for all constants c > 0, which is required
+        by the definition of "little o". Instead, c is chosen to be 4 and
+        only 4 in this proof.
+
+        o(g(n)) = {f(n) : ∀ constants c > 0, ∃ constant n0 > 0 such that 0 ≤ f(n) < cg(n) ∀ n ≥ n0}. 
+
+#3. 
+
+    Suppose there is a stack named stack.   
+
+    printBinaryTreeNodes(TreeNode root){
+        count := 0
+
+        while root != NIL then
+            print root.key
+            stack push root
+            count := count + 1
+            root := root.left
+
+            if root = NIL and count > 0 then
+                root := stack pop
+                root := root.right
+    }
+
+#4. 
+
+(a) 
+    Because we are adding to the end of s1 it will take O(n) time, since
+    adding to the end of a singly linked list takes O(n) time.
+   
+    If instead we were modifying s2, we could then add the end of s1 to the
+    beginning of s2 which would take O(1).
+(b) 
+    Assume instance variables of LinkedList L and int top 
+    Assume instance variable of ListNode tail
+
+    Stack()
+        top = 0
+        tail = NIL
+
+    push(Object o)
+        L.add(o)
+
+        if isEmpty() 
+            tail = o
+
+        top = top + 1
+
+
+    pop()
+        if isEmpty()
+            error "stack underflow"
+        else
+            Object o = L.remove(0)
+            top = top - 1
+            return o
+
+    boolean isEmpty()
+        if top == 0
+            return TRUE
+        else
+            return FALSE
+
+    isEmpty()
+        if top == 0
+            return TRUE
+        else
+            return FALSE 
+
+    top()
+        return L.get(0)
+
+(c) 
+    catenate(Stack s)
+        if isEmpty()
+            error "stack underflow"   
+        else
+            tail.next = s.get(0)
+
+#5.
+
+(a)
+    1. The cost of sorting k itmes with InsertionSort is Θ(k^2).
+    2. To sort n/k sublists we must do Θ(k^2) n/k times.
+    3. n/k * Θ(k^2) = Θ((nk^2)/k) = Θ(nk)
+
+(b)
+    
+    where N = n/k                                  Elements merged at each level
+                                 cN                0
+                           /           \             
+                        cN/2           cN/2        2 
+                     /      \        /      \       
+                    cN/4   cN/4   cN/4      cN/4   4 
+                    |       |        |        |      
+                    |       |        |        |      
+                    |       |        |        |      
+                    c       c        c        c ...2^(floor(log(N)) 
+
+    Θ(n lg(N)) = Θ(n(lg(n/k))
+
+(c)
+    We want Θ(n lg(n/k) + nk) to have the same runtime as n lg(n)
+
+    nk is the limiting factor in this equation. 
+    k must be less than n, otherwise we will be bound by Θ(n^2)
+    
+    So as long as k < n, nk < n^2.
+
+    And so, Θ(n lg(n/k) + nk) = Θ(n lg(n))
+
+(d)
+
+    In practice, I think testing would need to be done in order to
+    find an optimal value of k to use. More likely, a range of values
+    for k would be considered optimal.
+
+    I would start with k being some fraction of n, such as k = n/2,
+    increasing or decreasing by half of the last step until an
+    optimal range was found.

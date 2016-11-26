@@ -1,0 +1,504 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #20: Maximum Flow </title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #20: Maximum Flow </h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+<ol>
+  <li>Flow Networks and Maximum Flow Problem </li>
+  <li>Ford Fulkerson Method and Concepts</li>
+  <li>Ford Fulkerson Algorithm</li>
+  <li>Edmonds-Karp Algorithm (FF on a leash)</li>
+  <li>Maximum Bipartite Matching</li>
+</ol>
+
+
+<h2>Readings and Screencasts</h2>
+<ul>
+  <li>CLRS Sections 26.1-26.3 (we won't emphasize the proofs).</li>
+  <li>Screencasts:
+      <a href="http://youtu.be/3Q0IJgyuVEM">20 A</a> Introduction to Maximum Flow Problem; 
+      <a href="http://youtu.be/TDO4dwq4fKI">20 B</a> Residual graphs, augmenting flows, and the min
+  cut max flow theorem; and 
+      <a href="http://youtu.be/TTFOk0miZ6k">20 C</a> Flow Algorithms and Application. 
+  </li>
+</ul> 
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Flow Networks and Maximum Flow Problem  </h2>
+
+<p>Many problems involve modeling flow through networks, to maximize flow or look for
+vulnerabilities. These include liquids flowing through pipes, materials moving through
+transportation networks, and communication networks. </p>
+
+<p>Flow algorithms also have applications to problems that don't look like flow, such as
+scheduling.</p> 
+
+<!-- ------------------ -->
+<h3>Flow Networks </h3> 
+
+<p>A <b>flow network</b> is a directed graph <i>G</i> = (<i>V</i>, <i>E</i>) where each edge
+(<i>u</i>, <i>v</i>) has a <b>capacity</b> <i>c</i>(<i>u</i>, <i>v</i>) &ge; 0, and: </p>
+<ul>
+  <li>If (<i>u</i>, <i>v</i>) &notin; <i>E</i> then <i>c</i>(<i>u</i>, <i>v</i>) = 0.</li>
+  <li>If (<i>u</i>, <i>v</i>) &in; <i>E</i> then reverse edge (<i>v</i>, <i>u</i>) &notin;
+      <i>E</i>. [*]</li>
+  <li>A vertex <i>s</i> is designated as the <b>source vertex</b>.</li>
+  <li>A vertex <i>t</i> is designated as the <b>sink vertex</b> (or <i>t</i> for "target").</li> 
+</ul> 
+<p>Comments: </p>
+<ul>  
+  <li>[*] Can work around this restriction. <small>(Also, some authors <em>require</em> that
+     (<i>v</i>, <i>u</i>) &in; <i>E</i>, but this is because they are using <i>G</i> simultaneously
+     for what we will do with two graphs.</small>)</li>
+  <li> We assume that each vertex <i>v</i> lies on a path from source <i>s</i> to sink
+     <i>t</i>. (A <i>v</i> that does not will not participate in any flow, so can be ignored.) </li>
+</ul> 
+
+<p>A simple example: the trucking capacity network:</p>
+<img src="Topic-20/Fig-26-1-a-Flow-Network.jpg">
+
+<!-- ------------------ -->
+<h3>Flow <small>(Not Csikszentmihalyi's!)</small> </h3> 
+
+<p>A <b>flow</b> for a network is a function <i>f</i> : <i>V</i> x
+<i>V</i> &rarr; <big>&real;</big> <em>
+(that is, <i>f</i> assigns numbers to edges)</em> satisfying: </p>
+
+<ul>
+  <li><b>Capacity Constraint</b>: &forall; <i>u</i>, <i>v</i> &in; <i>V</i>,&nbsp;  0 &nbsp;  &le; 
+      &nbsp;  <i>f</i>(<i>u</i>, <i>v</i>) &nbsp;  &le; &nbsp; <i>c</i>(<i>u</i>,
+      <i>v</i>). <br>
+       <em>(Can't push more over an edge than its capacity.)</em> </li> <br>
+       
+  <li><b>Flow Conservation</b>:  &forall; <i>u</i> &in; <i>V</i> - {<i>s</i>, <i>t</i>},<br>
+      <img src="Topic-20/equation-flow-conservation.jpg"><br>
+      <em>(Flow into a vertex must equal flow out of it, except for the source and sink.)</em></li>
+</ul>
+  
+<p>Example with flow/capacity:</p>
+<img src="Topic-20/Fig-26-1-b-Flow.jpg">
+
+<p><i>Let's check flow conservation in this network. 
+Also, are we making maximum use of the network? How can we improve it?</i></p>
+
+<h4>Value of Flow</h4>
+<p>The value of flow <i>f</i> = |<i>f</i>| is the flow out of source minus the flow into the
+source:</p>
+<img src="Topic-20/equation-flow-value.jpg">
+<p><i>What is the value of flow in the example above?</i> </p> 
+
+<!-- ------------------ -->
+<h3> Excluded Variations </h3> 
+
+<p>Our formulation disallows <b>anti-parallel edges:</b> </p>
+<a href="Topic-20/Removing-Anti-Parallel-Edges.html"><img
+src="Topic-20/Fig-26-2-a-Antiparallel-Edges.jpg"></a> 
+
+<p>Fortunately they are easy to eliminate. <i>How would you do it? Why not just
+subtract 4 from 10 to get 6? Click on image to see an alternate solution.</i></p>
+
+
+<p>We also require that there be a single source and sink. We can easily convert networks with
+multiple sources and sinks:</p> 
+<img src="Topic-20/Fig-26-3-Conversion-to-Single-Source-Sink.jpg">
+
+<!-- ------------------ -->
+<h3>Maximum Flow Problem </h3> 
+<p>Given <i>G</i>, <i>s</i>, <i>t</i>, and <i>c</i>, find a flow <i>f</i> whose value is
+maximum.</p> 
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Cuts and Flow </h2> 
+
+<p>We take a brief diversion into some relevant graph theory.</p>
+
+<p>A <b>cut</b> (<i>S</i>, <i>T</i>) of a flow network <i>G</i> = (<i>V</i>, <i>E</i>) is a
+partition of <i>V</i> into <i>S</i> and <i>T</i> = <i>V</i> - <i>S</i> such that <i>s</i> &in;
+<i>S</i> and <i>t</i> &in; <i>T</i>. </p>
+
+<img src="Topic-20/Fig-26-5-Cut-Example.jpg" align="right">
+<p>Here is an example of a cut:</p>
+
+<p>The <b>net flow</b> across cut (<i>S</i>, <i>T</i>) for flow <i>f</i> is:</p>
+<img src="Topic-20/equation-flow-across-cut.jpg">
+
+<p>The <b>capacity</b> of cut (<i>S</i>, <i>T</i>) is: </p>
+<img src="Topic-20/equation-cut-capacity.jpg">
+<p><i>What is the net flow for the cut in this example? The capacity?</i></p> 
+
+<p>Note the <b><i>assymetry between net flow and capacity of cut</i></b>: For capacity, count only
+edges going from <i>S</i> to <i>T</i>, ignoring those in reverse direction. For net flow, count flow
+on all edges across the cut: flow on edges from <i>S</i> to <i>T</i> minus flow on edges from
+<i>T</i> to <i>S</i>. <i>Why does this assymetry make sense?</i></p>
+
+<!-- ------------------ -->
+<h3> Examples </h3>
+
+<p>Consider the cut <i>S</i> = {<i>s</i>, <i>w</i>, <i>y</i>}, <i>T</i> = {<i>x</i>, <i>z</i>,
+<i>t</i>} in the network shown.</p>
+<img src="Topic-20/equations-cut-example-1.jpg">
+<img src="Topic-20/example-flow-network-2-with-flow-and-cut1.jpg" align="right"> 
+
+<p>Now consider the cut <i>S</i> = {<i>s</i>, <i>w</i>, <i>x</i>, <i>y</i>}, <i>T</i> = {<i>z</i>,
+<i>t</i>}.</p>
+<img src="Topic-20/equations-cut-example-2.jpg">
+<img src="Topic-20/example-flow-network-2-with-flow-and-cut2.jpg" align="right"> 
+
+<p>We get the same flow as the previous cut, but higher capacity. It is not an accident that
+changing cut can change capacity but not flow. <em>Can you explain why?</em></p>
+
+<h4>Minimum Cut</h4> 
+<p>A <b>minimum cut</b> of <i>G</i> is a cut whose capacity is minimum over all cuts of
+<i>G</i>.</p>
+
+<!-- ------------------ -->
+<h3> Useful Facts </h3>
+
+<p>The proofs of these are straightforward but involve long manipulations of summations: see text.</p>
+
+<img src="Topic-19/lemming.jpg" align="right">
+
+<h4>Lemma</h4>
+
+<p>For any cut (<i>S</i>, <i>T</i>), &nbsp; <i>f</i>(<i>S</i>, <i>T</i>) &nbsp; = &nbsp; |<i>f</i>|
+<br> <i>(the net flow across any cut equals the value of the flow).</i> </p>
+
+<p>The intuition is that no matter where you cut the pipes in a network, you'll see the same flow
+volume coming out of the openings. If you did not, conservation would be violated at some nonempty
+subset of the vertices.</p>
+
+<h4>Corollary</h4>
+<p>The value of any flow &le; capacity of any cut.</p>
+
+<p>This is again intuitive under the plumbing analogy: if it were false, you could push more flow
+through the pipes than they can hold.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Ford Fulkerson Method and Concepts </h2>
+
+<p>This is a method, not an algorithm, because there are many ways to do it.</p>
+<img src="Topic-20/code-Ford-Fulkerson-Method.jpg">
+
+<img src="Topic-20/Fig-26-1-b-Flow.jpg" align = "right"> 
+<p>The intuition behind this method is simple: Find a pathway (an <i>augmenting path</i>) of unused
+capacity and increase the flow along that pathway. Repeat until no such pathways are found.</p>
+
+<p>What makes this nontrivial is an apparent paradox: overall flow can sometimes be increased by
+decreasing flow along certain edges (because they flow in the "wrong" direction or move capacity to
+a part of the network that can't handle it as well).
+<br><em> See whether you can find an example in the graph shown.</em> </p>
+
+<p>Ford Fulkerson manages this by constructing a parallel network of the available or
+<i>residual</i> capacity. We will return to the method after explaining these concepts.</p> 
+
+<!-- ------------------ -->
+<h3> Residual Network </h3>
+
+<p>Given a flow <i>f</i> in a network <i>G</i> = (<i>V</i>, <i>E</i>), consider a pair of vertices
+<i>u</i>, <i>v</i> &in; <i>V</i>. How much additional flow can we push directly from <i>u</i> to
+<i>v</i>? This is the <b>residual capacity</b>:</p>
+
+<img src="Topic-20/equation-residual-capacity.jpg" align="right" border="1">
+
+<p>The first case says that if we have not used the full capacity <i>c</i>(<i>u</i>, <i>v</i>) of an
+edge (<i>u</i>, <i>v</i>) in <i>E</i> then we can increase it by the difference.</p>
+
+<p>The second case says that if we are using <i>f</i>(<i>v</i>, <i>u</i>) of the capacity of (<i>v</i>, <i>u</i>) in <i>E</i> then
+we have the residual "capacity" of reversing (cancelling) that much flow in the reverse direction
+(<i>u</i>, <i>v</i>) (<em>notice that the letters are swapped</em>). </p>
+
+<p>Otherwise there is no residual capacity between <i>u</i> and <i>v</i>.</p>
+
+<p>We record these capacities in the <b>residual network</b> <i>G<sub>f</sub></i> =
+(<i>V</i>, <i>E<sub>f</sub></i>), where</p> 
+<blockquote>
+  <b><i>E<sub>f</sub></i></b> = {(<i>u</i>, <i>v</i>) &in; <i>V</i> x <i>V</i> :
+  <i>c<sub>f</sub></i>(<i>u</i>, <i>v</i>) &gt; 0}.
+</blockquote>
+
+<p>Each edge of the residual network can admit a positive flow.</p>
+
+<h4>Example</h4>
+
+<p>A flow network is on the left, and its residual network on the right.</p>
+
+<img src="Topic-20/example-flow-network-2-with-flow.jpg">
+<img src="Topic-20/example-flow-network-3-residual.jpg" align = "right">
+
+<p>For example, <i>G</i><sub><i>f</i></sub> says that we can add two more units from <i>s</i> to
+<i>w</i> in <i>G</i> or we can take one unit back. <i>(Take a little time to understand the
+relationship between the two graphs: <b>it's critical, so don't go on until you do!)</b></i></p>
+
+<p>Every edge (<i>u</i>, <i>v</i>) &in; <i>E<sub>f</sub></i> corresponds to (<i>u</i>, <i>v</i>)
+&in; <i>E</i> or (<i>v</i>, <i>u</i>) &in; <i>E</i>, and when only part of the capacity of the edge
+in <i>E</i> is used there may be two corresponding edges in <i>E<sub>f</sub></i>. So,
+|<i>E<sub>f</sub></i>| &le; 2 |<i>E</i>|</p>
+
+<p>A residual network is similar to a flow network, except that it may contain antiparallel
+edges.</p> 
+
+<p>We can define flow in a residual network that satisfies the definition of flow, but with
+respect to <i>c<sub>f</sub></i> in <i>G<sub>f</sub></i>. </p>
+
+<!-- ------------------ -->
+<h3> Augmentation and Augmenting Paths </h3>
+
+
+<p>Given flows <i>f</i> in <i>G</i> and <i>f '</i> in <i>G<sub>f</sub></i>, define the
+<b>augmentation</b> of <i>f</i> by <i>f '</i>,
+  &nbsp; <b> <i>f</i> &uarr; <i>f '</i></b>, &nbsp;
+to be a function <i>V</i> x <i>V</i> &rarr; &real;: </p>
+<img src="Topic-20/equation-augmentation-flow.jpg">
+<p>for all <i>u</i>, <i>v</i> &in; <i>V</i>.</p>
+
+<p><b><i>In English:</i></b> Increase the flow on (<i>u</i>, <i>v</i>) by <i>f '</i>(<i>u</i>,
+<i>v</i>), but <i>decrease</i> it by <i>f '</i>(<i>v</i>, <i>u</i>) because pushing flow on the
+reverse edge in the residual network decreases the flow in the original network.</p>
+
+<img src="Topic-19/lemming.jpg" align="right">
+<h4>Another Lemma</h4>
+
+<p>Given flow network <i>G</i>, flow <i>f</i> in <i>G</i>, and residual network
+<i>G<sub>f</sub></i>, let <i>f '</i> be a flow in <i>G<sub>f</sub></i>. Then <i>f</i> &uarr;
+<i>f '</i> is a flow in <i>G</i> with value &nbsp; |<i>f</i> &uarr; <i>f '</i>| &nbsp; = &nbsp;
+|<i>f</i>| + |<i>f '</i>|.</p>
+
+<p><i>(A proof with lots of summations in the CLRS book shows that the capacity constraint and flow
+conservation properties are met, and demonstrates that the value of <i>f</i> &uarr; <i>f '</i> is
+correct. The proof is easy to follow but more than I want to write here; see CLRS.)</i></p>
+
+<h4>Augmenting Paths</h4> 
+
+<p>Any simple path <i>p</i> from <i>s</i> to <i>t</i> in <i>G<sub>f</sub></i> is an <b>augmenting
+path</b>.</p> 
+
+<p>Augmenting paths admit more flow along each edge in <i>G<sub>f</sub></i>  (because all the edges
+have positive capacity).</p>
+
+<p>How much more flow can we push from <i>s</i> to <i>t</i> along an augmenting path <i>p</i>? The
+"weakest link" principle applies:</p> 
+<blockquote>
+  <i>c<sub>f</sub></i> (<i>p</i>) = min{<i>c<sub>f</sub></i>(<i>u</i>, <i>v</i>) : (<i>u</i>,
+<i>v</i>) is on <i>p</i>}.
+</blockquote>
+
+<h4>Example</h4> 
+<p>Here is a flow network (left) and a residual network (right).</p>
+<img src="Topic-20/example-flow-network-2-with-flow.jpg">
+<img src="Topic-20/example-flow-network-3-residual.jpg" align = "right">
+
+<p>Consider the augmenting path <i>p</i> = &lang;<i>s</i>, <i>w</i>, <i>y</i>, <i>z</i>, <i>x</i>,
+<i>t</i>&rang; in <i>G<sub>f</sub></i>. The minimum residual capacity of this path is
+...<i>what???</i></p>
+
+<img src="Topic-20/example-flow-network-4-augmented.jpg" align="left">
+
+<p>Push that much additional flow along <i>p</i> in <i>G</i>. Notice that the path in
+<i>G<sub>f</sub></i> goes over <i>G</i>'s edge (<i>y</i>, <i>w</i>) in the reverse direction, so we
+subtract that much flow from the edge in <i>G</i>. </p>
+
+<p>As a result, edge (<i>y</i>, <i>w</i>) has <i>f</i>(<i>y</i>, <i>w</i>) = 0, so we omit the flow,
+showing only <i>c</i>(<i>y</i>, <i>w</i>) = 3 in the revised <i>G</i> to the left.</p>
+
+<img src="Topic-20/example-flow-network-5-residual.jpg" align="right">
+<br align="left">
+
+<p>Now let's update the residual network <i>G<sub>f</sub></i>. <b> <em>Make sure you understand how
+we got the graph to the right before going on.</em></b></p>
+
+<p><i>Is there an augmenting path in G<sub>f</sub>?. How can we tell?</i></p>
+
+<p>Notice that no edges cross the cut ({<i>s</i>, <i>w</i>}, {<i>x</i>, <i>y</i>, <i>z</i>,
+<i>t</i>}) in the forward direction in <i>G<sub>f</sub></i>, so no path can get from <i>s</i> to
+<i>t</i>. </p>
+
+<p>Since no further augmentation is possible, we claim that the flow shown in G is a maximal
+flow. This theorem tells us we are right.</p>
+
+<h3>Max-Flow Min-Cut Theorem (Important!)</h3>
+<p>The <b>following are equivalent</b> (see text for lemma, corollary and proof):</p>
+<b>
+<ol>
+  <li><i>f</i> is a maximum flow</li><br>
+  <li><i>G<sub>f</sub></i> has no augmenting path</li></br>
+  <li>|<i>f</i>| = <i>c</i>(<i>S</i>, <i>T</i>) for some cut (<i>S</i>, <i>T</i>).</li>
+</ol>
+</b>
+
+<p>This means that if (2) we can't find augmenting paths <em>or</em> (3) have achieved a flow
+equivalent to the capacity of some cut, then we are done: (1) we have found the maximum flow.</p>
+
+<p>(3) also lets us predict what the max flow will be: it will be equal to the capacity of the
+<i>minimum</i> cut (as measured by capacity). Hence <b>"max flow is min cut"</b>. </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Ford Fulkerson Algorithm </h2>
+
+<p>Now we take the Ford Fulkerson <u>method</u> and make it into an <u>algorithm</u> based on this
+intuition: keep augmenting flow along an augmenting path until there is no augmenting path. The flow
+attribute is represented using dot notation on edges: (<i>u</i>, <i>v</i>).<i>f</i>.</p>
+
+<img src="Topic-20/code-Ford-Fulkerson-simple.jpg">
+<p>or in more detail</p>
+<img src="Topic-20/code-Ford-Fulkerson.jpg">
+
+<p>(Line 4 finds the "weakest link" on the augmenting path. Line 7 adds flow. Line 8 reduces flow.)</p>
+
+<h4>Analysis</h4>
+
+
+<p>Runtime depends on what costs can be, and method used to find paths.</p>
+
+<p>It's best to use integer weights when possible. (If capacities are
+irrational numbers, Ford-Fulkerson might never terminate!)</p>
+
+<p>The initialization lines 1-2 is O(<i>E</i>).</p>
+
+<p> The cost to find a path <i>p</i> from <i>s</i> to <i>t</i> in line
+3 depends on the method used. Breadth-First-Search or
+Depth-First-Search will work, and these are O(<i>V</i> +
+<i>E</i>). This is a connected graph, so |<i>E</i>| &ge; |<i>V</i>|
+&minus; 1, so this reduces to O(<i>E</i>).</p>
+
+<p>The rest of the work in the <tt>while</tt> loop is of lower complexity, so the work of each pass
+of the <tt>while</tt> loop is O(<i>E</i>). </p>
+
+<p> How many times will the <tt>while</tt> loop run? The worst case scenario is:</p>
+
+<ul>
+  <li> If all capacities are integer, each augmenting path raises |<i>f</i>| &ge; 
+       1.</li> 
+<li>In the worst case, it is possible for each augmenting path to raise |<i>f</i>| by <em>only</em> 
+       1, so if the maximum flow is  <i>f<sup>*</sup></i> then <i>f<sup>*</sup></i> iterations may
+       be needed. </li>
+  <li> Each iteration costs <i>E</i>, so worst case is <b>O(<i>E</i> <i>f<sup>*</sup></i>)</b>.</li> 
+</ul> 
+
+<img src="Topic-20/example-FF-worst-case.jpg" align="right">
+
+<p>The example to the right illustrates the classic worst case scenario. One could:</p>
+<ul>
+  <li> find augmenting path &lang;(A,B), (B,C), (C,D)&rang;, increasing flow by 1 to 1; then</li> 
+  <li> find augmenting path &lang;(A,C), (C,B), (B,D)&rang; <em>(notice that this uses the
+       antiparallel edge in the residual graph to subtract flow from (B,C))</em>, increasing flow by
+        1 to 2; then </li>  
+  <li> find augmenting path &lang;(A,B), (B,C), (C,D)&rang;, increasing flow by 1 to 3; then</li>
+  <li> find augmenting path &lang;(A,C), (C,B), (B,D)&rang;, increasing flow by 1 to 4; then
+  ...</li>
+</ul>
+<p> ... requiring 2000 iterations due to the unlucky choice of augmenting paths. </p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Edmonds-Karp Algorithm (FF on a leash) </h2>
+
+<p>Edmonds-Karp come to the rescue with an insight that controls the order in which Ford-Fulkerson
+explores paths.</p>
+
+<p>Notice that in the example above, if the shortest paths (by number of edges, not considering
+weight) are considered first, then the anomaly does not occur. We would find augmenting path
+&lang;(A,B), (B,D)&rang; to increase flow by 1000, then finish the job with augmenting path
+&lang;(A,C), (C,D)&rang;, or find the second and then the first.</p>
+
+<p>Edmonds-Karp is the Ford-Fulkerson algorithm but with the constraint that augmenting paths are
+computed by Breadth-First Search of <i>G<sub>f</sub></i>. (<em> I told you that those search
+algorithms are widely useful!</em>)</p>
+
+<p>A proof in the CLRS text shows that the number of flow augmentations performed by Edmunds-Karp is
+O(<i>V</i><i>E</i>). Since each BFS is still O(<i>E</i>) in a connected graph, Edunds-Karp runs in
+<b>O(<i>V</i> <i>E</i><sup>2</sup>)</b> time. The proof in CLRS works by bounding distances to vertices in
+<i>G<sub>f</sub></i>. </p>
+
+<p>Even better bounds are possible: this has been a very active area of algorithm
+development. Sections 26.4-26.5 of CLRS describe <b>push-relabel</b> algorithms that are as fast as
+O(<i>V</i><sup>3</sup>).  The notes at the end of the chapter discuss faster algorithms.</p>
+
+<p>There are many variations of Maximum Flow, such as including multiple sources and sinks;
+including costs and trying to minimize cost; including different kinds of material that take
+different capacities to transport; etc. Some can be very difficult to solve.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Maximum Bipartite Matching </h2>
+
+<p>Maximum Flow can also be used to solve problems that don't look like flow problems. Here is an
+example.</p>
+
+<p>Suppose we want to maximize ...</p>
+<ul>
+  <li>The number of boys and girls who can dance, given a list of who is willing to dance with whom
+  (a.k.a. the "marriage problem").</li>
+  <li>The number of classes that can be scheduled, given a list of which classes can be held in
+  which rooms.</li>
+  <li>The number of tasks that can be performed by some machines, given that some tasks can only be
+  performed by some of the machines.
+</ul> 
+
+<p>... etc. We make a <b>bipartite</b> graph <i>G</i> = (<i>V</i>, <i>E</i>) where <i>V</i> =
+<i>L</i> &cup; <i>R</i> such that all edges go between <i>L</i> and <i>R</i>, and edges in <i>E</i>
+indicate compatible entities.</p>
+
+<p>A <b>matching</b> is a subset of the edges <i>M</i> &sube; <i>E</i> such that for all <i>v</i>
+&in; <i>V</i>, zero or one edges of <i>M</i> are incident on <i>v</i>. (0: <i>v</i> is
+<b>unmatched</b>; 1: <i>v</i> is <b>matched</b>; &gt; 1 is not allowed.) Here is one example with
+two solutions: </p>
+
+<img src="Topic-20/Fig-26-8-a-Maximum-Bipartite-Matching-Examples.jpg">
+
+<p>On the left we can see a nonmaximal matching, and on the right a <b>maximum matching</b>, or
+matching of maximum cardinality: |<i>M</i>| &ge; |<i>M'</i>| &forall; matchings <i>M'</i>. </p>
+
+<h3>Solution</h3>
+
+<p> Given <i>G</i>, define flow network <i>G'</i> = (<i>V'</i>, <i>E'</i>):</p>
+<ul>
+  <li><i>V'</i> = <i>V</i> &cup; {<i>s</i>, <i>t</i>}.</li> 
+  <li><i>E'</i> = <i>E</i> augmented with edges from <i>s</i> to every <i>u</i> &in; <i>L</i> and from every
+  <i>v</i> in <i>R</i> to <i>t</i>. </li>
+  <li><i>c</i>(<i>u</i>, <i>v</i>) = 1 &forall; (<i>u</i>, <i>v</i>) &in; <i>E'</i>.</li>
+</ul>
+<p>Then just run Ford-Fulkerson (Edumunds-Karp is not required, as all edges have unit value):</p> 
+<img src="Topic-20/Fig-26-8-b-Maximum-Bipartite-Matching-Solution.jpg">
+
+<p>This works because a maximum flow must use the maximum number of (unitary capacity) edges across
+the cut (<i>L</i>, <i>R</i>). </p>
+
+<h3> Run Time Complexity</h3>
+
+<p>Previously we established that Ford-Fulkerson is O(<i>E</i> <i>f</i><sup>*</sup>).</p>
+
+<p>In the present problem we are running Ford-Fulkerson on <i>E'</i>, but <i>E'</i> = O(<i>E</i>)
+since we are adding no more than <i>V</i> edges (to vertices in <i>L</i> and vertices in <i>R</i>).
+Also, the flow value <i>f</i><sup>*</sup> = O(<i>V</i>) since edges are of unit value and you can't
+have flow across more edges than there are in min(|<i>L</i>|, |<i>R</i>|) = O(<i>V</i>). </p>
+
+<p>Therefore, bipartite matching can be computed with Ford-Fulkerson in
+<b>O(<i>V</i><i>E</i>)</b>. </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Wrapup</h2>
+
+<p>We have just seen an example of <b>problem reduction</b>: reducing the maximum bipartite matching
+problem to a flow problem and using a flow algorithm to solve it. Last week we saw another problem
+reduction: solving job scheduling by modeling it as a shortest-paths problem. </p>
+
+<p> <b><i>Problem reduction is a common theme in computer science.</i></b> In Topic 21, we will see
+how the flow problem reduces to the linear programming problem. In later topics, we'll consider
+reduction of classes of problems known as "P" and "NP", and encounter the greatest unsolved problem
+in computer science.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Sat Apr 11 03:39:29 HST 2015 <!-- hhmts end -->
+<br>Most images are from the instructor's material for Cormen et al. Introduction to Algorithms,
+Third Edition. The counter-example is from Goodrich & Tamassia, and I found the Lemma lemming
+running around loose on the Internet somewhere.</br> 
+</body>
+</html>

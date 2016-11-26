@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #16: Disjoint Sets and Union-Find </title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #16: Disjoint Sets and Union-Find</h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2>
+
+<ol>
+  <li>Disjoint Dynamic Sets </li>
+  <li>Finding Connected Components with Disjoint Sets </li>
+  <li>Linked List Representations of Disjoint Sets - <i>Skip in 2015: this is not as good as the
+  forest representation</i>  </li>
+  <li>Forest Representations of Disjoint Sets</li>
+</ol> 
+
+<h2>Readings and Screencasts</h2>
+<ul>
+  <li>Chapter 21 of CLRS sections 21.1 and 21.3, with focus on
+      21.3. (You need only know the result of the analysis in 21.4.) </li>  
+  <li>Screencast <a href="http://youtu.be/RUBU6eHAAaU">16A</a>
+       (also in Laulima and iTunesU)</li>
+
+</ul>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Dynamic Disjoint Sets (Union Find) </h2>
+
+<p>Two sets <i>A</i> and <i>B</i> are <b>disjoint</b> if they have no element in common.</p> 
+
+<p>Sometimes we need to group n distinct elements into a collection &Scaron; of disjoint sets
+&Scaron; = {<i>S</i><sub>1</sub>, ..., <i>S<sub>k</sub></i>} that may change over time.</p>
+<ul>
+  <li>&Scaron; is a set of sets: {{<i>x</i>, ... }, ..., {<i>y</i>, ... }} 
+  <li>Each set <i>S<sub>i</sub></i> &in; &Scaron; is identified by a <b>representative</b>, which is
+      some member of the set (e.g., <i>x</i> and <i>y</i>).</li>  
+  <li> It does not matter which member is the representative, as long as the representative remains
+  the same while the set is not modified.</li> 
+</ul>
+
+<p>Disjoint set data structures are also known as <b>Union-Find</b> data structures, after the two
+operations in addition to creation. (Applications often involve a mixture of searching for set
+membership and merging sets.) </p> 
+
+<!-- ----------- --> 
+<h3>Operations</h3> 
+
+<blockquote>
+
+<b>Make-Set(<i>x</i>)</b>: make a new set <i>S<sub>i</sub></i> = {<i>x</i>}
+<i>(<i>x</i> will be its representative)</i> and add <i>S<sub>i</sub></i> to &Scaron;.
+
+</blockquote> 
+
+<blockquote>
+
+<b>Union(<i>x</i>, <i>y</i>)</b>: if
+<i>x</i> &in; <i>S<sub>x</sub></i> and
+<i>y</i> &in; <i>S<sub>y</sub></i>, then
+&Scaron; &larr; &Scaron; &minus; <i>S<sub>x</sub></i> &minus; <i>S<sub>y</sub></i> <big> &cup;</big>
+{<i>S<sub>x</sub></i> <big> &cup; </big><i>S<sub>y</sub></i>} <i>(that is, combine the two sets
+<i>S<sub>x</sub></i> and <i>S<sub>y</sub></i>)</i>. 
+<ul>
+    <li>The representative of <i>S<sub>x</sub></i> <big>&cup;</big> <i>S<sub>y</sub></i> is any
+        member of that new set (implementations often use the representative of one of
+        <i>S<sub>x</sub></i> or <i>S<sub>y</sub></i>.) </li>
+    <li>Destroys <i>S<sub>x</sub></i> and <i>S<sub>y</sub></i>, since the sets must be disjoint
+        (they cannot co-exist with <i>S<sub>x</sub></i> <big>&cup;</big>
+        <i>S<sub>y</sub></i>). </li>
+</ul> 
+</blockquote> 
+
+<blockquote>
+<b>Find-Set(<i>x</i>)</b>: return the representative of the set containing <i>x</i>.
+</blockquote> 
+
+<!-- ----------- --> 
+<h3>Analysis</h3> 
+
+<p>We analyze in terms of: </p>
+<ul>
+  <li><i>n</i> = number of Make-Set operations, i.e., the number of sets initially involved</li> 
+  <li><i>m</i> = total number of operations</li>
+</ul>
+
+<p>Some facts we can rely on:</p>
+<ul>
+  <li><i>m</i> &ge; <i>n</i></li>
+  <li>Can have at most <i>n</i>&minus;1 Union operations, since after <i>n</i>&minus;1 Unions, only
+      1 set remains.</li>
+  <li>It can be helpful for analysis to assume that the first <i>n</i> operations are Make-Set
+      operations (put all the elements we will be working with in singleton sets to start with).</li> 
+</ul>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Applications of Disjoint Sets</h2>
+
+<p>Union-Find on disjoint sets is used to find structure in other data structures, such as a
+graph. We initially assume that all the elements are distinct by putting them in singleton sets, and
+then we merge sets as we discover the structure by which the elements are related.</p>
+
+<!-- ---------------------------- --> 
+<h3>Finding Connected Components</h3> 
+
+<p>Recall from <a href="Topic-14.html">Topic 14</a> that for a graph <i>G</i> = (<i>V</i>,
+<i>E</i>), vertices <i>u</i> and <i>v</i> are in the same <b>connected component</b> if and only if
+there is a path between them. </p>
+
+<p>Here are the algorithms for computing connected components and then for testing whether two items
+are in the same component:</p>
+
+<img src="Topic-16/pseudocode-connected-components.jpg">
+<img src="Topic-16/pseudocode-same-components.jpg">
+
+<p><i>Would that work with a directed graph?</i></p>
+
+<h4>Example</h4> 
+<img src="Topic-16/Fig-21-1-finding-connected-components.jpg">
+
+<img src="Topic-16/ti-chats.jpg" align="right">
+
+<p>Although it is easy to see the connected components above, the utility of the algorithm becomes
+more obvious when we deal with large graphs (such as pictured)!</p>
+
+<h4>Alternatives</h4> 
+
+<p>In a <em>static</em> undirected graph, it is faster to run Depth-First Search (exercise 22.3-12),
+or for static directed graphs the strongly connected components algorithm of <a
+ href="Topic-14.html">Topic 14</a> (section 22.5), which consists of two DFS. But in some
+applications edges may be added to the graph. In this case, union-find with disjoint sets is faster
+than re-running the DFS.</p>
+
+<!-- ---------------------- --> 
+<h3>Minimum Spanning Trees</h3> 
+
+<p> In the next topic we cover algorithms to find <i>minimum spanning trees</i> of graphs. Kruskal's
+algorithm will use Union-Find operations. </p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Linked List Representations of Disjoint Sets </h2>
+
+<p>One might think that lists are the simplest approach, but there is a better approach that is not
+any more complex: this section is mainly for comparision purposes.</p>
+
+<h3>Representation</h3>
+<p>Each set is represented using an unordered singly linked list. The list object has
+attributes:</p>
+<ul>
+  <li><b>head</b>: pointing to the first element in the list, the set's representative.</li>
+  <li><b>tail</b>: pointing to the last element in the list.</li>
+</ul>
+
+<img src="Topic-16/Fig-21-2-linked-list-S1.jpg" align="right">
+
+<p>Each object in the list has attributes for:</p>
+<ul>
+  <li><b>next</b>
+  <li>The <b>set member</b> (e.g., the vertex in the graph being analyzed)</li>
+  <li>A pointer to the list object that represents the <b>set</b></li>
+</ul>
+
+<h3>Operations</h3>
+
+<p>First try:</p>
+<ul>
+  <li>Make-Set(<i>x</i>): create a singleton list containing <i>x</i></li>
+  <li>Find-Set(<i>x</i>): follow the pointer back to the list object, and then follow the
+      <tt>head</tt> pointer to the representative</li>
+  <li>Union(<i>x</i>, <i>y</i>): append <i>y</i>'s lists onto the end of <i>x</i>'s list.
+      <ul>
+        <li>Use <i>x</i>'s tail pointer to find the end.</li>
+        <li>Need to update the pointer back to the set object for every node on <i>y</i>'s list.</li>
+      </ul>
+  </li>
+</ul>
+
+<p>For example, let's take the union of <i>S</i><sub>1</sub> and <i>S</i><sub>2</sub>, replacing
+<i>S</i><sub>1</sub>:</p>
+
+<img src="Topic-16/Fig-21-2-linked-list-representation.jpg">
+
+<p>This can be slow for large data sets. For example, suppose we start with <i>n</i> singletons and
+always happend to append the larger list onto the smaller one in a sequence of merges:</p>
+<img src="Topic-16/Fig-21-3-worst-case-alt.jpg">
+<p>If there are <i>n</i> Make-Sets and <i>n</i> Unions, the amortized time per operation is
+O(<i>n</i>)!</p> 
+
+<p>A <b>weighted-union heuristic</b> speeds things up: always append the smaller list to the larger
+list (so we update fewer set object pointers). Althought a single union can still take
+&Omega;(<i>n</i>) time (e.g., when both sets have <i>n</i>/2 members), a sequence of <i>m</i>
+operations on <i>n</i> elements takes O(<i>m</i> + <i>n</i> lg <i>n</i>) time. </p>
+
+<p><b><i>Sketch of proof:</i></b> Each Make-Set and Find-Set still takes O(1). Consider how many
+times each object's set representative pointer must be updated during a sequence of <i>n</i> Union
+operations. It must be in the smaller set each time, and after each Union the size of this smaller
+set is at least double the size. So: </p>
+
+<img src="Topic-16/representative-update-bound.jpg">
+
+<p>Each representative set for a given element is updated &le; lg <i>n</i> times, and there are
+<i>n</i> elements plus <i>m</i> operations. However, we can do better!</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Forest Representations of Disjoint Sets </h2>
+
+<p>The following is a classic representation of Union-Find, due to Tarjan (1975). The set of sets is
+represented by a forest of trees. The code is as simple as the analysis of runtime is complex.</p>
+
+<h3>Representation</h3>
+<img src="Topic-16/disjoint-set-forest.jpg" align="right">
+<ul>
+  <li>Each tree represents a set.</li>
+  <li>The root of the tree is the set representative.</li>
+  <li>Each node points only to its parent (no child pointers needed).</li>
+  <li>The root points to itself as parent.
+</ul>
+
+<h3>Operations</h3>
+
+<ul>
+  <li>Make-Set(<i>x</i>): create a single node tree with <i>x</i> at the root</li>
+  <li>Find-Set(<i>x</i>): follow parent pointers back to the root</li>
+  <li>Union(<i>x</i>, <i>y</i>): make one root a child of the other. (This in itself could degenerate
+  to a linear list-like tree, but we will fix this below.)</li> 
+</ul>
+<img src="Topic-16/disjoint-set-union-alt.jpg">
+
+<h4>Heuristics</h4>
+
+<p>In order to avoid degeneration to linear trees, and achieve amazing amortized performance, these
+two heuristics are applied:</p>
+
+<p><b>Union by Rank</b>: make the root of the "smaller" tree a child of the root of the "larger" 
+tree. But rather than size we use <b>rank</b>, an upper bound on the height of each node (stored in
+the node).</p> 
+<ul>
+  <li>Rank of singleton sets is 0.</li>
+  <li>When taking the Union of two trees of equal rank, choose one arbitrarily to be the parent
+      and increment its rank by one. <i>(Why is it incremented?)</i> </li>
+  <li>When taking the Union of two trees of unequal rank, the tree with lower rank becomes the
+      child, and ranks are unchanged. <i>(Why does this make sense?)</i></li> 
+</ul>
+
+<p><b>Path Compression</b>: When running Find-Set(<i>x</i>), make all nodes on the path from
+<i>x</i> to the root direct children of the root. For example, Find-Set(a):</p>
+<img src="Topic-16/Fig-21-5-path-compression-alt.jpg">
+
+<h3>Algorithms</h3>
+
+<p>The algorithms are very simple! (But their analysis is complex!) We assume that nodes <i>x</i>
+and <i>y</i> are tree nodes with the client's element data already initialized.</p>
+
+<img src="Topic-16/pseudocode-disjoint-set-forest.jpg">
+
+<p>Link implements the union by rank heuristic.</p> 
+<p>Find-Set implements the path compression heuristic. It makes a recursive pass up the tree to find
+the path to the root, and as recursion unwinds it updates each node on the path to point directly to
+the root. (This means it is not tail recursive, but as the analysis shows, the paths are very unlikely to
+be long.)</p>
+
+
+<h3>Time Complexity</h3>
+
+<p>The analysis can be found in section 21.4. It is very involved, and I only expect you to know
+what is discussed below. It is based on a very fast growing function: </p>
+<img src="Topic-16/A_k-j.jpg">
+
+<p><i>A<sub>k</sub></i>(<i>j</i>) is a variation of <b>Ackerman's Function</b>, which is what you
+will find in most classic texts on the subject. The function grows so fast that
+<i>A</i><sub>4</sub>(1) = 16<sup>512</sup> is <em>much</em> larger than the number of atoms in the observable
+universe (10<sup>80</sup>)!</p>
+
+<p>The result uses <b>&alpha;(<i>n</i>),</b> a single parameter inverse of <i>A<sub>k</sub></i>(<i>j</i>)
+defined as the lowest <i>k</i> for which <i>A<sub>k</sub></i>(1) is at least <i>n</i>:</p>
+<img src="Topic-16/growth-inverse-ackermann.jpg" align="right" border="1">
+<blockquote>
+&alpha;(<i>n</i>) = min{<i>k</i> : <i>A<sub>k</sub></i>(1) &ge; <i>n</i>} 
+</blockquote>
+
+<p>&alpha;(<i>n</i>) grows <em>very</em> slowly, as shown in the table. We are highly unlikely to
+ever encounter &alpha;(<i>n</i>) &gt; 4 (we would need input size much greater than the number of
+atoms in the universe). Although its growth is strictly larger than a constant, for all practical
+purposes we can treat &alpha;(<i>n</i>) as a constant.</p>
+
+<p>The analysis of section 21.4 shows that the running time is <u><b>O(<i>m</i>
+&alpha;(<i>n</i>))</b> for a sequence of <i>m</i></u> <tt>Make-Set</tt>, <tt>Find-Set</tt> and
+<tt>Union</tt> operations, or <u><b>O(&alpha;(<i>n</i>))</b> per operation</u>. Since
+&alpha;(<i>n</i>) &gt; 4 is highly unlikely, for all practical purposes the cost of a sequence of
+<i>m</i> such operations is O(<i>m</i>), or O(1) amortized cost per operation!!</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Wrapup</h2>
+
+<p>We now return to Graphs. We'll see Union-Find used when we cover minimum spanning trees. </p> 
+
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Thu Mar 26 15:42:07 HST 2015 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition.</br> 
+</body>
+</html>

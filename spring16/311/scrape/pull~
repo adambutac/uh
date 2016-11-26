@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for OUTPUT in $(cat podcasts.list)
+do
+    curl -O -b "JSESSIONID=4a426916-f9de-4736-ac2f-c7565c1baf05.sak30" $OUTPUT 
+done
+

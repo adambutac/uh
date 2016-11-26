@@ -1,0 +1,642 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #3: Growth of Functions and Asymptotic Concepts </title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> Topic #3: Growth of Functions and Asymptotic Concepts</h1><hr> 
+<!-- ------------------------------------------------------------ -->
+
+<h2>Outline</h2> 
+<ol>
+  <li>Intro to Asymptotic Analysis</li>
+  <li>Big-O</li>
+  <li>&Omega; (Omega)</li>
+  <li>&Theta; (Theta)</li>
+  <li>Asymptotic Notation in Equations</li>
+  <li>Asymptotic Inequality</li>
+  <li>Properties of Asymptotic Sets</li>
+  <li>Common Functions</li>
+</ol>
+
+<h2>Readings and Screencasts</h2>
+
+<ul>
+  <li>Chapter 3 of CLRS</li>
+  <li>Screencasts: 
+      <a href="https://www.youtube.com/watch?v=y86z2OrIYQQ">3A</a>, 
+      <a href="https://www.youtube.com/watch?v=4IL2Ir_O_vI">3B</a>, 
+      <a href="https://www.youtube.com/watch?v=uaqLI449XQw">3C</a>, and 
+      <a href="https://www.youtube.com/watch?v=f2czg61AtQw">3D</a> 
+      (also available in Laulima and iTunesU)
+  <br>These screencasts have some audio problems, but they are usable. The audio problems were
+  resolved (and other aspects of the production improved) in a few weeks.
+  </li>
+</ul>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Intro to Asymptotic Analysis </h2>
+
+<p>The notations discussed today are ways to describe behaviors of <em>functions,</em> particularly
+<em>in the limit</em>, or <em>asymptotic</em> behavior.</p>
+
+<p>The functions need not necessarily be about algorithms, and indeed asymptotic analysis is used
+for many other applications.</p>
+
+<p>Asymptotic analysis of algorithms requires:</p> 
+<ol>
+  <li> Identifying <b> what aspect of an algorithm we care about</b>, such as: 
+    <ul> <br>
+      <li>runtime;</li>
+      <li>use of space;</li>
+      <li>possibly other attributes such as communication bandwidth;</li>
+      <br>
+    </ul>
+  </li> 
+  <li> Identifying <b>a function that characterizes that aspect; </b> and
+  </li> <br>
+  <li> Identifying <b>the asymptotic class of functions that this
+  function belongs to</b>, where classes are defined in terms of bounds on growth
+  rate.
+  </li> 
+</ol>
+
+<p>The different asymptotic bounds we use are analogous to equality and inequality
+relations: </p>
+
+<ul>
+  <li>O       &nbsp; &asymp; &nbsp; &le;</li>
+  <li>&Omega; &nbsp; &asymp; &nbsp; &ge;</li>
+  <li>&Theta; &nbsp; &asymp; &nbsp; =</li>
+  <li>o       &nbsp; &asymp; &nbsp; &lt;</li>
+  <li>&omega; &nbsp; &asymp; &nbsp; &gt;</li>
+</ul> 
+
+<p>In practice, most of our analyses will be concerned with run time. Analyses may examine:</p>
+<ul>
+  <li>Worst case</li>
+  <li>Best case</li>
+  <li>Average case (according to some probability distribution across all
+  possible inputs)</li>
+</ul> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Big-O (asymptotic &le;)</h2>
+
+<p>Our first question about an algorithm's run time is often "how bad can it
+get?" We want a guarantee that a given algorithm will complete within a
+reasonable amount of time for typical n expected. This requires an <b>asymptotic
+upper bound</b>: the "worst case".</p> 
+
+<p>Big-O is commonly used for worst case analyses, because it gives an upper
+bound on growth rate. Its definition in terms of set notation is:</p> 
+
+<blockquote>
+O(<i>g</i>(<i>n</i>)) = {<i>f</i>(<i>n</i>) : &exist; positive constants <i>c</i> and
+<i>n</i><sub>0</sub> such that 0 &le; <i>f</i>(<i>n</i>) &le; <i>c</i><i>g</i>(<i>n</i>) &forall;
+<i>n</i> &ge; <i>n</i><sub>0</sub>}.
+</blockquote>
+
+<img src="Topic-03/graph-big-O.jpg" align="right">
+
+<p>This definition means that as <i>n</i> increases, afer a point <i>f</i>(<i>n</i>) grows no faster
+than <i>g</i>(<i>n</i>) (as illustrated in the figure): <i>g</i>(<i>n</i>) is an <em>asymptotic
+upper bound</em> for <i>f</i>(<i>n</i>). </p>
+
+
+<p>Since O(<i>g</i>(<i>n</i>)) is a set, it would be natural to write <i>f</i>(<i>n</i>) &isin;
+O(<i>g</i>(<i>n</i>)) for any given <i>f</i>(<i>n</i>) and <i>g</i>(<i>n</i>) meeting the definition
+above, for example,  <i>f</i> &isin; O(<i>n</i><sup>2</sup>). </p>
+
+<p>But the algorithms literature has adopted the convention of using = instead of &isin;, for
+example, writing <i>f</i>(<i>n</i>) = O(<i>g</i>(<i>n</i>)). This "abuse of notation" makes some
+manipulations possible that would be more tedious if done strictly in terms of set notation. (We do
+<em>not</em> write O(<i>g</i>(<i>n</i>))=<i>f</i>(<i>n</i>); will return to this point).</p>
+
+<p>Using the = notation, we often see definitions of big-O in in terms of truth
+conditions as follows: </p> 
+
+<blockquote>
+<i>f</i>(<i>n</i>) = O(<i>g</i>(<i>n</i>)) iff &exist; positive constants <i>c</i> and
+<i>n</i><sub>0</sub> such that 0 &le; <i>f</i>(<i>n</i>) &le; <i>c</i><i>g</i>(<i>n</i>) &forall;
+<i>n</i> &ge; <i>n</i><sub>0</sub>.
+</blockquote> 
+
+<p>We assume that all functions involved are asymptotically non-negative. Other authors don't make
+this assumption, so may use |<i>f</i>(<i>n</i>)| etc. to cover negative values. This assumption is
+reflected in the condition 0 &le; <i>f</i>(<i>n</i>). </p>
+
+<h3>Examples</h3>
+
+<p>Show that 2<i>n</i><sup>2</sup> is O(<i>n</i><sup>2</sup>).</p>
+
+<p> To do this we need to show that there exists some <i>c</i> and <i>n</i><sub>0</sub> such that
+(letting 2<i>n</i><sup>2</sup> play the role of <i>f</i>(<i>n</i>) and <i>n</i><sup>2</sup> play the
+role of <i>g</i>(<i>n</i>) in the definition):
+<blockquote>
+0 &le; 2<i>n</i><sup>2</sup> &le; <i>c</i><i>n</i><sup>2</sup> for all <i>n</i> &ge;
+<i>n</i><sub>0</sub>. 
+</blockquote>
+
+<p>It works with <i>c</i> = 2, since this makes the <i>f</i> and
+<i>g</i> terms equivalent for all <i>n</i> &ge; <i>n</i><sub>0</sub> = 0. (We'll do a harder example
+under &Theta;.) </p> 
+
+<h4>What's in and what's out</h4>
+
+<table width="90%" border="0">
+  <tr>
+    <td>These are all O(<i>n</i><sup>2</sup>):</td>
+    <td>These are not: </td>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li><i>n</i><sup>2</sup></li>
+        <li><i>n</i><sup>2</sup> + 1000<i>n</i></li>
+        <li>1000<i>n</i><sup>2</sup> + 1000<i>n</i></li>
+        <li><i>n</i><sup>1.99999</sup></li>
+        <li><i>n</i></li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li><i>n</i><sup>3</sup></li>
+        <li><i>n</i><sup>2.00001</sup></li>
+        <li><i>n</i><sup>2</sup> lg <i>n</i></li> 
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<h4>Insertion Sort Example</h4>
+
+<p>Recall that we did a tedious analysis of the worst case of insertion sort, ending with this
+formula: </p>
+
+<img src="Topic-02/equation-insertion-worst-3.jpg">
+
+<p><i>T(n)</i> can be expressed as <i>pn<sup>2</sup> + <i>q</i><i>n</i> - r</i> for suitable <i>p,
+q, r</i> (<i>p</i> = (<i>c</i><sub>5</sub>/2 + <i>c</i><sub>6</sub>/2 + <i>c</i><sub>7</sub>/2),
+etc.).</p>
+
+<p> The textbook (page 46) sketches a proof that <i><i>f</i>(<i>n</i>) =
+<i>a</i><i>n</i><sup>2</sup> + <i>b</i><i>n</i> + <i>c</i></i> is &Theta;(<i>n</i><sup>2</sup>), and
+we'll see shortly that &Theta;(<i>n</i><sup>2</sup>) &rarr; O(<i>n</i><sup>2</sup>). This is
+generalized to all polynomials in Problem 3-1. So, any polynomial with highest order term
+<i>a</i><i>n</i><sup><i>d</i></sup> (i.e., a polynomial in <i>n</i> of degree <i>d</i>) will be
+O(<i>n</i><sup><i>d</i></sup>).</p>
+
+<p>This suggests that the worst case for insertion sort <i>T</i>(<i>n</i>) &isin;
+O(<i>n</i><sup>2</sup>). An upper bound on the worst case is also an upper bound on all other cases,
+so we have already covered those cases. </p>
+
+<p>Notice that the definition of big-O would also work for <i><i>g</i>(<i>n</i>) =
+n<sup>3</sup></i>, <i><i>g</i>(<i>n</i>) = 2<sup>n</sup></i>, etc., so we can also say that
+<i>T</i>(<i>n</i>) (the worst case for insertion sort) is O(<i>n</i><sup>3</sup>),
+O(2<sup><i>n</i></sup>), etc. However, these loose bounds are not very useful! We'll deal with this
+when we get to &Theta; (Theta).</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>&Omega; (Omega, asymptotic &ge;)</h2>
+
+<p>We might also want to know what the best we can expect is. In the last lecture we derived
+this formula for insertion sort:</p>
+
+<img src="Topic-02/equation-insertion-best.jpg">
+
+<p>We could prove that this best-case version of T(n) is big-O of something, but that would only
+tell us that the best case is no worse than that something. What if we want to know what is "as good
+as it gets": a lower bound below which the algorithm will never be any faster?</p>
+
+<p>We must both pick an appropriate function to measure the property of interest, and pick an
+appropriate asymptotic class or comparison to match it to. We've done the former with
+<i>T</i>(<i>n</i>), but what should it be compared to?</p>
+
+<p>It makes more sense to determine the <b>asymptotic lower bound</b> of
+growth for a function describing the best case run-time. In other words, what's the fastest
+we can ever expect, in the best case?</p>
+
+<img src="Topic-03/graph-Omega.jpg" align="right">
+
+<p> <b>&Omega; (Omega)</b> provides what we are looking for. Its set and truth condition
+definitions are simple revisions of those for big-O:</p>
+
+<blockquote>
+&Omega;(<i>g</i>(<i>n</i>)) = {<i>f</i>(<i>n</i>) : &exist; positive constants <i>c</i> and
+<i>n</i><sub>0</sub> such that 0 &le; <i>cg</i>(<i>n</i>) &le; <i>f</i>(<i>n</i>) &forall; <i>n</i>
+&ge; <i>n</i><sub>0</sub>}.
+<br><i>[The <i>f</i>(<i>n</i>) and <i>cg</i>(<i>n</i>) have swapped places.]</i>
+</blockquote>
+
+<blockquote>
+<i>f</i>(<i>n</i>) = &Omega;(<i>g</i>(<i>n</i>)) iff &exist; positive constants <i>c</i> and
+<i>n</i><sub>0</sub> such that <i>f</i>(<i>n</i>) &ge; <i>cg</i>(<i>n</i>) &forall; <i>n</i> &ge;
+<i>n</i><sub>0</sub>.
+<br><i>[&le; has been replaced with &ge;.]</i>
+</blockquote>
+
+<p>The semantics of &Omega; is: as <i>n</i> increases after a point, <i>f</i>(<i>n</i>) grows no
+slower than <i>g</i>(<i>n</i>) (see illustration).</p>
+
+<h3>Examples</h3>
+
+<p>Sqrt(<i>n</i>) is &Omega;(lg <i>n</i>) with <i>c</i>=1 and <i>n</i><sub>0</sub>=16.<br>
+<i>(At n=16 the two functions are equal; try at n=64 to see the growth, or graph it.)</i></p>
+
+<h4> What's In and What's Out</h4>
+
+<table width="90%" border="0">
+  <tr>
+    <td>These are all &Omega;(<i>n</i><sup>2</sup>): </td>
+    <td>These are not:</td>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li><i>n</i><sup>2</sup></li>
+        <li><i>n</i><sup>2</sup> + 1000n &nbsp; <i>(It's also O(<i>n</i><sup>2</sup>)!)</li>
+        <li>1000<i>n</i><sup>2</sup> + 1000<i>n</i></li>
+        <li>1000<i>n</i><sup>2</sup> - 1000<i>n</i></li>
+        <li><i>n</i><sup>3</sup></li>
+        <li><i>n</i><sup>2.00001</sup></li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li><i>n</i><sup>1.99999</sup></li>
+        <li><i>n</i></li>
+        <li>lg <i>n</i></li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<h4>Insertion Sort Example</h4>
+
+<p>We can show that insertion will take at least &Omega;(<i>n</i>) time in the best case (i.e., it
+won't get any better than this) using the above formula and definition.</p>
+
+<img src="Topic-02/equation-insertion-best.jpg">
+
+<p><i>T</i>(<i>n</i>) can be expressed as <i>pn - q</i> for suitable <i>p, q</i> (e.g., <i>q</i> =
+<i>c</i><sub>2</sub> + <i>c</i><sub>4</sub> + <i>c</i><sub>5</sub> + <i>c</i><sub>8</sub>,
+etc.). (In this case, <i>p</i> and <i>q</i> are positive.) This suggests that <i>T</i>(<i>n</i>)
+&isin; &Omega;(<i>n</i>), that is, &exist; <i>c, n<sub>0</sub></i> s.t. <i>pn - q &ge; cn,</i>
+&forall;<i>n &ge; n<sub>0</sub></i>. This follows from the generalized proof for polynomials.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>&Theta; (Theta, asymptotic =)</h2>
+
+<p>We noted that there are <em> loose </em> bounds, such as <i>f</i>(<i>n</i>) =
+<i>n</i><sup>2</sup> is O(<i>n</i><sup>3</sup>), etc., but this is an overly pessimistic
+assessment. It is more useful to have an <b>asymptotically tight bound</b> on the growth of a
+function. In terms of algorithms, we would like to be able to say (when it's true) that a given
+characteristic such as run time grows <em>no better and no worse</em> than a given function. That
+is, we want to simultaneoulsy bound from above and below. Combining the definitions for O and
+&Omega;: </p>
+
+<img src="Topic-03/graph-Theta.jpg" align="right">
+
+<blockquote>
+&Theta;(<i>g</i>(<i>n</i>)) = {<i>f</i>(<i>n</i>) : &exist; positive constants <b><i>c</i><sub>1</sub>,
+<i>c</i><sub>2</sub></b>, and <i>n</i><sub>0</sub> such that 0 &le;
+<b><i>c</i><sub>1</sub><i>g</i>(<i>n</i>) &le; <i>f</i>(<i>n</i>) &le;
+<i>c</i><sub>2</sub><i>g</i>(<i>n</i>)</b>, &forall; <i>n</i> &ge; <i>n</i><sub>0</sub>}.
+</blockquote>
+
+<p> As illustrated, <i>g</i>(<i>n</i>) is an asymptotically tight bound for <i>f</i>(<i>n</i>): after a
+point, <i>f</i>(<i>n</i>) grows no faster and no slower than <i>g</i>(<i>n</i>).</p>
+
+<p>The book suggests the proof of this theorem as an easy exercise (just combine the two
+definitions):</p>
+
+<blockquote>
+<i>f</i>(<i>n</i>) = &Theta;(<i>g</i>(<i>n</i>)) iff <i>f</i>(<i>n</i>) = &Omega;(<i>g</i>(<i>n</i>)) &and; <i>f</i>(<i>n</i>) = O(<i>g</i>(<i>n</i>)).  
+</blockquote>
+
+<p>You may have noticed that some of the functions in the list of examples for big-O are also in the
+list for &Omega;. This indicates that the set &Theta; is not empty.</p>
+
+<h3>Examples</h3>
+
+<blockquote>
+<i>Reminder:</i> 
+<i>f</i>(<i>n</i>) = &Theta;(<i>g</i>(<i>n</i>)) iff &exist; positive constants
+<i>c</i><sub>1</sub>, <i>c</i><sub>2</sub>, and <i>n</i><sub>0</sub> such that 0 &le;
+<i>c</i><sub>1</sub><i>g</i>(<i>n</i>) &le; <i>f</i>(<i>n</i>) &le;
+<i>c</i><sub>2</sub><i>g</i>(<i>n</i>)&forall; <i>n</i> &ge; <i>n</i><sub>0</sub>.
+</blockquote>
+
+<p><i>n</i><sup>2</sup> - 2<i>n</i> is &Theta;(<i>n</i><sup>2</sup>), &nbsp; with
+<i>c</i><sub>1</sub> = 1/2; <i>c</i><sub>2</sub> = 1, and <i>n</i><sub>0</sub> = 4, &nbsp; since:</p>
+
+<blockquote>
+
+<i>n</i><sup>2</sup>/2 &nbsp;  &le; &nbsp;  <i>n</i><sup>2</sup> - 2<i>n</i> &nbsp; &le; &nbsp;
+<i>n</i><sup>2</sup> &nbsp;  for <i>n</i> &ge; <i>n</i><sub>0</sub> = 4.
+
+</blockquote>
+
+<h4>Find an asymptotically tight bound (&Theta;) for</h4> 
+<ul>
+  <li> 4<i>n</i><sup>3</sup> </li> 
+  <li> 4<i>n</i><sup>3</sup> + 2<i>n</i>. </li>
+</ul>
+<p>Please try these before you <a href="Topic-03/Example-Analysis.html">find solutions here</a>.</p>
+
+<h4>What's in and what's out</h4>
+
+<table width="90%" border="0">
+  <tr>
+    <td>These are all &Theta;(n<sup>2</sup>): </td>
+    <td>These are not </td>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li><i>n</i><sup>2</sup></li>
+        <li><i>n</i><sup>2</sup> + 1000<i>n</i></li>
+        <li>1000<i>n</i><sup>2</sup> + 1000<i>n</i> + 32,700</li>
+        <li>1000<i>n</i><sup>2</sup> - 1000<i>n</i> - 1,048,315</li>
+      </ul>
+    </td> 
+    <td>
+      <ul>
+        <li><i>n</i><sup>3</sup></li>
+        <li><i>n</i><sup>2.00001</sup></li>
+        <li><i>n</i><sup>1.99999</sup></li>
+        <li><i>n</i> lg <i>n</i></li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<p></p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Asymptotic Inequality</h2>
+
+<p>The O and &Omega; bounds may or may not be asymptotically tight. The next two
+notations are for upper bounds that are strictly <em>not</em> asymptotically
+tight. There is an <em>analogy</em> to inequality relationships:</p>
+<ul>
+  <li> "&le;" is to "&lt;" as big-O (may or may not be tight) is to little-o
+  (strictly not equal)
+  <li> "&ge;" is to "&gt" as &Omega; (may or may not be tight) is to
+  little-&omega; (strictly not equal).  
+</ul> 
+
+<h3>o-notation ("little o", asymptotic &lt;)</h3>
+
+<blockquote>
+o(<i>g</i>(<i>n</i>)) = {<i>f</i>(<i>n</i>) : &forall; constants <i>c</i> &gt; 0, &exist; constant
+<i>n</i><sub>0</sub> &gt; 0 such that 0 &le; <i>f</i>(<i>n</i>) <b>&lt;</b> <i>cg</i>(<i>n</i>) &forall;
+<i>n</i> &ge; <i>n</i><sub>0</sub>}.
+</blockquote>
+
+<img src="Topic-03/o-limit-definition.jpg" align="right" border="1">
+
+<p>Alternatively, <i>f</i>(<i>n</i>) becomes <em>insignificant</em> relative to <i>g</i>(<i>n</i>)
+as <i>n</i> approaches infinity (see box):</p>
+
+<p>We say that <i>f</i>(<i>n</i>) is <b>asymptotically smaller</b> than <i>g</i>(<i>n</i>) if
+<i>f</i>(<i>n</i>) = o(<i>g</i>(<i>n</i>))</p>
+  
+<ul>
+  <li><i>n</i><sup>1.99999</sup> &isin; o(<i>n</i><sup>2</sup>)</li>
+  <li><i>n</i><sup>2</sup>/lg <i>n</i> &isin; o(<i>n</i><sup>2</sup>)</li>
+  <li><i>n</i><sup>2</sup> &notin; o(<i>n</i><sup>2</sup>) (similarly, 2 is not less than 2)</li>
+  <li><i>n</i><sup>2</sup>/1000 &notin; o(<i>n</i><sup>2</sup>) </li>
+</ul> 
+
+<h3>&omega;-notation ("little omega", asymptotic &gt;)</h3>
+
+<blockquote>
+&omega;(<i>g</i>(<i>n</i>)) = {<i>f</i>(<i>n</i>) : &forall; constants <i>c</i> &gt; 0, &exist;
+constant <i>n</i><sub>0</sub> &gt; 0 such that 0 &le; <i>cg</i>(<i>n</i>) <b>&lt;</b> <i>f</i>(<i>n</i>)
+&forall; <i>n</i> &ge; <i>n</i><sub>0</sub>}.
+</blockquote>
+
+<img src="Topic-03/omega-limit-definition.jpg" align="right" border="1">
+
+<p>Alternatively, <i>f</i>(<i>n</i>) becomes <em> arbitrarily large </em> relative to
+<i>g</i>(<i>n</i>) as <i>n</i> approaches infinity (see box):</p>
+
+<p>We say that <i>f</i>(<i>n</i>) is <b>asymptotically larger</b> than <i>g</i>(<i>n</i>) if
+<i>f</i>(<i>n</i>) = &omega;(<i>g</i>(<i>n</i>))</p>
+
+<ul>
+  <li><i>n</i><sup>2.00001</sup> &isin; &omega;(<i>n</i><sup>2</sup>)</li>
+  <li><i>n</i><sup>2</sup>lg <i>n</i> &isin; &omega;(<i>n</i><sup>2</sup>)</li>
+  <li><i>n</i><sup>2</sup> &notin; &omega;(<i>n</i><sup>2</sup>)</li>
+</ul>
+
+<p>The two are related: &nbsp;
+<b><i>f</i>(<i>n</i>) &isin; &omega;(<i>g</i>(<i>n</i>)) &nbsp; iff &nbsp; <i>g</i>(<i>n</i>) &isin;
+o(<i>f</i>(<i>n</i>)).</b></p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Asymptotic Notation in Equations</h2>
+
+<p>We already noted that while asymptotic categories such as &Theta;(<i>n</i><sup>2</sup>) are sets,
+we usually use "=" instead of "&isin;" and write (for example) <i>f</i>(<i>n</i>) =
+&Theta;(<i>n</i><sup>2</sup>) to indicate that <i>f</i> is in this set.</p> 
+
+<p>Putting asymptotic notation in equations
+lets us do shorthand manipulations during analysis. </p>
+
+<h3>Asymptotic Notation on Right Hand Side: &exist;</h3>
+
+<p>O(<i>g</i>(<i>x</i>)) on the right hand side stands for <em>some</em> anonymous function in the
+set O(<i>g</i>(<i>x</i>)).</p> 
+
+<blockquote>
+2<i>n</i><sup>2</sup> + 3<i>n</i> + 1 = 2<i>n</i><sup>2</sup> + &Theta;(<i>n</i>) &nbsp; &nbsp;  means: <br>
+2<i>n</i><sup>2</sup> + 3<i>n</i> + 1 = 2<i>n</i><sup>2</sup> + <i>f</i>(<i>n</i>)</i>
+&nbsp; &nbsp; &nbsp;  for <em>some</em>
+<i><i>f</i>(<i>n</i>) &isin; &Theta;(<i>n</i>)</i> 
+&nbsp; &nbsp;  (in particular, <i>f</i>(<i>n</i>) = 3<i>n</i> + 1).
+</blockquote>
+
+<h3>Asymptotic Notation on Left Hand Side: &forall;</h3>
+
+<p>The notation is only used on the left hand side when it is also on the right hand side.</p>
+
+<p>Semantics: No matter how the anonymous functions are chosen on the left hand side, there is a way
+to choose the functions on the right hand side to make the equation valid.</p>
+
+<blockquote>
+2<i>n</i><sup>2</sup> + &Theta;(<i>n</i>) = &Theta;(<i>n</i><sup>2</sup>)</i> &nbsp; &nbsp;  means  &nbsp;
+for <em>all</em> <i>f</i>(<i>n</i>) &isin; &Theta;(<i>n</i>), there <em> exists</em>
+<i>g</i>(<i>n</i>) &isin; &Theta;(<i>n</i><sup>2</sup>) such  that
+<br> 2<i>n</i><sup>2</sup> + <i>f</i>(<i>n</i>) = <i>g</i>(<i>n</i>).
+</blockquote>
+
+<h3>Combining Terms</h3>
+
+<p>We can do basic algebra such as: </p>
+
+<blockquote>
+2<i>n</i><sup>2</sup> + 3<i>n</i> + 1 &nbsp; = &nbsp; 2<i>n</i><sup>2</sup> + &Theta;(<i>n</i>)
+ &nbsp; =  &nbsp; &Theta;(<i>n</i><sup>2</sup>) 
+</blockquote>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Properties</h2>
+
+<p>If we keep in mind the analogy to inequality, many of these make sense, but see the end for a
+caution concerning this analogy.</p>
+
+<h3>Relational Properties</h3>
+<dl>
+  <dt> <b>Transitivity</b>:</dt>
+  <dd><ul>
+        <li><i>f</i>(<i>n</i>) = &Theta;(<i>g</i>(<i>n</i>)) and <i>g</i>(<i>n</i>) = &Theta;(h(n)) &nbsp; &rArr; &nbsp; <i>f</i>(<i>n</i>) = &Theta;(h(n)).</li>
+        <li><i>f</i>(<i>n</i>) = O(<i>g</i>(<i>n</i>)) and <i>g</i>(<i>n</i>) = O(h(n)) &nbsp; &rArr; &nbsp; <i>f</i>(<i>n</i>) = O(h(n)).</li>
+        <li><i>f</i>(<i>n</i>) = &Omega;(<i>g</i>(<i>n</i>)) and <i>g</i>(<i>n</i>) = &Omega;(h(n)) &nbsp; &rArr; &nbsp; <i>f</i>(<i>n</i>) = &Omega;(h(n)).</li>
+        <li><i>f</i>(<i>n</i>) = o(<i>g</i>(<i>n</i>)) and <i>g</i>(<i>n</i>) = o(h(n)) &nbsp; &rArr; &nbsp; <i>f</i>(<i>n</i>) = o(h(n)).</li>
+        <li><i>f</i>(<i>n</i>) = &omega;(<i>g</i>(<i>n</i>)) and <i>g</i>(<i>n</i>) = &omega;(h(n)) &nbsp; &rArr; &nbsp; <i>f</i>(<i>n</i>) = &omega;(h(n)).</li>
+      </ul>
+  </dd>
+
+  <dt> <b>Reflexivity</b>:</dt>
+  <dd><ul>
+        <li><i>f</i>(<i>n</i>) = &Theta;(<i>f</i>(<i>n</i>))</li>
+        <li><i>f</i>(<i>n</i>) = O(<i>f</i>(<i>n</i>))</li>
+        <li><i>f</i>(<i>n</i>) = &Omega;(<i>f</i>(<i>n</i>))</li>
+        <li><i>What about o and &omega;?</i></li> 
+      </ul>
+  </dd>
+
+  <dt> <b>Symmetry</b>:</dt>
+  <dd><ul>
+        <li><i>f</i>(<i>n</i>) = &Theta;(<i>g</i>(<i>n</i>)) &nbsp; iff &nbsp; <i>g</i>(<i>n</i>) = &Theta;(<i>f</i>(<i>n</i>)) </li>
+        <li><i>Should any others be here? Why or why not?</i></li> 
+      </ul>
+  </dd>
+
+   <dt> <b>Transpose Symmetry</b>:</dt>
+   <dd><ul>
+        <li><i>f</i>(<i>n</i>) = O(<i>g</i>(<i>n</i>)) &nbsp; iff &nbsp; <i>g</i>(<i>n</i>) = &Omega;(<i>f</i>(<i>n</i>)) </li>
+        <li><i>f</i>(<i>n</i>) = o(<i>g</i>(<i>n</i>)) &nbsp; iff &nbsp; <i>g</i>(<i>n</i>) = &omega;(<i>f</i>(<i>n</i>)) </li>
+      </ul>
+  </dd>
+
+</dl> 
+
+<h3>Incomparability</h3>
+
+<p>Here is where the analogy to numeric (in)equality breaks down: There is no trichotomy. Unlike
+with constant numbers, we can't assume that one of &lt;, =, &gt; hold. Some functions may be
+incomparable.</p>
+
+<p>Example: <i>n</i><sup>1 + <i>sin n</i></sup> is incomparable to <i>n</i> since <i>sin n</i>
+oscillates between -1 and 1, so 1 + <i>sin n</i> oscillates between 0 and 2. <i>(Try graphing it.)</i> </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Common Functions and Useful Facts</h2>
+
+<p>Various classes of functions and their associated notations and identities are reviewed in the
+end of the chapter: please review the chapter and refer to ICS 241 if needed. Here we highlight some
+useful facts:</p>
+
+<h3>Monotonicity</h3>
+<ul>
+  <li><i>f</i>(<i>n</i>) is <b>monotonically increasing</b> &nbsp; if &nbsp; <i>m</i> &le; <i>n</i>
+     &nbsp; &rArr; &nbsp; <i>f</i>(<i>m</i>) &le; <i>f</i>(<i>n</i>).</li>
+  <li><i>f</i>(<i>n</i>) is <b>monotonically decreasing</b> &nbsp; if &nbsp; <i>m</i> &ge; <i>n</i>
+      &nbsp; &rArr; &nbsp; <i>f</i>(<i>m</i>) &ge; <i>f</i>(<i>n</i>).</li>
+  <li><i>f</i>(<i>n</i>) is <b>strictly increasing</b> &nbsp; if &nbsp; <i>m</i> &lt; <i>n</i>
+      &nbsp; &rArr; &nbsp; <i>f</i>(<i>m</i>) &lt; <i>f</i>(<i>n</i>).</li>
+  <li><i>f</i>(<i>n</i>) is <b>strictly decreasing</b> &nbsp; if &nbsp; <i>m</i> &gt; <i>n</i>
+      &nbsp; &rArr; &nbsp; <i>f</i>(<i>m</i>) &gt; <i>f</i>(<i>n</i>).</li>
+</ul>
+  
+<h3>Polynomials</h3> 
+<ul>
+  <li><i>p</i>(<i>n</i>) = &Theta;(<i>n</i><sup><i>d</i></sup>)</i>, for asymptoptically positive
+     polynomials in <i>n</i> of degree <i>d</i> </li> 
+</ul>
+
+<h3>Exponentials</h3> 
+<ul>
+  <li><i>n</i><sup><i>b</i></sup> = o(<i>a</i><sup><i>n</i></sup>) for all real constants <i>a</i> and <i>b</i>
+  such that <i>a</i> &gt; 1: <b><i>Any exponential function with a base greater than 1 grows
+  faster than any polynomial function.</i></b></li><br> 
+  <li>Useful identities:
+      <ul>
+         <li><i>a</i><sup>-1</sup> = 1/<i>a</i></li>
+         <li>(<i>a</i><sup><i>m</i></sup>)<sup><i>n</i></sup> = <i>a</i><sup><i>mn</i></sup></li>
+         <li><i>a</i><sup><i>m</i></sup><i>a</i><sup><i>n</i></sup> = <i>a</i><sup><i>m</i> + <i>n</i></sup></li>
+      </ul> 
+  </li> 
+</ul>
+
+
+<h3>Logarithms</h3> 
+<ul>
+
+  <li>(lg <i>n</i>)<sup><i>b</i></sup> = lg<sup><i>b</i></sup><i>n</i> =
+       o(<i>n</i><sup><i>a</i></sup>)</i>, for a &gt; 0: <b><i>any positive polynomial function
+       grows faster than any polylogarithmic function.</i></b></li><br>
+       
+  <li>Useful identities:
+      <ul>
+         <li><i>a</i> = <i>b</i><sup>log<sub><i>b</i></sub><i>a</i></sup> &nbsp; <i>(Definition of logs.)</i></li>
+         <li>log<sub><i>a</i></sub><i>n</i> =
+         log<sub><i>b</i></sub><i>n</i>/log<sub><i>b</i></sub><i>a</i> &nbsp; <br>
+         &nbsp; &nbsp; <i>(Base change. If <i>n</i> is
+         variable and <i>a</i> and <i>b</i> are constant, the denominator is constant: this is why
+         asymptotic analysis can ignore the base.)</i></li>
+         <li>log<sub><i>c</i></sub>(<i>ab</i>) = log<sub><i>c</i></sub><i>a</i> +
+         log<sub><i>c</i></sub><i>b</i> &nbsp; <i>(Ask your slide rule!)</i> </li>
+         <li>log<sub><i>b</i></sub><i>a<sup><i>n</i></sup></i> =
+             <i>n</i> log<sub><i>b</i></sub><i>a</i></li>
+         <li>log<sub><i>b</i></sub>(1/<i>a</i>) = &minus;log<sub><i>b</i></sub><i>a</i></li>
+         <li>log<sub><i>b</i></sub><i>a</i> = 1 / log<sub><i>a</i></sub><i>b</i></li>
+         <li><i>a</i><sup>log<sub><i>b</i></sub><i>c</i></sup> =
+             <i>c</i><sup>log<sub><i>b</i></sub><i>a</i></sup> &nbsp; <i>(Useful for getting the
+      variable where you want it.)</i> </li>
+      </ul> 
+  </li>
+  
+</ul>
+
+
+<h3>Factorials</h3> 
+<ul>
+  <li><i>n</i>! = &omega;(2<sup><i>n</i></sup>): &nbsp; <i><b>factorials grow faster than
+  exponentials</b> (but it could be worse):</i></li>
+
+  <li><i>n</i>! = o(<i>n</i><sup><i>n</i></sup>)</li>
+  <li>lg(<i>n</i>!) = &Theta;(<i>n</i> lg <i>n</i>)</li>
+  <li>See also the more complex <b>Stirling's approximation</b> from which these are derived.</li> 
+
+</ul>
+
+<h3>Iterated Functions</h3>
+<ul>
+  <li>Definition: <i>f</i><sup>(<i>i</i>)</sup>(<i>n</i>) is <i>f</i> applied <i>i</i> times to the
+  initial value <i>n</i>. </li>
+  <li>Iterated Logarithm: lg<sup>*</sup><i>n</i> = min{<i>i</i> &ge; 0:
+  lg<sup>(<i>i</i>)</sup><i>n</i> &le; 1} &nbsp; <i>(The iteration at which
+  lg<sup>(<i>i</i>)</sup><i>n</i> is less than 1: a very slowly growing function.)</i></li>
+</ul> 
+  
+<h3>Fibonacci Numbers</h3> 
+<ul>
+  <li>Definition: <i>F</i><sub>0</sub> = 0; <i>F</i><sub>1</sub> = 1; and for <i>i</i> > 1
+      <i>F</i><sub><i>i</i></sub> = <i>F</i><sub><i>i</i>-1</sub> +
+      <i>F</i><sub><i>i</i>-2</sub>. </li> 
+  <li> <b><i>Fibonacci numbers grow exponentially.</i></b> </li> 
+</ul>
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Sat Jan 25 03:51:57 HST 2014 <!-- hhmts end -->
+<br>Images are from the instructor's manual for Cormen et al.</br>
+</body>
+</html>

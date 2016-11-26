@@ -1,0 +1,64 @@
+                                                    Adam Butac
+                                                    03/10/16
+                                                    ICS 432
+
+                     Homework Assignment #7
+
+Exercise #1
+    Question #1 (10)
+        Given that,
+        p = # of processors
+        f = percentage of enhanceable code = 80% = 0.8
+        Speedup(p) = 1/(1-f + f/p)
+        Efficency(p) = Speedup(p)/p = 50% = 0.5
+
+        We can conclude the following
+        
+        E(p) = S(p)/p = 1/2
+
+        p/2 = S(p) = 1/(1-f + f/p)
+        2/p = 1 - f + f/p
+        2 = p(1-f) + f
+        2/(1-f) = p + f/(1-f)
+        p = 2/(1-f) - f/(1-f) 
+        p = (2 - f)/(1 - f)
+        p = (2 - 0.8)/(1 - 0.8)
+        therefore
+        p = 1.2/0.2 = 6
+
+    Question #2 (10)
+
+        Since we know, when f is the percentage of enhanceable
+        code, Speedup(p) = 1/(1 - f + f/p), and we are given
+        p = 12, Speedup(12) = 10 
+
+        Solving for f...
+        
+        10 = 1/(1 - f + f/12)
+        1/10 = 1 - f + f/12        
+        1/10 = 12/12 - 12f/12 + 1f/12
+        1/10 = 1 - 13f/12
+        13f/12 = 9/10
+        therefore
+        f = (9/10)(12/13) = 83.08%
+
+   Question #3 (10)
+
+        Given that,
+        f = 95%
+        A machine with 10 cores...
+        A machine with 16 cores that runs 75% slower...
+        t inital = 1min
+
+        Calculating the initial speedup(10) = 6.89655
+        and so the sequential time T = 6.89655 minutes
+        This means that the 16 core machine would take
+        6.89655 * 1.25 minutes = 8.571428 minutes.
+        Calculating the 16 core speedup(16) = 9.1428
+        
+        We know that Speedup(p) = T/T'
+        So that 9.1428 = 8.5714/T'
+
+        solving for T'...
+
+        T' = 0.9375 minutes < 1 minute

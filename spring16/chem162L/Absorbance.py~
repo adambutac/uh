@@ -1,0 +1,12 @@
+def percent_transmittance():
+    return
+
+def optical_density(A, e, b ,c):
+    #A is absorbance
+    #e is the molar absorbtivity
+    #b is solution path length (length of curvette in cm)
+    #c is the concentration of solution in mols per litre
+    if(A and b and c):
+        return A/(b*c)
+
+print(optical_density(0.13, None, 1, 0.00024))

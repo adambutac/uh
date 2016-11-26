@@ -1,0 +1,590 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #25: Approximation Algorithms </title>
+</head>
+
+<body>
+
+<!-- ********** 2015: More info on Greedy Approximation from CLRS 35.3? ********** -->
+
+<hr><h1><a href="../index.html">ICS 311</a> #25: Approximation Algorithms </h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2>
+<ol> 
+  <li> Approximation Algorithms</li>
+  <li> Example: Vertex Cover </li>
+  <li> Example: TSP </li>
+  <li> Other Strategies: Greedy Algorithms, Randomization, and Linear Programming </li>
+</ol>
+
+<h2>Readings and Screencasts</h2>
+<ul>
+  <li>CLRS 3rd Ed. Sections 35.1 through 35.4 (make sure you make it to 35.4)</li>
+  <li>Screencasts: <a href="http://youtu.be/hdch8ioLRqE">25 A</a> Heuristic Approximation Algorithms,
+                  <a href="http://youtu.be/a0fkEdx_K3g">25 B</a> Approximation Strategies
+                  (Randomization and Relaxed Linear Programming) 
+  </li>
+</ul>
+
+<p>
+"Although this may seem a paradox, all
+exact science is dominated by the idea of approximation." <em>&minus; Bertrand Russell</em> 
+</p> 
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Approximation Algorithms </h2>
+
+<img src="Topic-25/garey-johnson-you-and-boss.jpg" align="right" hspace="5">
+
+<p>Well, your boss understands it's a hard problem, but he still wants you to do something about it!
+After all, we can't abandon the lucrative iThingy market! Is there a way to configure iThingies to
+be "good enough" without using a huge amount of computer time delaying the orders?</p>
+
+<p>There are three broad approaches to handing NP-Complete or NP-Hard problems in practice:</p>
+<ol>
+  
+  <li><b>Stick with small problems,</b> where the total execution time for an optimal solution is
+      not bad. Your boss rejects this as it would limit the configuration options the company
+      offers.</li> <br>
+      
+  <li><b>Find special cases</b> of the problem that can be solved in polynomial time (e.g., 2-CNF
+      rather than 3-CNF). It requires
+      that we know more about the structure of the problem. We don't know much about iThingies, but
+      we will use some restrictions to help with the third approach ... </li><br>
+      
+  <li><b>Find near-optimal solutions</b> with <b> approximation algorithms</b>. Your boss thinks it
+      just might work: since the problem is hard, customers won't realize you haven't given them the
+      optimal solution as long as a lot of their requests are met. This is the approach we'll
+      examine today. </li>
+      
+</ol>
+
+<!-- ------------- -->
+<h3>Definitions</h3> 
+
+<p>Let <i>C</i> be the cost of a solution found for a problem of size <i>n</i> and
+<i>C</i><sup>*</sup> be the optimal solution for that problem. </p>
+
+<p>Then we say an algorithm has an <b>approximation ratio of &rho;(n)</b> <i>(that's "rho")</i> if
+</p> 
+
+<blockquote>
+  <i>C</i>/<i>C</i><sup>*</sup> &le; &rho;(n) for minimization problems: the factor by which the
+  actual solution obtained is larger than the optimal solution. 
+</blockquote>
+
+<blockquote>
+  <i>C</i><sup>*</sup>/<i>C</i> &le; &rho;(n) for maximization problems: the factor by which the
+  optimal solution is larger than the solution obtained
+</blockquote>
+
+<img src="Topic-25/equation-approximation-ratio.jpg" align="right" hspace="5" border="1" hspace="1">
+
+<p>The CLRS text says both of these at once in one expression shown to
+the right. The ratio is never less than 1 (perfect performance).</p>
+
+<p>An algorithm that has an approximation ratio of &rho;(n) is called a
+<b>&rho;(<i>n</i>)-approximation algorithm</b>. </p> 
+
+<p>An <b>approximation scheme</b> is a parameterized approximation algorithm that takes
+an additional input &epsilon; &gt; 0 and for any fixed &epsilon; is a (1+&epsilon;)-approximation
+algorithm. (&epsilon; is how much slack you will allow away from the optimal 1-"approximation".) </p>
+
+<p>An approximation scheme is a <b>polynomial approximation scheme</b> if for any fixed &epsilon;
+&gt; 0 the scheme runs in time polynomial in input size <i>n</i>. (We will not be discussing
+approximation schemes today; just wanted you to be aware of the idea. See section 35.5)</p>
+
+<!-- ------------- -->
+<h3>A Question</h3>
+
+<p>By definition, if a problem A is NP-Complete then if we can solve A in
+O(f(n)) then we can solve any other problem B in NP in O(g(n)) where g(n) is polynomially related to
+f(n). (A polynomial time reduction of the other problems to A exists.) </p>
+
+<p><i>So, if we have a &rho;(n)-approximation algorithm for the optimization version of A, does this
+mean we have a &rho;(n)-approximation algorithm for the optimization version of any problem B in NP?
+Can we just use the same polynomial time reduction, and solve A, to get a &rho;(n)-approximation for
+B?</i></p>
+
+<p>That would be pretty powerful! Below we show we have a 2-approximation algorithm for NP-Hard
+Vertex Cover: so is 2-approximation possible for the optimization version of <em>any</em> problem in
+NP?  (See problem 35.1-5.) </p>
+
+<p>We examine two examples in detail before summarizing other approximation strategies.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Vertex Cover Approximations </h2>
+
+<p>Recall that a <b>vertex cover</b> of an undirected graph <i>G</i> = (<i>V</i>, <i>E</i>) is a
+subset <i>V'</i> &sube; <i>V</i> such that if (<i>u</i>, <i>v</i>) &in; <i>E</i> then <i>u</i> &in;
+<i>V'</i> or <i>v</i> &in; <i>V'</i> or both (there is a vertex in <i>V'</i> "covering" every edge in
+<i>E</i>).</p>
+
+<p>The optimization version of the <b>Vertex Cover Problem</b> is to find a vertex cover of minimum
+size in <i>G</i>. </p>
+
+<p>We previously showed by reduction of CLIQUE to VERTEX-COVER that the corresonding decision
+problem is NP-Complete, so the optimization problem is NP-Hard.</p>
+
+<!-- --------------------------- -->
+<h3>Approx-Vertex-Cover</h3>
+
+<p>Vertex Cover can be approximated by the following surprisingly simple algorithm, which iterately
+chooses an edge that is not covered yet and covers it:</p>
+<img src="Topic-25/code-approx-vertex-cover.jpg"><br align="right" hspace="5">
+
+<img src="Topic-25/Fig-35-1-Approx-Vertex-Cover-a.jpg" align="right" hspace="5">
+
+<h4>Example</h4>
+
+<!-- ********** NEXT  YEAR: MAKE YOUR OWN EXAMPLE; EXTEND IT INTO THE QUESTIONS ******** -->
+
+<p> Suppose we have this input graph:</p>
+
+<p>Suppose then that edge {<i>b</i>, <i>c</i>} is chosen. The two incident vertices are added to the
+cover and all other incident edges are removed from consideration:</p> <img
+src="Topic-25/Fig-35-1-Approx-Vertex-Cover-b.jpg">
+
+<p>Iterating now for edges {<i>e</i>, <i>f</i>} and then {<i>d</i>, <i>g</i>}: </p>
+<img src="Topic-25/Fig-35-1-Approx-Vertex-Cover-c.jpg" align="left"> &nbsp; &nbsp; &nbsp; &nbsp; 
+<img src="Topic-25/Fig-35-1-Approx-Vertex-Cover-d.jpg">
+
+<p>The resulting vertex cover is shown on the left and the optimal vertex on the right:</p>
+<img src="Topic-25/Fig-35-1-Approx-Vertex-Cover-e.jpg" align="left"> &nbsp; &nbsp; &nbsp; &nbsp; 
+<img src="Topic-25/Fig-35-1-Approx-Vertex-Cover-opt.jpg">
+
+<p><i>(Would the approximation bound be tighter if we always chose an edge with the highest degree
+vertex remaining? Let's try it on this example. Would it be tighter in general? See 35.1-3.)</i></p>
+
+<h4>Analysis</h4>
+
+<p>How good is the approximation? We can show that the solution is within a factor of 2 of
+optimal.</p>
+
+<p><i>Theorem:</i> <b>Approx-Vertex-Cover is a polynomial time 2-approximation algorithm for Vertex
+Cover.</b></p>
+
+<img src="Topic-25/code-approx-vertex-cover.jpg" align="right" hspace="5">
+<p><i>Proof:</i> The algorithm is correct because it loops until every edge in <i>E</i> has been
+covered.</p>
+
+<p>The algorithm has O(|<i>E</i>|) iterations of the loop, and (using aggregate analysis, <a
+ href="Topic-15.html">Topic 15</a>) across all loop iterations, O(|V|) vertices are added to
+<i>C</i>. Therefore it is O(<i>E</i> + <i>V</i>), so is polynomial. </p>
+
+<p>It remains to be shown that the solution is no more than twice the size of the optimal
+cover. We'll do so by finding a lower bound on the optimal solution <i>C</i><sup>*</sup>.
+
+<p> Let <i>A</i> be the set of edges chosen in line 4 of the algorithm. Any vertex cover must cover
+at least one endpoint of every edge in <i>A</i>. No two edges in <i>A</i> share a vertex (see
+algorithm), so in order to cover <i>A</i>, the optimal solution <i>C</i><sup>*</sup> must have at
+least as many vertices: </p>
+<blockquote>
+| <i>A</i> | &nbsp; &le;  &nbsp; | <i>C</i><sup>*</sup> |
+</blockquote>
+
+<p>Since each execution of line 4 picks an edge for which neither endpoint is yet in <i>C</i> and
+adds these two vertices to <i>C</i>, then we know that</p>
+
+<blockquote>
+| <i>C</i> | &nbsp; = &nbsp; 2 | <i>A</i> |
+</blockquote>
+
+<p>Therefore: </p>
+
+<blockquote>
+| <i>C</i> | &nbsp; &le; &nbsp; 2 | <i>C</i><sup>*</sup> |
+</blockquote>
+
+<p>That is, |<i>C</i>| cannot be larger than twice the optimal, so is a 2-approximation algorithm
+for Vertex Cover.</p>
+
+<p>This is a common strategy in approximation proofs: <u>we don't know the size of the optimal
+solution, but we can set a lower bound on the optimal solution and relate the obtained solution to
+this lower bound</u>.</p>
+
+<h3>Problems</h3>
+
+<p><i>Can you come up with an example of a graph for which Approx-Vertex-Cover always gives a
+suboptimal solution?</i></p>
+
+<p>Suppose we restrict our graphs to trees. <i>Can you give an efficient greedy algorithm that
+always finds an optimal vertex cover for trees in linear time?</i></p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> TSP Approximations </h2>
+
+<img src="Topic-25/tsp-cartoon.jpg" align="right" hspace="5">
+
+<p>In the <b>Traveling Salesperson Problem</b> (TSP) we are given a complete undirected graph
+<i>G</i> = (<i>V</i>, <i>E</i>) (representing, for example, routes between cities) that has a
+nonnegative integer cost <i>c</i>(<i>u</i>, <i>v</i>) for each edge {<i>u</i>, <i>v</i>}
+(representing distances between cities), and must find a Hamiltonian cycle or tour with minimum
+cost. We define the cost of such a cycle <i>A</i> to be the sum of the costs of edges:</p>
+<img src="Topic-25/equation-TSP-cost.jpg">
+
+<p>The unrestricted TSP is very hard, so we'll start by looking at a common restriction.</p>
+
+<!-- --------------------------- -->
+<h3>Triangle Inequality TSP</h3>
+
+<p>In many applications (e.g., Euclidean distances on two dimensional surfaces), the TSP cost
+function satisfies the <b>triangle inequality</b>: </p>
+
+<img src="Topic-25/triangle-inequality.jpg" align="right" hspace="5">
+
+<blockquote>
+<i>c</i>(<i>u</i>, <i>v</i>) &nbsp; &le; &nbsp; <i>c</i>(<i>u</i>, <i>w</i>) + <i>c</i>(<i>w</i>, <i>v</i>),
+ &nbsp; &nbsp; &forall; <i>u</i>, <i>v</i>, <i>w</i> &in; <i>V</i>.
+</blockquote>
+<p>Essentially this means that it is no more costly to go directly from <i>u</i> to <i>v</i> than it
+would be to go between them via a third point <i>w</i>.</p>
+
+<h4>Approximate Tour for Triangle Inequality TSP</h4>
+
+<p>The triangle inequality TSP is still NP-Complete, but there is a 2-approximation algorithm for
+it. The algorithm finds a minimum spanning tree (<a href="Topic-17.html">Topic 17</a>), and then
+converts this to a low cost tour:</p>
+
+<img src="Topic-25/code-approx-TSP-tour.jpg">
+
+<p><i>(Another MST algorithm might also work.)</i></p>
+
+<h4>Example</h4>
+<p>Suppose we are working on the graph shown below to the left. (Vertices are placed on a grid so
+you can compute distances if you wish.) The MST starting with vertex <i>a</i> is shown to the
+right.</p>
+<img src="Topic-25/Fig-35-2-Approx-TSP-a.jpg" align="left"> &nbsp; &nbsp; &nbsp; &nbsp; 
+<img src="Topic-25/Fig-35-2-Approx-TSP-b.jpg">
+
+<p>Recall from early in the semester (or ICS 241) that a preorder walk of a tree visits a vertex
+before visiting its children. Starting with vertex <i>a</i>, the preorder walk visits vertices in
+order <i>a</i>, <i>b</i>, <i>c</i>, <i>h</i>, <i>d</i>, <i>e</i>, <i>f</i>, <i>g</i>. This is the
+basis for constructing the cycle in the center (cost 19.074). The optimal solution is shown to the
+right (cost 14.715).</p>
+
+<img src="Topic-25/Fig-35-2-Approx-TSP-c.jpg" align="left"> &nbsp; &nbsp; &nbsp; &nbsp; 
+<img src="Topic-25/Fig-35-2-Approx-TSP-d.jpg"> &nbsp; &nbsp; &nbsp; 
+<img src="Topic-25/Fig-35-2-Approx-TSP-e.jpg" align="right" hspace="5">
+
+<h4>Analysis of Approx-TSP-Tour</h4>
+<p><i>Theorem:</i> <b>Approx-TSP-Tour is a polynomial time 2-approximation algorithm for TSP with
+triangle inequality.</b></p>
+
+<img src="Topic-25/code-approx-TSP-tour.jpg" align="right" hspace="5"> 
+<p><i>Proof:</i> The algorithm is correct because it produces a Hamiltonian circuit.</p>
+
+<p>The algorithm is polynomial time because the most expensive operation is <tt>MST-Prim</tt>, which
+can be computed in O(<i>E</i> lg <i>V</i>) (see <a href="Topic-17.html">Topic 17 notes</a>).</p>
+
+<p>For the approximation result, let <i>T</i> be the spanning tree found in line 2, <i>H</i> be the
+tour found and <i>H</i><sup>*</sup> be an optimal tour for a given problem.</p>
+
+<p>If we delete any edge from <i>H</i><sup>*</sup>, we get a spanning tree that can be no cheaper
+than the <em>minimum</em> spanning tree <i>T</i>, because <i>H</i><sup>*</sup> has one more (nonegative
+cost) edge than <i>T</i>: </p>
+
+<img src="Topic-25/Fig-35-2-Approx-TSP-c.jpg" align="right" hspace="5">
+<blockquote>
+<i>c</i>(<i>T</i>) &nbsp; &le; &nbsp; <i>c</i>(<i>H</i><sup>*</sup>)
+</blockquote>
+
+<p>Consider the cost of the <b>full walk</b> <i>W</i> that traverses the edges of <i>T</i> exactly
+twice starting at the root. (For our example, <i>W</i> is &lang;{<i>a</i>, <i>b</i>}, {<i>b</i>,
+<i>c</i>}, {<i>c</i>, <i>b</i>}, {<i>b</i>, <i>h</i>}, {<i>h</i>, <i>b</i>}, {<i>b</i>, <i>a</i>},
+{<i>a</i>, <i>d</i>}, ... {<i>d</i>, <i>a</i>}&rang;.) Since each edge in <i>T</i> is traversed
+twice in <i>W</i>: </p>
+<blockquote>
+<i>c</i>(<i>W</i>) &nbsp; = &nbsp; 2 <i>c</i>(<i>T</i>)
+</blockquote>
+
+<img src="Topic-25/Fig-35-2-Approx-TSP-d.jpg" align="right" hspace="5">
+
+<p>This walk <i>W</i> is not a tour because it visits some vertices more than once, but we can skip
+the redundant visits to vertices once we have visited them, producing the same tour <i>H</i> as in
+line 3. (For example, instead of &lang;{<i>a</i>, <i>b</i>}, {<i>b</i>, <i>c</i>}, {<i>c</i>,
+<i>b</i>}, {<i>b</i>, <i>h</i>}, ... &rang;, go direct: &lang;{<i>a</i>, <i>b</i>}, {<i>b</i>,
+<i>c</i>}, {<i>c</i>, <i>h</i>}, ... &rang;.)
+
+<p>By the triangle inequality, which says it can't cost any more to go direct between two
+vertices,</p>
+
+<blockquote>
+<i>c</i>(<i>H</i>) &nbsp; &le; &nbsp; <i>c</i>(<i>W</i>)
+</blockquote>
+<p>Noting that <i>H</i> is the tour constructed by Approx-TSP-Tour, and putting all of these together: </p> 
+<blockquote>
+<i>c</i>(<i>H</i>) &nbsp; &le; &nbsp; <i>c</i>(<i>W</i>) &nbsp; = &nbsp; 2 <i>c</i>(<i>T</i>) &nbsp;
+&le; &nbsp; 2 <i>c</i>(<i>H</i><sup>*</sup>)
+</blockquote>
+
+<p>So, <i>c</i>(<i>H</i>) &le; 2 <i>c</i>(<i>H</i><sup>*</sup>), and thus
+<big><tt>Approx-TSP-Tour</tt></big> is a 2-approximation algorithm for TSP. (The CLRS text notes that
+there are even better solutions, such as a 3/2-approximation algorithm.)</p>
+
+<!-- --------------------------- -->
+<h3>Closest Point Heuristic</h3>
+
+<p>Another algorithm that is a 2-approximation on the triangle inequality TSP is the <b>closest point
+heuristic</b>, in which one starts with a trivial cycle including a single arbitrarily chosen vertex,
+and at each iteration adds the next closest vertex not on the cycle until the cycle is complete.</p> 
+
+<!-- --------------------------- -->
+<h3>The General TSP</h3>
+
+<p>Above we got our results using a restriction on the TSP. Unfortunately, the general problem is
+harder ...</p> 
+
+<p><i>Theorem:</i> <b>If P &ne; NP, then for any constant &rho; &ge; 1 there is no polynomial time
+approximation algorithm with ratio &rho; for the general TSP.</b></p>
+
+<p>The proof by contradiction shows that if there were such an approximation one can solve instances
+of Hamiltonian Cycle in polynomial time. Since Hamiltonian Cycle is NP-Complete, then P = NP. The
+proof uses a reduction similar to that used in <a href="Topic-24.html">Topic 24</a>, where edges for
+TSP graph <i>G'</i> are given unit cost only if the corresponding edge is in the edge-set <i>E</i>
+for the Hamiltonian Cycle problem graph <i>G</i>:</p> <img
+src="Topic-25/equation-TSP-Ham-Cycle.jpg">
+
+<p>For <em>any</em> &rho;(n) &ge; 1, a TSP approximation algorithm will choose the edges of cost 1
+in <i>G'</i> (because to include even one edge not in <i>E</i> would exceed the approximation
+ratio), thereby finding a Hamiltonian Cycle in <i>G</i> if such a cycle exists. (See text for
+details.)</p>
+
+
+<!-- --------------------------------------------------------- -->
+<hr><h2>Hierarchy of Problem Difficulty</h2>
+
+<p>We have just seen that even within NP, some problems are harder than others in terms of whether
+they allow approximations.</p>
+
+<p>The proof technique of reduction to NP-Complete problems has been used to organize the class NPC
+into problems that can be polynomially approximated and those that cannot under the assumption that
+P &ne; NP. Further discussion can be found in Garey and Johnson (1979). </p>
+
+<p>You can probably guess that the answer to the question I raised in the beginning concerning
+transfer of &rho;(n)-approximation across problem reductions is negative, but <i> why would that be
+the case? Why aren't approximation properties carried across problem reductions?</i></p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Three Strategies </h2>
+
+<p>Various reusable strategies for approximations have been found, three of which we review briefly
+here.</p> 
+
+<!-- --------------------------- -->
+<h3>Greedy Approximations</h3>
+
+<p>Sometimes it is possible to obtain an adequate approximation ratio with a greedy approach. </p>
+Here is a brief example, covered in more detail in CLRS 3.5.3. 
+
+<h4>Set Covering Problem</h4>
+
+<p>Suppose we are given a finite set of elements <i>X</i>, and a "family" or set of subsets <i>F</i>
+such that every element of <i>X</i> belongs to at least one set in <i>F</i>. That is, <i>F</i>
+<u>covers</u> <i>X</i>. But do we need all of the subsets in <i>F</i> to cover <i>X</i>? </p>
+
+<blockquote>The SET-COVER problem is to find a minimum subset of <i>F</i> (minimum number of
+subsets) that cover all of <i>X</i> (the union of the subsets is <i>X</i>).</blockquote>
+
+<p>VERTEX-COVER can be reduced to SET-COVER, so the latter is NP-Complete.</p>
+
+<p>This problem has applications to finding the minimum resources needed for a situation, such as
+the minumum number of people (represented by the subsets of <i>F</i>) with the skills (represented
+by members of <i>X</i>) needed to carry out a task or solve a problem. </p>
+
+<p>A greedy approximation algorithm for SET-COVER is as follows:</p>
+
+<pre>
+  Greedy-Set-Cover (X, F)
+  1  U = X                      // the remaining elements we need to cover
+  2  C = {}                     // the subset of F we have chosen
+  3  while U != {}
+  4      select an S &in; F that maximizes |S &cap; U|
+  5      U = U &minus; S             // we are now covering the elements of S ...
+  6      C = C &cup; {S}           // ... by adding S to our chosen subsets 
+  7  return C 
+</pre> 
+
+<p> CLRS show that Greedy-Set-Cover can be implemented in polynomial time, and furthermore that it
+is an &rho;(<i>n</i>)-approximation algorithm, where &rho;(<i>n</i>) is related to the size of the
+maximum set in <i>F</i>, max{|<i>S</i>| : <i>S</i> &in; <i>F</i>}, a small constant in some
+applications. </p>
+
+<p>You can see CLRS for details: The main point here is to make you aware that sometimes greedy
+algorithms work as approximation algorithms.</p> 
+
+
+<!-- --------------------------- -->
+<h3>Randomized Approximations</h3>
+
+<p>The approximation ratio &rho;(<i>n</i>) of a randomized algorithm is based on its <b>expected
+cost <i>C</i></b>. Otherwise the definition is the same.</p>
+
+<p>A randomized algorithm that achieves an expected cost within a factor &rho;(<i>n</i>) of the
+optimal cost <i>C</i><sup>*</sup> is called a <b> randomized &rho;(<i>n</i>)-approximation algorithm</b>.</p>
+
+<h4>Max-3-CNF Satisfiability</h4> 
+
+<p>Recall that 3-CNF-SAT (<a href="Topic-24.html">Topic 24</a>) asks whether a boolean formula in
+3-conjunctive normal form (3-CNF) is satisfiable by an assignment of truth values to the
+variables.</p>
+
+<p>The Max-3-CNF variation is an optimization problem that seeks to maximize the number of
+conjunctive clauses evaluating to 1. We assume that no clause contains both a variable and its
+negation.</p>
+
+<p>Amazingly, a purely random solution is expected to be pretty good:</p> 
+
+<p><i>Theorem:</i> <b>The randomized algorithm that independently sets each variable of MAX-3-CNF to
+1 with probability 1/2 and to 0 with probabilty 1/2 is a randomized 8/7-approximation algorithm.</b></p>
+
+<p><i>Proof:</i> Given a MAX-3-CNF instance with <i>n</i> variables <i>x</i><sub>1</sub>
+... <i>x</i><sub><i>n</i></sub> and <i>m</i> clauses, set each variable randomly to either 0 or 1
+with probability 1/2 in each case. Define the <em>indicator random variable</em> (<a
+href="Topic-05.html">Topic 5</a>): </p>
+<blockquote>
+Y<sub><i>i</i></sub> = I{clause <i>i</i> is satisfied}.
+</blockquote>
+
+<img src="Topic-25/lemming.jpg" align="right" hspace="5">
+
+<p>A clause is only unsatisfied if all three literals are 0, so Pr{clause <i>i</i> is not satisfied}
+= (1/2)<sup>3</sup> = 1/8. Thus, Pr{clause <i>i</i> is satisfied} = 7/8. By an important lemma from
+<a href="Topic-05.html">Topic 5</a>, E[Y<sub><i>i</i></sub>] = 7/8.</p>
+
+<p>Let Y = <big>&Sigma;</big> Y<sub>1</sub> ... Y<sub><i>m</i></sub> be the number of clauses satisified
+overall. Then:</p>
+<img src="Topic-25/equations-expected-value-Y.jpg">
+
+<p>Since <i>m</i> is the upper bound <i>C</i><sup>*</sup> on the number of satisfied clauses, the
+approximation ratio <i>C</i><sup>*</sup> / <i>C</i> is</p>
+<blockquote>
+<i>m</i> / (7<i>m</i>/8) &nbsp; =  &nbsp; 8/7.
+</blockquote>
+
+<p>The restriction on a variable and its negation can be lifted. This is just an example:
+randomization can be applied to many different problems &minus; but don't always expect it to work out so
+well!</p>
+
+<!-- --------------------------- -->
+<h3>Linear Programming Approximations</h3>
+
+<p>Sometimes we can "relax" a problem to make it amenable to linear programming (<a
+href="Topic-21.html">Topic 21</a>). For example ...</p>
+
+<h4>Minimum-Weight Vertex-Cover</h4> 
+
+<p>In the <b>minimum-weight vertex-cover</b> problem, we are given an undirected graph <i>G</i> =
+(<i>V</i>, <i>E</i>), and a weight function <i>w</i>(<i>v</i>) &ge; 0 for <i>v</i> &in;
+<i>V</i>. We define the weight of a vertex cover <i>V'</i> to be
+<big>&Sigma;</big><sub>v&in;<i>V'</i></sub> <i>w</i>(<i>v</i>) and seek to find a vertex cover of minimum
+weight. </p> 
+
+<h4>Linear Programming Relaxation</h4> 
+
+<p>Let each vertex <i>v</i> &in; <i>V</i> be associated with a variable <i>x</i>(<i>v</i>), which is
+1 iff <i>v</i> in the vertex cover and 0 otherwise.</p> 
+
+<p>Since any edge (<i>u</i>, <i>v</i>) must be covered, <i>x</i>(<i>u</i>) + <i>x</i>(<i>v</i>) &ge;
+1. This leads to the NP-Hard <b>0-1 integer linear program</b>:</p>
+<img src="Topic-25/equations-0-1-integer-programming.jpg">
+
+<p>Now let's "relax" the formulation to allow <i>x</i>(<i>v</i>) to range over 0 &le;
+<i>x</i>(<i>v</i>) &le; 1. Then the problem can be written as this <b>linear programming
+relaxation</b>:</p>
+<img src="Topic-25/equations-linear-programming-relaxation.jpg">
+
+<p>Since a solution to the 0-1 integer version of the problem is a legal solution to the relaxed
+version of the problem, the value of an optimal solution to this latter relaxed program gives a
+lower bound on the value of an optimal solution to the 0-1 integer problem.</p>
+
+<p>The solution to the relaxed linear program can be converted to an approximation of the integer
+linear program with this algorithm:</p>
+
+<img src="Topic-25/code-approx-min-weight-vc.jpg">
+
+<p>This procedure essentially "rounds" the fractional values to 0 or 1.</p>
+
+<h4>Analysis</h4>
+
+<p><i>Theorem:</i> <b><big><tt>Approx-Min-Weight-VC</tt></big> is a polynomial 2-approximation
+algorithm for the mimimum-weight vertex-cover problem.</b></p>
+
+<p><i>Proof:</i> There is a polynomial time algorithm for linear programming (line 2), and lines 3-5
+are also polynomial in time. So, <big><tt>Approx-Min-Weight-VC</tt></big> is polynomial.</p>
+
+<p>The result must be a vertex cover, since for any edge (<i>u</i>, <i>v</i>) the constraint
+<i>x</i>(<i>u</i>) + <i>x</i>(<i>v</i>) &ge; 1 implies that at least one of the vertices must have a
+value of 1/2, so is included in the vertex cover by lines 4-5 of the algorithm, thereby covering the
+edge.</p>
+
+<p>To show 2-approximation, let <i>C</i><sup>*</sup> be an optimal solution and let
+<i>z</i><sup>*</sup> be the value of the solution to the relaxed linear program shown above.</p>
+
+<p>An optimal solution <i>C</i><sup>*</sup> must be a feasible solution to the relaxed linear
+program for which <i>z</i><sup>*</sup> is an optimal solution, so <i>z</i><sup>*</sup> cannot be any
+worse than <i>C</i><sup>*</sup>: </p>
+
+<blockquote>
+<i>z</i><sup>*</sup> &nbsp; &le; &nbsp; <i>w</i>(<i>C</i><sup>*</sup>)
+</blockquote>
+
+<p>We've already established that every edge is covered. We bound the weight of this cover
+from above by transforming the value of the optimal solution to the relaxed problem:</p>
+<img src="Topic-25/equations-z-star.jpg">
+
+<p>So, <i>w</i>(<i>C</i>) &le; 2 <i>z</i><sup>*</sup>. This result with the prior result of
+<i>z</i><sup>*</sup> &le; <i>w</i>(<i>C</i><sup>*</sup>) gives:</p>  
+<blockquote>
+  <i>w</i>(<i>C</i>) &nbsp; &le; &nbsp; 2<i>z</i><sup>*</sup> &nbsp; &le; &nbsp;
+  2<i>w</i>(<i>C</i><sup>*</sup>) 
+</blockquote>
+
+<p>That is, <i>w</i>(<i>C</i>) &le; 2<i>w</i>(<i>C</i><sup>*</sup>), so we have 2-approximation.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Other Examples</h2>
+
+<p>It is worth reading the other examples in the text. </p>
+
+<p>Section 35.3 shows how the Set Covering Problem, which has many applications, can be approximated
+using a simple greedy algorithm with a logarithmic approximation ratio.</p>
+
+<p>Section 35.5 uses the Subset Sum problem to show how an exponential but optimal algorithm can be
+transformed into a fully polynomial time approximation scheme, meaning that we can give the
+algorithm a parameter specifying the desired approximation ratio.</p>
+
+<p>Many more examples are suggested in the problem set for the chapter.</p>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Summary of Strategies</h2>
+
+<p>Faced with an NP Hard optimization problem, your options include: </p>
+<ol>
+  <li>Use a known exponential algorithm and stick to small problems.</li>
+  <li>Figure out whether you can restrict your problem to a special case for which polynomial
+      solutions are known.</li> 
+  <li>Give up on optimality, and find or design an approximation algorithm that gives "good enough"
+      results. Strategies include:
+      <ul>
+        <li>Design a clever approximation using some heuristic (e.g., as for vertex cover and TSP in
+        this lecture). </li>
+        <li>Model the problem as an integer linear program and relax it to allow real valued
+        solutions that are then used (e.g. by rounding) to determine an approximate integer
+        solution. </li>
+        <li>Get lucky and show that randomly choosing a solution is good enough!</li> 
+      </ul> 
+  </li> 
+</ol> 
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Mon May  5 16:37:32 HST 2014 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition, and from Garey & Johnson (1979), Computers and Intractability.</br> 
+</body>
+</html>

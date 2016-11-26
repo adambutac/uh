@@ -1,0 +1,19 @@
+#!/bin/bash
+
+html_input=$1
+url=$2
+
+if [ -z "$1" ] 
+then
+    echo "You must specify an html file to scrape."
+    exit 
+fi
+
+if [ -z "$2" ]
+then 
+    echo "You must specify a URL to pull from."
+    exit 
+fi
+
+cat $html_input | grep $url | cut -d "\"" -f2 > scraped
+

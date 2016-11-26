@@ -1,0 +1,521 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #6: Hash Tables</title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #6: Hash Tables</h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+<ol>
+  <li>Motivations and Introduction</li>
+  <li>Hash Tables with Chaining </li>
+  <li>Hash Functions and Universal Hashing</li> 
+  <li>Open Addressing Strategies</li>
+</ol>
+
+<h2> Readings and Screencasts </h2>
+<ul> 
+  <li>CLRS Sections 11.1-11.4. (Exclude 11.5)</li>
+  <li>Screencasts <a href="http://youtu.be/NMm1BKomO_Y">6A</a>,
+                  <a href="http://youtu.be/ei7T9Y97u0M">6B</a>,
+                  <a href="http://youtu.be/jW4wCfz3DwE">6C</a>,
+                  <a href="http://youtu.be/SGGP_HJNUts">6D</a>
+                  (also in Laulima and iTunesU)</li>
+</ul> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Motivations and Introduction</h2>
+
+<p>Many applications only need the insert, search and delete
+operations of a <a href="Topic-04.html#dynamicsetadt">dynamic set</a>. Example:
+symbol table in a compiler.</p>
+
+<p>Hash tables are an effective approach.  Under reasonable assumptions, they have O(1) operations,
+but they can be &Theta;(n) worst case </p>
+
+<h3>Direct Addressing</h3>
+
+<p>Hash tables generalize arrays. Let's look at the idea with arrays first. Given a key <i>k</i>
+from a universe <i>U</i> of possible keys, a <b>direct address table</b> stores and retrieves the
+element in position <i>k</i> of the array. </p> <img src="Topic-06/Fig-11-1-direct-address.jpg">
+
+<p>Direct addressing is applicable when we can allocate an array with one element for every key
+(i.e., of size |<i>U</i>|). It is trivial to implement:</p>
+<img src="Topic-06/pseudocode-direct-address.jpg">
+
+<p>However, often the space of possible keys is much larger than the number of actual keys we
+expect, so it would be wasteful of space (and sometimes not possible) to allocate an array of size
+|<i>U</i>|.</p> 
+
+<h3>Hash Tables and Functions</h3>
+
+<p><b>Hash tables</b> are also arrays, but typically of size proportional to the number of keys
+expected to be stored (rather than to the number of keys). </p>
+
+<p>If the expected keys K &sub; U, the Universe of keys, and |K| is substantially smaller than |U|,
+then hash tables can reduce storage requirements to &Theta;(|K|). </p> 
+
+<p>A <b>hash function</b> <i>h(k)</i> maps the larger universe U of external keys to indices into the
+array. Given a table of size <i>m</i> with zero-based indexing (we shall see why this is useful):</p>
+<ul>
+  <li><i>h</i> : U &rarr; {0, 1, ..., <i>m</i>-1}.</li> 
+  <li>We say that <i>k</i> <b>hashes</b> to slot <i>h(k)</i>. </li> 
+</ul> 
+
+<h3> Collisions </h3> 
+
+<p>The major issue to deal with in designing and implementing hash tables is what to do when the
+hash function maps multiple keys to the same table entry. </p>
+<img src="Topic-06/Fig-11-2-collisions.jpg"> 
+
+<p>Collisions may or may not happen when |K| &le; <i>m</i>, but definitely happens when |K| &gt;
+<i>m</i>. <i>(Is there any way to avoid this?)</i></p>
+
+<p>There are two major approaches: Chaining (the preferred method) and Open Addressing. We'll look
+at these and also hash function design.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Hash Tables with Chaining</h2>
+
+<p>A simple resolution: Put elements that hash to the same slot into a linked list. This is called
+<i>chaining</i> because we chain elements off the slot of the hash table.</p>
+<ul>
+  <li> Slot <i>j</i> points to the head of a list of all stored elements that hash to <i>j</i>, or to
+  NIL if there are no such elements.</li> 
+  <li> Doubly linked lists may be used when deletions are expected to be frequent.</li>
+  <li> Sentinels can also be used to simplify the code.</li>
+</ul> 
+<img src="Topic-06/Fig-11-3-chaining.jpg">
+
+<h3>Pseudocode for Chaining</h3>
+
+<p>Implementation is simple if you already have implemented linked lists:</p>
+<img src="Topic-06/pseudocode-chained-hashing.jpg">
+
+<p><i>What are the running times for these algorithms? Which can we state directly,
+and what do we need to know to determine the others?</i> </p> 
+
+<h3>Analysis of Hashing with Chaining</h3>
+
+<p>How long does it take to find an element with a given key, or to determine that there is no such
+element?</p>
+<ul>
+  <li> Analysis is in terms of the <b>load factor <i>&alpha; = n/m</i></b>, where
+    <ul>
+      <li> <i>n</i> = number of elements in the table </li>
+      <li> <i>m</i> = number of slots in the table = number of (possibly empty) linked lists</li>
+    </ul>
+  <li> The load factor &alpha; is the average number of elements per linked list. </li>
+  <li> Can have &alpha; &lt; 1; &alpha; = 1; or &alpha; &gt; 1.  </li>
+  <li> Worst case is when all <i>n</i> keys hash to the same slot. <br>
+       <i>Why? What happens? &Theta;(_____?)</i> </li>
+  <li> Average case depends on how well the hash function distributes the keys among the
+       slots. </li>
+</ul>
+
+<p>Let's analyze averge-case performance under the assumption of <b>simple uniform hashing:</b> any
+given element is equally likely to hash into any of the <i>m</i> slots: </p>
+<ul> 
+  <li>For <i>j</i> = 0, 1, ..., <i>m</i>-1, denote the length of list T[<i>j</i>] by
+      <i>n<sub>j</sub></i>.</li>
+  <li>Then <i>n</i> = <i>n<sub>0</sub></i> + <i>n<sub>1</sub></i> + ... +
+      <i>n<sub>m-1</sub></i>. </li>
+  <li>Average value of <i>n<sub>j</sub></i> is E[<i>n<sub>j</sub></i>] = &alpha; = <i>n/m</i>. </li>
+  <li> Assuming <i>h(k)</i> computed in O(1), so time to search for <i>k</i> depends on length
+  <i>n<sub>h(k)</sub></i> of the list T[<i>h(k)</i>].
+</ul>
+
+<p>Consider two cases: Unsuccessful and Successful search. The former analysis is simpler because
+you always search to the end, but for successful search it depends on where in T[<i>h(k)</i>] the
+element with key <i>k</i> will be found. </p>
+
+<h4>Unsuccessful Search</h4>
+
+<p>Simple uniform hashing means that any key not in the table is equally likely to hash to any of
+the <i>m</i> slots.</p>
+
+<p>We need to search to end of the list T[<i>h(k)</i>]. It has expected length
+E[<i>n<sub>h(k)</sub></i>] = &alpha; = <i>n/m</i>.  </p>
+
+<p>Adding the time to compute the hash function gives <b>&Theta;(1 + &alpha;)</b>. (We leave in the
+"1" term for the initial computation of <i>h</i> since &alpha; can be 0, and we don't want to say
+that the computation takes &Theta;(0) time). </p>
+
+<h4>Successful Search</h4>
+
+<p>We assume that the element <i>x</i> being searched for is equally likely to be any of the
+<i>n</i> elements stored in the table. </p>
+
+<p>The number of elements examined during a successful search for <i>x</i> is 1 more than the number
+of elements that appear before <i>x</i> in <i>x</i>'s list (because we have to search them, and then
+examine <i>x</i>). </p>
+
+<p>These are the elements inserted <i>after x</i> was inserted (because we insert at the head of the
+list).</p>
+
+<p>Need to find on average, over the <i>n</i> elements <i>x</i> in the table, how many elements were
+inserted into <i>x</i>'s list after <i>x</i> was inserted. <i>Lucky we just studied indicator random
+variables!</i></p>
+
+<p>For <i>i</i> = 1, 2, ..., <i>n</i>, let <i>x<sub>i</sub></i> be the <i>i</i>th element inserted
+into the table, and let <i>k<sub>i</sub></i> = <i>key</i>[<i>x<sub>i</sub></i>].</p>
+
+<p>For all <i>i</i> and <i>j</i>, define the indicator random variable:</p>
+<blockquote>
+  <i>X<sub>ij</sub></i> = I{<i>h(k<sub>i</sub>)</i> = <i>h(k<sub>j</sub>)</i>}. &nbsp; &nbsp;
+  <i>(The event that keys <i>k<sub>i</sub></i> and <i>k<sub>j</sub></i> hash to the same slot.)</i> 
+</blockquote>
+
+<img src="Topic-06/lemming.jpg" align="right"> 
+<p>Simple uniform hashing implies that Pr{<i>h(k<sub>i</sub>)</i> = <i>h(k<sub>j</sub>)</i>} =
+1/<i>m</i> <i>(Why?)</i> </p>
+
+<p> Therefore, E[<i>X<sub>ij</sub></i>] = 1/<i>m</i> by Lemma 1 (<a href="Topic-05.html#lemma1">Topic
+#5</a>). </p>
+
+<p>The expected number of elements examined in a successful search is those elements <i>j</i> that
+are inserted after the element <i>i</i> of interest <i>and</i> that end up in the same linked list
+(<i>X<sub>ij</sub></i>):</p>
+
+<img src="Topic-06/analysis-chaining-1.jpg">
+<ul>
+  <li>The innermost summation is adding up, for all <i>j</i> inserted after <i>i</i>
+(<i>j</i>=<i>i</i>+1), those that are in the same hash table (when <i>X<sub>ij</sub></i> = 1).</li>
+  <li> The outermost summation runs this over all <i>n</i> of the keys inserted (indexed by <i>i</i>),
+and finds the average by dividing by <i>n</i>.</li>
+</ul>
+
+<p>I fill in some of the implicit steps in the rest of the text's analysis. First, by linearity of
+expectation we can move the E in: </p>
+
+<img src="Topic-06/analysis-chaining-2.jpg">
+
+<p>That is the crucial move: instead of analyzing the probability of complex events, use indicator
+random variables to break them down into simple events that we know the probabilities for. In this
+case we know E[<i>X<sub>i,j</sub></i>] (if <i>you</i> don't know, ask the lemming above): </p>
+
+<img src="Topic-06/analysis-chaining-3.jpg">
+
+<p>Multiplying 1/<i>n</i> by the terms inside the summation, </p>
+<ul>
+  <li> For the first term, we get &Sigma;<sub><i>i</i>=1,<i>n</i></sub>1/<i>n</i>, which is just 
+       <i>n</i>/<i>n</i> or 1</li> 
+  <li> Move 1/<i>m</i> outside the summation of the second term to get 1/<i>nm</i>. This leaves
+       &Sigma;<sub><i>i</i>=1,<i>n</i></sub>(&Sigma;<sub><i>j</i>=<i>i</i>+1,<i>n</i></sub>1),
+       which simplifies as shown below (if you added 1 <i>n</i> times, you would overshoot by
+       <i>i</i>).</li>
+</ul>
+
+<img src="Topic-06/analysis-chaining-4.jpg">
+
+<p>Splitting the two terms being summed, the first is clearly <i>n</i><sup>2</sup>, and the second
+is the familiar sum of the first <i>n</i> numbers:</p>
+
+<img src="Topic-06/analysis-chaining-5.jpg"><br> 
+<img src="Topic-06/analysis-chaining-6.jpg">
+
+<p>Distributing the 1/<i>nm</i>, we get
+1 + (<i>n</i><sup>2</sup>/<i>nm</i> - <i>n</i>(<i>n</i>+1)/2<i>nm</i> &nbsp; = &nbsp;
+1 + <i>n</i>/<i>m</i> - (<i>n</i>+1)/2<i>m</i> &nbsp; = &nbsp;
+1 + 2<i>n</i>/2<i>m</i> - (<i>n</i>+1)/2<i>m</i>, and now we can combine the two fractions: </p>
+
+<img src="Topic-06/analysis-chaining-7.jpg">
+
+<p>Now we can turn two instances of <i>n</i>/<i>m</i> into &alpha; with this preparation:
+1 + (<i>n</i> - 1)/2<i>m</i>  &nbsp; = &nbsp;
+1 + <i>n</i>/2<i>m</i> - 1/2<i>m</i> &nbsp; = &nbsp;
+1 + &alpha;/2 - n/2<i>mn</i> &nbsp; = &nbsp;</p>
+
+<img src="Topic-06/analysis-chaining-8.jpg">
+
+<p></p>
+
+<p>Adding the time (1) for computing the hash function, the expected total time for a successful
+search is:</p>
+
+<blockquote>
+  &Theta;(2 + &alpha;/2 - &alpha;/2<i>n</i>) = <b>&Theta;(1 + &alpha;).</b> 
+</blockquote>
+
+<p>since the third term vanishes in significance as <i>n</i> grows, and the constants 2 and 1/2 have
+&Theta;(1) growth rate.</p>
+
+<p> Thus, <b>search is an average of &Theta;(1 + &alpha;) in either case.</b></p>
+
+<p>If the number of elements stored <i>n</i> is bounded within a constant factor of the number of
+slots <i>m</i>, i.e., <i>n</i> = O(<i>m</i>), then &alpha; is a constant, and search is O(1) on
+average.</p>
+
+<p>Since insertion takes O(1) worst case and deletion takes O(1) worst case when doubly linked lists
+are used, all three operations for hash tables are O(1) on average.</p>
+
+<small><p><i>(I went through that analysis in detail to show again the utility of indicator random
+variables and to demonstrate what is possibly the most crucial fact of this chapter, but we won't do
+the other analyses in detail. With perserverence you can similarly unpack the other
+analyses.)</i></p></small>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Hash Functions and Universal Hashing</h2>
+
+<p>Ideally a hash function satisfies the assumptions of simple uniform hashing.</p>
+
+<p> This is not possible in practice, since we don't know in advance the probability distribution of
+the keys, and they may not be drawn independently.
+
+<p>Instead, we use heuristics based on what we know about the domain of the keys to create a hash
+function that performs well. </p>
+
+<h3>Keys as natural numbers </h3>
+
+<p>Hash functions assume that the keys are natural numbers. When they are not, a conversion is
+needed. Some options:</p>
+<ul>
+  <li> Floating point numbers: If an integer is required, sum the mantissa and exponent, treating
+       them as integers.</li> 
+  <li> Character string: Sum the ASCII or Unicode values of the characters of the string. </li>
+  <li> Character string: Interpret the string as an integer expressed in some radix notation. (This
+  gives very large integers.) </li>
+</ul> 
+
+<h3>Division method</h3>
+
+<p>A common hash function: <b><i>h(k)</i> = <i>k</i> mod <i>m</i></b>.<br>
+<i>(Why does this potentially produce all legal values, and only legal values?)</i></p>  
+
+<p><i>Advantage:</i> Fast, since just one division operation required. </p>
+
+<p><i>Disadvantage:</i> Need to avoid certain values of <i>m</i>, for example: </p>
+<ul>
+  <li> Powers of 2. If <i>m</i> = 2<sup><i>p</i></sup> for integer <i>p</i> then <i>h(k)</i> is the
+       least significant <i>p</i> bits of <i>k</i>. <br>
+       (There may be a domain pattern that makes the keys clump together).  </li>
+  <li> If character strings are interpreted in radix 2<sup><i>p</i></sup> then <i>m</i> =
+       2<sup><i>p</i></sup> - 1 is a bad choice: permutations of characters hash the same. </li>
+</ul>
+
+<p>A prime number not too close to an exact power of 2 is a good choice for <i>m</i>. </p>
+
+
+<h3>Multiplication method</h3>
+<p><b><i>h(k)</i> = Floor(<i>m</i>(<i>k</i> A mod 1))</b>, where <i>k</i> A mod 1 =
+fractional part of <i>k</i>A.  </p>
+<ol>
+  <li> Choose a constant A in range 0 &lt; A &lt; 1. </li>
+  <li> Multiply <i>k</i> by A</li>
+  <li> Extract the fractional part of <i>k</i>A</li>
+  <li> Multiply the fractional part by <i>m</i></li>
+  <li> Take the floor of the result. </li>
+</ol> 
+
+<p><i>Disadvantage:</i> Slower than division. </p>
+
+<p><i>Advantage:</i> The value of <i>m</i> is not critical. </p>
+
+<p>The book discusses an implementation that we won't get into ...</p>
+
+<img src="Topic-06/Fig-11-4-multiplication-hashing.jpg"> 
+
+<h3>Universal Hashing <img src="Topic-06/badguy.jpg" align="right"></h3> 
+
+<p>Our malicious adversary is back! He's choosing keys that all hash to the same slot, giving worst
+case behavior and gumming up our servers! What to do?</p>
+
+<p>Random algorithms to the rescue: randomly choose a different hash function each time you
+construct and use a new hash table. </p>
+
+<p>But it has to be a good one. Can we define a family of good candidates?</p>
+
+<p>Consider a finite collection <i>&Eta;</i> of hash functions that map universe U of keys into {0, 1, ...,
+<i>m</i>-1}. </p>
+
+<p><i>&Eta;</i> is <b>universal</b> if for each pair of keys <i>k, l</i> &isin; U, where <i>k &ne; l</i>,
+the number of hash functions <i>h &isin; &Eta;</i> for which <i>h(k) = h(l)</i> is less than or
+equal to <i>|&Eta;|/m</i> (that's the size of <i>&Eta;</i> divided by <i>m</i>). </p>
+
+<p>In other words, with a hash function <i>h</i> chosen randomly from <i>&Eta;</i>, the probability
+of collision between two different keys is no more than <i>1/m</i>, the chance of a collision when
+choosing two slots randomly and independently.</p>
+
+<p>Universal hash functions are good because (proven as Theorem 11.3 in text): </p>
+<ul>
+  <li> If <i>k</i> is not in the table, the expected length E[<i>n<sub>h(k)</sub></i>] of the list that
+       <i>k</i> hashes to is less than or equal to &alpha;. </li>
+  <li> If <i>k</i> is in the table, the expected length E[<i>n<sub>h(k)</sub></i>] of the list that
+       holds <i>k</i> is less than or equal to 1 + &alpha;. </li>
+</ul>
+
+<p>Therefore, the expected time for search is O(1).
+
+<p>One candidate for a collection <i>&Eta;</i> of hash functions is:</p>
+<blockquote>
+<i>&Eta;</i> = {<i>h<sub>ab</sub></i>(<i>k</i>) :  <b><i>h<sub>ab</sub></i>(<i>k</i>) = ((<i>ak +
+b</i>) mod <i>p</i>) mod <i>m</i>)},</b>  where <i>a</i> &isin; {1, 2, ..., <i>p</i>-1} and <i>b</i> &isin; {0,
+1, ..., <i>p</i>-1}, where <i>p</i> is prime and larger than the largest key. 
+</blockquote>
+<p>Details in text, including proof that this provides a universal set of hash functions. Java built
+in hash functions take care of much of this for you: read the Java documentation for details.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2>Open Addressing Strategies</h2>
+
+<p>Open Addressing seeks to avoid the extra storage of linked lists by putting all the keys in the
+hash table itself.</p>
+
+<p>Of course, we need a way to deal with collisions. If a slot is already occupied we will apply a
+systematic strategy for searching for alternative slots. This same strategy is used in both
+insertion and search. </p>
+
+<h3> Probes and <i>h</i>(<i>k</i>,<i>i</i>)</h3>
+
+<p>Examining a slot is called a <b>probe</b>. We need to extend the hash function <i>h</i> to take
+the probe number as a second argument, so that <i>h</i> can try something different on subsequent
+probes. We count probes from 0 to <i>m</i>-1 (you'll see why later), so the second argument takes on
+the same values as the result of the function:</p>
+
+<blockquote>
+<b><i>h</i> : <i>U</i> x {0, 1, ... <i>m</i>-1} &rarr; {0, 1, ... <i>m</i>-1}</b><br>
+</blockquote>
+
+<p>We require that the <b>probe sequence</b></p>
+
+<blockquote>
+&lang; <i>h</i>(<i>k</i>,0), &nbsp; <i>h</i>(<i>k</i>,1) &nbsp;  ... &nbsp; <i>h</i>(<i>k</i>,<i>m</i>-1) &rang;
+</blockquote>
+
+<p> be a permutation of &lang; 0, 1, ... <i>m</i>-1 &rang;. Another way to state this requirement is
+that all the positions are visited. </p>
+
+<p>There are three possible outcomes to a probe: <i>k</i> is in the slot probed (successful search);
+the slot contains NIL (unsuccessful search); or some other key is in the slot (need to continue
+search). </p>
+
+<p>The strategy for this continuation is the crux of the problem, but first let's look at the
+general pseudocode.</p>
+
+<h3>Pseudocode</h3>
+
+<p><b>Insertion</b> returns the index of the slot it put the element in <i>k</i>, or throws an error
+if the table is full:</p>
+<img src="Topic-06/pseudocode-open-hash-insert.jpg">
+
+<p><b>Search</b> returns either the index of the slot containing element of key <i>k</i>, or NIL if
+the search is unsuccessful:</p> 
+<img src="Topic-06/pseudocode-open-hash-search.jpg">
+
+<p><b>Deletion</b> is a bit complicated. We can't just write NIL into the slot we want to
+delete. <i>(Why?)</i> </p>
+
+<p>Instead, we write a special value DELETED. During search, we treat it as if it were a
+non-matching key, but insertion treats it as empty and reuses the slot.</p>
+
+<p><i>Problem:</i> the search time is no longer dependent on &alpha;. <i>(Why?)</i></p>
+
+<p>The ideal is to have <b>uniform hashing</b>, where each key is equally likely to have any of the
+<i>m</i>! permutations of &lang;0, 1, ... <i>m</i>-1&rang; as its probe sequence. But this is hard
+to implement: we try to guarantee that the probe sequence is <i>some</i> permutation of &lang;0, 1,
+... <i>m</i>-1&rang;.</p>
+
+<p>We will define the hash functions in terms of <b> auxiliary hash functions</b> that do the
+initial mapping, and define the primary function in terms of its <i>i</i>th iterations, where
+0 &le; <i>i</i> &lt <i>m</i>. </p>
+
+<h3>Linear Probing </h3>
+
+<p>Given an <b>auxiliary hash function <i>h'</i></b>, the probe sequence starts at
+<i>h'</i>(<i>k</i>), and continues sequentially through the table: </p>
+
+<blockquote>
+<i>h</i>(<i>k</i>,<i>i</i>) = (<i>h'</i>(<i>k</i>) + <i>i</i>) mod <i>m</i>
+</blockquote> 
+
+<p><i>Problem:</i> <b>primary clustering</b>: sequences of keys with the same <i>h'</i> value build
+up long runs of occupied sequences.</p>
+
+<h3>Quadratic Probing </h3>
+
+<p>Quadratic probing is attempt to fix this ... instead of reprobing linearly, QP "jumps" around the
+table according to a quadratic function of the probe, for example: </p>
+
+<blockquote>
+
+<i>h</i>(<i>k</i>,<i>i</i>) = (<i>h'</i>(<i>k</i>) + <i>c</i><sub>1</sub><i>i</i> +
+<i>c</i><sub>2</sub><i>i</i><sup>2</sup>) mod <i>m</i>,<br>
+where <i>c</i><sub>1</sub> and <i>c</i><sub>2</sub> are constants.
+
+</blockquote> 
+
+<p><i>Problem:</i> <b>secondary clustering</b>: although primary clusters across sequential runs of
+table positions don't occur, two keys with the same <i>h'</i> may still have the same probe sequence,
+creating clusters that are broken across the same sequence of "jumps".</p>
+
+<h3>Double Hashing</h3>
+
+<p>A better approach: use two auxiliary hash functions <i>h<sub>1</sub></i> and
+<i>h</i><sub>2</sub>, where <i>h</i><sub>1</sub> gives the initial probe and <i>h</i><sub>2</sub>
+gives the remaining probes (here you can see that having <i>i</i>=0 initially drops out the second
+hash until it is needed):
+<img src="Topic-06/Fig-11-5-double-hashing.jpg" align="right">
+<blockquote>
+<i>h</i>(<i>k</i>,<i>i</i>) = (<i>h</i><sub>1</sub>(<i>k</i>) + <i>ih</i><sub>2</sub>(<i>k</i>)) mod
+<i>m</i>.
+</blockquote> 
+
+<p><i>h</i><sub>2</sub>(<i>k</i>) must be relatively prime to <i>m</i> (relatively prime means they have
+no factors in common other than 1) to guarantee that the probe sequence is a full permutation of  &lang;0, 1,
+... <i>m</i>-1&rang;. Two approaches:</p>
+<ul>
+  <li> Choose <i>m</i> to be a power of 2 and <i>h</i><sub>2</sub> to always produce an odd number
+  &gt; 1.</li> 
+  <li> Let <i>m</i> be prime and have 1 &lt; <i>h</i><sub>2</sub>(<i>k</i>) &lt; <i>m</i>. <br>
+  (The example
+  figure is <i>h</i><sub>1</sub>(<i>k</i>) = <i>k</i> mod 13, and <i>h</i><sub>2</sub>(<i>k</i>) = 1 + (<i>k</i>
+  mod 11).)
+</ul>
+
+<p>There are &Theta;(<i>m</i><sup>2</sup>) different probe sequences, since each possible combination
+of <i>h</i><sub>1</sub>(<i>k</i>) and <i>h</i><sub>2</sub>(<i>k</i>) gives a different probe sequence. This is an
+improvement over linear or quadratic hashing.</p>
+
+<h3>Analysis of Open Addressing</h3>
+
+<p>The textbook develops two theorems you will use to compute the expected number of probes for
+unsuccessful and successful search. (These theorems require &alpha; &lt; 1 because an expression
+1/1&minus;&alpha; is derived and we don't want to divide by 0.)</p>
+
+<blockquote>
+<b>Theorem 11.6:</b> Given an open-address hash table with load factor &alpha; =
+<i>n</i>/<i>m</i> &lt; 1, the expected number of probes in an <i><b>unsuccessful</b></i> search is
+at most <b>1/(1 &minus; &alpha;)</b>, assuming uniform hashing.
+</blockquote> 
+
+<blockquote>
+<b>Theorem 11.8:</b> Given an open-address hash table with load factor &alpha; = <i>n</i>/<i>m</i>
+&lt; 1, the expected number of probes in a <i><b>successful</b></i> search is at most
+<b>(1/&alpha;) ln (1/(1 &minus; &alpha;))</b>, assuming uniform hashing and assuming that each key in
+the table is equally likely to be searched for.
+</blockquote> 
+
+<p>We leave the proofs for the textbook, but note particularly the "intuitive interpretation" in the
+proof of 11.6 of the <b><i>expected number of probes</i></b> on page 275:</p>
+
+<blockquote>
+E[<i>X</i>] &nbsp; = &nbsp; 1/(1-&alpha;) &nbsp; = &nbsp;  1 &nbsp; + &nbsp; &alpha; &nbsp; + &nbsp; &alpha;<sup>2</sup> &nbsp;
++ &nbsp; &alpha;<sup>3</sup> &nbsp; + &nbsp; ...
+</blockquote> 
+
+<p>We always make the first probe (1). With probability &alpha; &lt; 1, the first probe
+finds an occupied slot, so we need to probe a second time (&alpha;). With probability
+&alpha;<sup>2</sup>, the first two slots are occupied, so we need to make a third probe ... </p>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Sun Feb 16 02:14:59 HST 2014 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition.</br> 
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #18: Single Source Shortest Paths</title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #18: Single Source Shortest Paths </h1><hr> 
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+
+<p>Today's Theme: Relax!</p> 
+<ol>
+  <li>Shortest Paths Problems </li>
+  <li>Bellman-Ford Algorithm</li>
+  <li>Shortest Paths in a DAG </li>
+  <li>Dijkstra's Algorithm </li>
+</ol>
+
+<h2>Readings and Screencasts</h2>
+<ul>
+  <li>Required: CLRS 3rd Ed., Sections 24.1-24.3.</li>
+  <li>See also: Sedgewick (1984) Chapter 31 for light conceptual introduction (in Laulima),
+  or Sedgewick & Wayne (2001) Algorithms Chapter 4 for code and application examples.</li> 
+  <li>Screencasts <a href="http://youtu.be/S7rzpWwICo8">18 A Intro</a>, 
+                  <a href="http://youtu.be/4Iy0RalrsXo">18 B Bellman-Ford </a>,
+                  <a href="http://youtu.be/0wfNtfhHlqE">18 C Dijkstra</a>.
+</ul>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Shortest Paths Problems </h2>
+
+<p>or how to get there from here ...</p>
+
+<!-- ----------- -->
+<h3>Definition</h3>
+
+<p>Input is a directed graph <i>G</i> = (<i>V</i>, <i>E</i>) and a <b><i>weight function</i></b>
+<i>w</i>: <i>E</i> &rarr; &real;.</p>
+
+<p>Define the <b><i>path weight</i> <i>w</i>(<i>p</i>) </b> of path <i>p</i> = &lang;<i>v</i><sub>0</sub>,
+<i>v</i><sub>1</sub>, ... <i>v<sub>k</sub></i>&rang; to be the sum of edge weights on the path:</p>
+
+<img src="Topic-18/sum-of-weights.jpg">
+
+<p>Then the <b><i>shortest path weight</i></b> from <i>u</i> to <i>v</i> is:</p>
+<img src="Topic-18/shortest-path-definition.jpg">
+<p>A <b>shortest path</b> from <i>u</i> to <i>v</i> is any path such that <i>w</i>(<i>p</i>) =
+&delta;(<i>u</i>, <i>v</i>). </p>
+
+<!-- ----------- -->
+<h3>Examples</h3>
+
+<p>In our examples the shortest paths will always start from <i>s</i>, the <b><i>source</i></b>. The
+&delta; values will appear inside the vertices, and shaded edges show the shortest paths.</p>
+<img src="Topic-18/Fig-24-2-shortest-paths-example-alt.jpg">
+
+<p>As can be seen, shortest paths are not unique.</p> 
+
+<!-- ----------- -->
+<h3>Variations</h3>
+<ul>
+  <li><b><i>Single-Source:</i></b> from <i>s</i> to every <i>v</i> &in; <i>V</i> (the version we consider)</li>
+  <li><b><i>Single-Destination:</i></b> from every <i>v</i> &in; <i>V</i> to some <i>d</i>. (Solve by reversing
+      the links and solving single source.) </li>
+  <li><b><i>Single-Pair:</i></b> from some <i>u</i> to some <i>v</i>. Every known algorithm takes
+      just as long as solving Single-Source.</i></b> (<i>Why might that be the case?</i>)</li>
+  <li><b><i>All-Pairs:</i></b> for every pair <i>u</i>, <i>v</i> &in; <i>V</i>. Next lecture.</li> 
+</ul>
+
+<!-- -------------------- -->
+<h3>Negative Weight Edges</h3>
+
+<p>These are OK as long as no negative-weight cycles are reachable from the source <i>s</i>. Fill in
+the blanks:</p>
+<img src="Topic-18/Fig-24-1-negative-weights-2.jpg">
+
+<p>If a negative-weight cycle is accessible, it can be iterated to make <i>w</i>(<i>s</i>, <i>v</i>)
+arbitarily small for all <i>v</i> on the cycle: </p> 
+<img src="Topic-18/Fig-24-1-negative-weights-3.jpg">
+
+<p>Some algorithms can detect negative-weight cycles and others cannot, but when they are present
+shortest paths are not well defined.</p> 
+
+<!-- ----------- -->
+<h3>Cycles</h3>
+<p>Shortest paths cannot contain cycles.</p>
+<ul>
+  <li>We already ruled out negative-weight cycles.</li>
+  <li>If there is a positive-weight cycle we can get a shorter path by omitting the cycle, so it
+      can't be a shortest path with the cycle.</li>
+  <li>If there is a zero-weight cycle, it does not affect the cost to omit them, so we will assume
+      that solutions won't use them.</li> 
+</ul>
+
+<!-- -------------------- -->
+<h3><a name="optimal">Optimal Substructure</a></h3> 
+
+<p>The shortest paths problem exhibits <b><i>optimal substructure</i></b>, suggesting that greedy
+algorithms and dynamic programming may apply. Turns out we will see examples of both (Dijkstra's
+algorithm in this chapter, and Floyd-Warshall in the next chapter, respectively).</p>
+
+<img src="Topic-19/lemming.jpg" align="right">
+
+<p><b><i>Lemma:</i> Any subpath of a shortest path is a shortest path.</b></p>
+
+<p><b><i>Proof</i></b> is by cut and paste. Let path <i>p<sub>uv</sub></i> be a shortest path from
+<i>u</i> to <i>v</i>, and that it includes subpath <i>p<sub>xy</sub></i> (this represents
+subproblems):</p>
+
+<img src="Topic-18/subpath-lemma-a.jpg">
+
+<p>Then &delta;(<i>u</i>, <i>v</i>) = <i>w</i>(<i>p</i>) = <i>w</i>(<i>p<sub>ux</sub></i>) +
+<i>w</i>(<i>p<sub>xy</sub></i>) + <i>w</i>(<i>p<sub>yv</sub></i>). 
+
+<p>Now, for proof by contradiction, suppose that substructure is not optimal, meaning  that for some
+choice of these paths there exists a shorter path <i>p'<sub>xy</sub></i> from <i>x</i> to <i>y</i> that is
+shorter than <i>p<sub>xy</sub></i>. Then <i>w</i>(<i>p'<sub>xy</sub></i>) &lt; 
+<i>w</i>(<i>p<sub>xy</sub></i>).</p>
+<p>From this, we can construct <i>p'</i>:</p>
+<img src="Topic-18/subpath-lemma-b.jpg">
+<p>Then</p>
+<img src="Topic-18/subpath-lemma-c.jpg">
+<p>which contradicts the assumption that  <i>p<sub>uv</sub></i> is a shortest path.</p>
+
+<!-- ----------- -->
+<h3>Algorithms</h3>
+<p>All the algorithms we consider will have the following in common.</p>
+
+<h4>Output</h4>
+<p>For each vertex <i>v</i> &in; <i>V</i>, we maintain these attributes:</p>
+<p><b><i>v.d</i></b> is called the <b><i>shortest path estimate</i></b>.
+
+<ul>
+  <li>Initially, <i>v.d</i> = &infin; </li>
+  <li><i>v.d</i> may be reduced as the algorithm progresses, but <i>v.d</i> &ge; &delta;(<i>s</i>,
+      <i>v</i>) is always true.</li>
+  <li>We want to show that at the conclusion of our algorithms, <i>v.d</i> = &delta;(<i>s</i>, <i>v</i>).</li> 
+</ul>
+
+<p><b><i>v.</i>&pi;</b> = the predecessor of <i>v</i> by which it was reached on the shortest path
+known so far. 
+<ul>
+  <li>If there is no predecessor, <i>v.</i>&pi;  = NIL.</li>
+  <li>We want to show that at the conclusion of our algorithms, <i>v.</i>&pi; = the predecessor of
+    <i>v</i> on the shortest path from <i>s</i>.</li>
+  <li>If that is true, &pi; induces a <b><i>shortest path tree</i></b> on <i>G</i>. (See text for proofs of
+    properties of &pi;.) </li>
+
+</ul> 
+
+<h4>Initialization</h4>
+<p>All the shortest-paths algorithms start with this:</p>
+<img src="Topic-18/code-initialize-single-source.jpg">
+
+<a name="relax"><h4>Relaxation</h4></a> 
+<p>They all apply the relaxation procedure, which essentially asks: can we improve the current
+shortest-path estimate for <i>v</i> by going through <i>u</i> and taking (<i>u</i>, <i>v</i>)?</p>
+
+<img src="Topic-18/code-relax.jpg">
+<img src="Topic-18/Fig-24-3-relaxation-alt.jpg" align="right">
+
+<p>The algorithms differ in the order in which they relax each edge and how many times they do
+that.</p>
+
+<!-- ----------- -->
+<h3>Shortest Paths Properties</h3> 
+
+<p>All but the first of these properties assume that <tt>INIT-SINGLE-SOURCE</tt> has been called
+once, and then <tt>RELAX</tt> is called zero or more times.</p>
+
+<img src="Topic-18/properties.jpg">
+
+<p>Proofs are available in the text. Try to explain informally why these are correct.</p>
+
+<!-- ------------------------------------------------------------ -->
+<a name="bellmanford">
+<hr><h2> Bellman-Ford Algorithm </h2>
+</a> 
+
+<p>Essentially a <b>brute force strategy</b>: relax systematically enough times that you can be sure
+you are done. </p>
+
+<!-- Arguably not; see email from Nodari 
+<p>The algorithm can also be considered a dynamic programming algorithm for reasons
+discussed below.</p>
+--> 
+
+<ul>
+  <li>Allows negative-weight edges</li>
+  <li>Computes <i>v</i>.<i>d</i> and <i>v</i>.&pi; for all <i>v</i> &in; <i>V</i>.</li>
+  <li>Returns True (and a solution embedded in the graph) if no negative-weight cycles are reachable
+  from <i>s</i>, and False otherwise.</li>
+</ul>
+
+<img src="Topic-18/code-Bellman-Ford.jpg">
+<img src="Topic-18/code-relax.jpg" align = "right">
+
+<p>The first <tt>for</tt> loops do the work of relaxation. <i>How does the last <tt>for</tt> loop
+help -- how does it work?</i></p>
+
+<!-- ----------- -->
+<h3>Analysis:</h3>
+
+<p><tt>RELAX</tt> is O(1), and the nested <tt>for</tt> loops relax all edges |<i>V</i>| - 1 times,
+so <tt>BELLMAN-FORD</tt> is &Theta;(<i>V E</i>). </p>
+
+<!-- ----------- -->
+<h3>Examples:</h3>
+<p>Example from the text, relaxed in order (t,x), (t,y), (t,z), (x,t), (y,x) (y,z), (z,x), (z,s),
+(s,t), (s,y):</p>
+<img src="Topic-18/Fig-24-4-Bellman-Ford-example.jpg">
+
+<p>Try this other example (click for answer):</p>
+<img src="Topic-18/code-Bellman-Ford.jpg" align="right">
+<a href="Topic-18/Bellman-Ford-Example-2-2.jpg"><img src="Topic-18/Bellman-Ford-Example-2-1.jpg"></a> 
+
+<!-- ----------- -->
+<h3> Correctness</h3>
+
+<p>The values for <i>v</i>.<i>d</i> and <i>v</i>.&pi; are guaranteed to converge on shortest paths
+after |<i>V</i>| - 1 passes, assuming no negative-weight cycles. </p> 
+
+<p>This can be proven with the path-relaxation property, which states that if we relax the edges of
+a shortest path &lang;<i>v</i><sub>0</sub>, <i>v</i><sub>1</sub>, ... <i>v<sub>k</sub></i>&rang; in
+order, even if interleaved with other edges, then <i>v<sub>k</sub></i>.<i>d</i> =
+&delta;(<i>s</i>,<i>v<sub>k</sub></i>) after <i>v<sub>k</sub></i> is relaxed.</p>
+
+<img src="Topic-18/code-Bellman-Ford.jpg" align = "right">
+
+<p>Since the list of edges is relaxed as many times as the longest possible
+shortest path (|<i>V</i>|- 1), it must converge by this property.</p>
+<ul>
+  <li>First iteration relaxes (<i>v</i><sub>0</sub>, <i>v</i><sub>1</sub>)</li> 
+  <li>Second iteration relaxes (<i>v</i><sub>1</sub>, <i>v</i><sub>2</sub>)</li>
+  <li> ... </li> 
+  <li><i>k</i>th iteration relaxes (<i>v</i><sub><i>k</i>-1</sub>, <i>v</i><sub><i>k</i></sub>)</li>
+</ul>
+
+<!-- Arguably not; see email from Nodari 
+<p>This is why the Bellman Ford algorithm can be considered to be a dynamic
+ programming algorithm:</p>
+<ul>
+  <li> After the first pass, paths of length 1 are correct and are used to construct longer
+        paths;</li> 
+  <li> after the second pass, paths of length 2 are correct and are used to construct longer paths;
+       etc.</li>
+</ul>
+<p>up until <i>n</i>&minus;1, which is the longest possible path.</p>
+--> 
+
+<p>We also must show that the True/False values are correct. Informally, we can see that if
+<i>v</i>.<i>d</i> is still getting smaller after it should have converged (see above), then there
+must be a negative weight cycle that continues to decrement the path.</p>
+
+<p>The full proof of correctness may be found in the text.</p> 
+
+<p>The values computed on each pass and how quickly it converges depends on order of relaxation: it
+may converge earlier.<p>
+
+<p><i>How can we use this fact to speed the algorithm up a
+bit?</i></p>
+
+<img src="http://imgs.xkcd.com/comics/pillow_talk.jpg">
+
+<!-- ------------------------------------------------------------ -->
+<hr><img src="Topic-18/dawg.jpg" align="right"><h2> Shortest Paths in a DAG </h2>
+
+<p>Life is easy when you are a DAG ... </p>
+
+<p>There are no cycles in a Directed Acyclic Graph. Thus, negative weights are not a problem.
+Also, vertices must occur on shortest paths in an order consistent with a topological sort.</p>
+
+<p>We can do something like Bellman-Ford, but don't need to do it as many times, and don't need to
+check for negative weight cycles:</p>
+
+<img src="Topic-18/code-DAG-Shortest-Paths.jpg">
+
+<h4>Analysis:</h4>
+
+<p>Given that topological sort is &Theta;(<i>V</i> + <i>E</i>), what's the complexity of
+<tt>DAG-SHORTEST-PATHS</tt>? <i>This one's on you: what's the run-time complexity?</i> Use aggregate
+analysis ...</p>
+
+<h4>Correctness:</h4> 
+<p>Because we process vertices in topologically sorted order, edges of <i>any</i> path must be
+relaxed in order of appearance in the path.</p>
+<p>Therefore edges on any shortest path are relaxed in order.</p>
+<p>Therefore, by the path-relaxation property, the algorithm terminates with correct values.</p> 
+
+<img src="Topic-18/code-DAG-Shortest-Paths.jpg" align="right">
+
+<!-- ----------- -->
+<h3>Examples</h3>
+
+<p>From the text:</p>
+<img src="Topic-18/Fig-24-5-Shortest-Paths-in-DAG.jpg">
+<p>Notice we could not reach <i>r</i>!</p> 
+
+<p>Let's try another example (click for answer):</p>
+<a href="Topic-18/DAG-example-2-2.jpg"><img src="Topic-18/DAG-example-2-1.jpg"></a> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><a name="Dijkstra"><img src="Topic-18/Dijkstra.jpg" align="right"></a>
+<h2> Dijkstra's Algorithm </h2>
+
+
+<p>The algorithm is essentially a weighted version of breadth-first search: BFS uses a FIFO queue;
+while this version of Dijkstra's algorithm uses a priority queue.
+
+<p> It also has similarities to Prim's algorithm, being greedy, and with similar iteration.</p>
+
+<p>Assumes there are no negative-weight edges. </p>
+
+<!-- ----------- -->
+<h3>Algorithm</h3> 
+<ul>
+  <li><i>S</i> = set of vertices whose final shortest-path weights are determined.</li>
+  <li><i>Q</i> = <i>V</i> - <i>S</i> is the priority queue. </li>
+  <li>Priority queue keys are shortest path estimates <i>v</i>.<i>d</i>. </li>
+</ul>
+
+<img src="Topic-17/pseudocode-Prim-MST.jpg" align="right"> 
+<p>Here is the algorithm as given by CLRS, with Prim on the right for comparison:</p>
+<img src="Topic-18/code-Dijkstra.jpg">
+
+<p>Dijkstra's algorithm is greedy in choosing the closest vertex in <i>V</i> - <i>S</i> to add to
+<i>S</i> each iteration. The difference is that </p>
+<ul>
+  <li> For Prim "close" means the cost to take one step to include the next cheapest vertex:
+      <br> <tt> if <i>w</i>(<i>u</i>,<i>v</i>) &lt; <i>v</i>.key</tt> </li> 
+  <li> for Dijkstra "close" means the cost from the source vertex <i>s</i> to <i>v</i>: this is in
+      the RELAX code <br> <tt>if <i>v</i>.<i>d</i> &gt; <i>u</i>.<i>d</i> +
+      <i>w</i>(<i>u</i>,<i>v</i>)</tt>. </li>
+</ul> 
+
+<p>The above specification of the algorithm can be improved. Relax(<i>u</i>,<i>v</i>,<i>w</i>)
+updates the shortest path estimates <i>v.d</i> of the vertices that are in the priority queue. To
+make sure the keys of the priority queue are updated properly, we must call <tt>DecreaseKey</tt> on the
+vertex being updated. We can only know whether to do this if Relax tells us whether there was a
+change. Therefore the following modifications are needed:</p>
+
+<pre>
+Relax(<i>u,v,w</i>)
+1 <b>if</b> <i>v.d</i> &gt; <i>u.d</i> + <i>w</i>(<i>u</i>,<i>v</i>)
+2     <i>v</i>.<i>d</i> = <i>u</i>.<i>d</i> + <i>w</i>(<i>u</i>,<i>v</i>)
+3     <i>v</i>.&pi; = <i>u</i>
+4     <b>return</b> TRUE
+5 <b>else</b>
+6     <b>return</b> FALSE
+</pre>
+
+<p>Then change Dijkstra as follows:</p>
+<pre>
+8        <b>if</b> Relax(<i>u</i>, <i>v</i>, <i>w</i>)
+9            DecreaseKey(<i>Q</i>, <i>v</i>, <i>v</i>.<i>d</i>)  
+</pre>
+
+<!-- ----------- -->
+<h3>Examples</h3> 
+<p>From the text (black vertices are set <i>S</i>; white vertices are on <i>Q</i>; shaded vertex is
+the min valued one chosen next iteration):</p>
+<img src="Topic-18/Fig-24-6-Dijkstra-Example.jpg">
+
+<p>Let's try another example (click for answer):</p>
+<img src="Topic-18/code-Dijkstra.jpg" align="right"> 
+<a href="Topic-18/Dijkstra-Example-2-2.jpg"><img src="Topic-18/Dijkstra-Example-2-1.jpg"></a> 
+
+<p>Here's a graph with a negative weight: try it from <i>s</i> and see what happens:</p> 
+
+<img src="Topic-18/Dijkstra-negative-weight-example.jpg">
+
+<!-- ----------- -->
+<h3>Correctness</h3>
+<img src="Topic-18/code-Dijkstra.jpg" align="right"> 
+<p>The proof is based on the following loop invariant at the start of the
+<tt>while</tt> loop: </p>
+<blockquote><i>v</i>.<i>d</i> = &delta;(<i>s</i>, <i>v</i>) for all <i>v</i> &in;
+<i>S</i>. </blockquote>
+
+<p><b><i>Initialization:</i></b> Initially <i>S</i> = &empty;, so trivially true. </p>
+
+<p><b><i>Maintenance:</i></b> We just sketch this part (see text). Need to show that
+<i>u</i>.<i>d</i> = &delta;(<i>s</i>, <i>u</i>) when <i>u</i> is added to <i>S</i> in each
+iteration. The upper bound property says it will stay the same thereafter.</p>
+
+<p>Suppose (for proof by contradiction) that &exist; <i>u</i> such that <i>u</i>.<i>d</i> &ne;
+&delta;(<i>s</i>, <i>u</i>) when added to <i>S</i>. Without loss of generality, let <i>u</i> be the
+first such vertex added to <i>S</i>.</p>
+
+<ul>
+  <li><i>u</i> &ne; <i>s</i>, since <i>s</i>.<i>d</i> = &delta;(<i>s</i>, <i>s</i>) = 0. Therefore
+      <i>s</i> &in; <i>S</i> &ne; &empty;. </li>
+  <li>So there is a path from <i>s</i> to <i>u</i>. This means there must be a shortest path <i>p</i> from <i>s</i>
+      to <i>u</i>. <img src="Topic-18/Fig-24-7-Dijkstra-Correctness.jpg" align="right"> </li>
+  <li>The proof decomposes <i>p</i> into a path <i>s</i> to <i>x</i>, (<i>x</i>, <i>y</i>), and a
+      path from <i>y</i> to <i>u</i>. (Some but not all of these can be null.)</li>
+  <li><i>y</i>.<i>d</i> = &delta;(<i>s</i>, <i>y</i>) when <i>u</i> added to <i>S</i>. (By
+      hypothesis, <i>x</i>.<i>d</i> = &delta;(<i>s</i>, <i>x</i>) when <i>x</i> was
+      added. Relaxation of (<i>x</i>, <i>y</i>) extends this to <i>y</i> by the convergence
+      property.)</li> 
+  <li>Since <i>y</i> appears before <i>u</i> on a shortest path with non-negative weights,
+  &delta;(<i>s</i>,<i>y</i>) &le; &delta;(<i>s</i>,<i>u</i>), and we can show that <i>y</i>.<i>d</i>
+      &le; <i>u</i>.<i>d</i> by the triangle inequality and upper-bound properties.</li>
+  <li>But <i>u</i> being chosen first from <i>Q</i>
+      means <i>u</i>.<i>d</i> &le; <i>y</i>.<i>d</i>; so must be that <i>u</i>.<i>d</i> =
+      <i>y</i>.<i>d</i>. </li>
+  <li> Therefore <i>y</i>.<i>d</i> = &delta;(<i>s</i>, <i>y</i>) = &delta;(<i>s</i>, <i>u</i>) =
+      <i>u</i>.<i>d</i>. 
+  <li>This contradicts the assumption that <i>u</i>.<i>d</i> &ne;  &delta;(<i>s</i>, <i>u</i>)</li> 
+</ul> 
+
+<p><b><i>Termination:</i></b> At the end, <i>Q</i> is empty, so <i>S</i> = <i>V</i>, so
+<i>v</i>.<i>d</i> = &delta;(<i>s</i>, <i>v</i>) for all <i>v</i> &in; <i>V</i> </p>
+
+<!-- ----------- -->
+<h3>Analysis</h3>
+
+<p>The run time depends on the implementation of the priority queue.</p>
+
+<img src="Topic-18/code-Dijkstra.jpg" align="right">
+
+<p>If <b><i>binary min-heaps</i></b> are used:</p> 
+<ul>
+  <li>The <tt>EXTRACT-MIN</tt> in line 5 and the implicit <tt>DECREASE-KEY</tt> operation that
+  results from relaxation in line 8 are each O(lg <i>V</i>).</li>
+  <li>The <tt>while</tt> loop over |<i>V</i>| elements of <i>Q</i> invokes |<i>V</i>| O(log
+  <i>V</i>) <tt>EXTRACT-MIN</tt> operations.
+  <li>Switching to aggregate analysis for the <tt>for</tt> loop in lines 7-8, there is a call to 
+      <tt>RELAX</tt> for each of O(<i>E</i>) edges, and each call may result in an O(log
+      <i>V</i>) <tt>DECREASE-KEY</tt>.</li>  
+  <li>The total is <b>O((<i>V</i> + <i>E</i>) lg <i>V</i>)</b>.</li>
+  <li>If the graph is connected, there are at least as many edges as vertices, and this can be
+      simplified to <b>O(<i>E</i> lg <i>V</i>)</b>, which is faster than <tt>BELLMAN-FORD</tt>'s
+      O(<i>E</i> <i>V</i>). </li>  
+</ul> 
+
+<p>With <b><i>Fibonacci heaps</i></b> (which were developed specifically to speed up this
+algorithm), O(<i>V</i> lg <i>V</i> + <i>E</i>) is possible. <i>(Do not use this result unless you are
+specifically using Fibonacci heaps!)</i></p>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers (with edits suggested by Nodari Sitchinava)</address>
+<!-- hhmts start -->Last modified: Sun Apr  5 04:37:54 HST 2015 <!-- hhmts end -->
+<br>Images are from the instructor's material for Cormen et al. Introduction to Algorithms, Third
+Edition.</br> 
+</body>
+</html>

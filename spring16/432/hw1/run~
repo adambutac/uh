@@ -1,0 +1,1 @@
+java -Xmx5500M -Xms1000M -cp ics432_raytracer.jar:. MakeMovieConcurrent 240 1

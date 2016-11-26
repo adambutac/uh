@@ -1,0 +1,841 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>ICS 311 #21: Linear Programming </title>
+</head>
+
+<body>
+
+<hr><h1><a href="../index.html">ICS 311</a> #21: Linear Programming </h1><hr>
+
+<!-- ------------------------------------------------------------ -->
+<h2>Outline</h2> 
+<ol>
+  <li>Introduction to Linear Programming</li>
+  <li>Formulating Problems as Linear Programs </li> 
+  <li>Foundations in Gaussian Elimination </li>
+  <li>The Simplex Method </li>
+</ol>
+
+<h2>Objectives</h2>
+<ul>
+  <li> Be aware of the range of problems to which linear programming can be applied.</li> 
+  <li> Understand the Simplex algorithm just enough to understand the format of linear equations
+       used and what is done with them.
+  <li> Be able to write a simple linear program for a problem. </li> 
+</ul> 
+
+<h2>Readings</h2> 
+
+<p>If you have a background in Gaussian Elimination and read and understand Sections 29.0-29.3 of
+CLRS, up through the description of Simplex (you need not read the proofs that follow), these
+objectives will be met. (The material of CLRS Sections 29.4-29.5 is excellent, but we don't need to
+see all the proofs concerning Simplex to use it.)</p>
+
+<p>If you don't have a background in Gaussian Elimination, then reading and understanding Section
+28.1 of CLRS would provide it. However, Section 28.1 provides more detail than is needed to get the
+gist of Gaussian Elimination and the Simplex. I found Sedgewick's (1984), Chapter 5 presentation of
+Gaussian Elimination to be clear and sufficient. I also found his presentation of Linear Programming
+in Chapter 38 useful for its clear narrative around an example.</p>
+
+<p>For a full study of linear programming I recommend this reading sequence:</p> 
+<ul>
+  <li> <b>Chapter 5 of Sedgewick (1984) on Gaussian Elimination</b></li> 
+  <li> <b>Chapter 38 of Sedgewick (1984) on Linear Programming</b></li> 
+  <li> <b>Sections 29.0 through the first half of 29.3 of CLRS</b></li> 
+</ul>
+
+<p> If you don't have time for the full reading:</p>
+<ul> 
+  <li> <b>Read the following web notes</b> (which summarize the main points from Sedgewick and some
+       material from CLRS 29.0-29.3).</li> 
+  <li> Then <b>read 29.0, 29.1 and 29.2 of CLRS before class</b> (quiz
+       questions and class problems are drawn from those sections). </li>
+</ul>
+
+<h2>Screencasts</h2>
+
+<p>No Screencasts were made for this topic.</p> 
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Introduction to Linear Programming </h2>
+
+<p><i>The following brief conceptual overview of Linear Programming and its
+roots in Gaussian Elimination is based largely on Chapters 5 and 38 of: Robert Sedgewick
+(1983). Algorithms. Reading, MA: Addison-Wesley. First Edition
+(available on Internet), with some comments from CLRS Chapter 29. </i></p>
+
+<p><b>Mathematical programming</b> is the process of modeling a problem as a set of mathematical
+equations. (The "programming" is in mathematics, not computer code.)</p>
+
+<p><b>Linear programming</b> is mathematical programming where the equations are <i>linear
+equations</i> in a set of variables that model a problem, and include:</p>
+<ul>
+  <li>a set of <b>constraints</b> on the values of the variables (each constraint being expressed as
+      a linear equation), and </li>
+  <li>an <b>objective function</b> or linear function of these variables that is to be maximized
+      subject to these constraints.</li>
+</ul> 
+
+<p>A large and diverse set of problems can be expressed as linear programs and solved. Examples
+include: </p>
+<ul>
+  <li><i><b>Scheduling tasks,</b></i> such as in business, construction or manufacturing, for example, scheduling
+      flight crews for an airline.</li>  
+  <li><i><b>Flows in a network,</b></i> including flows of multiple types of substances or commodities subject to
+      various constraints (example to be given).</li> 
+  <li><i><b>Maximizing an outcome </b></i> given a set of constrained resources, such as
+      deciding where to drill for oil for maximum expected payoff.</li>
+</ul>
+
+<h3>Simplex Algorithm</h3> 
+
+<ul>
+  <li>A well established algorithm (actually, family of algorithms) for solving linear programming
+      problems.</li> 
+  <li>Available in many computer packages.</li>
+  <li>Usually not the most efficient way to solve a problem (many of the algorithms we have studied
+      are more efficient for their specialized problem), but is often easy to "program".</li>
+  <li>Well studied, but analyzing its asymptotic complexity is still an active area of research,
+      over 50 years after its invention!</li> 
+  <li>Examples have been given requiring exponential time, but Simplex has been repeatedly shown to
+      have good performance in practice on real problems.</li> 
+</ul> 
+
+<!-- ----------------------- -->
+<h3>Examples</h3>
+
+<p>We begin with examples of problems for which we already have more efficient algorithms. The point
+of revisiting them here with less efficient linear programming solutions is to show you how linear
+programming works in terms of familiar problems; and also to reinforce the recurring theme that
+problems can be solved with different algorithms if you change problem representation.</p>
+
+<h4>Linear Program for Single-Pair Shortest Paths</h4>
+
+<p>The <a href="Topic-18.html#bellmanford">Bellman-Ford algorithm</a> for single-<u>source</u>
+shortest paths uses the <a href="Topic-18.html#relax"><tt>Relax</tt></a> procedure to find a
+distance <i>v</i>.<i>d</i>, where for every edge (<i>u</i>, <i>v</i>) &in; <i>E</i>,
+<i>v</i>.<i>d</i> &le; <i>u</i>.<i>d</i> + <i>w</i>(<i>u</i>, <i>v</i>) (since <tt>Relax</tt>
+changes <i>v</i>.<i>d</i> precisely when this is not true). Also, <i>s</i>.<i>d</i> for the source
+vertex <i>s</i> is always 0. </p>
+
+<p>We can translate these observations directly into a linear program for the <b>single-<u>pair</u>
+shortest-path</b> problem from <i>s</i> to <i>t</i>. We will use notation
+<i>d</i><sub><i>v</i></sub> instead of <i>v</i>.<i>d</i> to be consistent with typical linear
+programming notation: </p>
+
+<blockquote> 
+Maximize:  &nbsp; &nbsp; <i>d</i><sub><i>t</i></sub><br>
+Subject to: <br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;
+<i>d</i><sub><i>v</i></sub> &le; <i>d</i><sub><i>u</i></sub>+ <i>w</i>(<i>u</i>, <i>v</i>),
+&nbsp; &forall; (<i>u</i>, <i>v</i>) &in; <i>E</i> <br> 
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+<i>s</i>.<i>d</i> = 0. 
+</blockquote>
+
+<p>The expression <i>d</i><sub><i>v</i></sub> &le; <i>d</i><sub><i>u</i></sub>+ <i>w</i>(<i>u</i>,
+<i>v</i>) is a constraint based on what <tt>Relax</tt> guarantees, and <i>s</i>.<i>d</i> = 0 by
+definition (assuming no negative weight cycles). </p>
+
+<p>But why are we <u>maximizing</u> <i>d</i><sub><i>t</i></sub> when we seek <u>shortest</u>
+paths?</p> 
+<ul> 
+  <li> If we minimized <i>d</i><sub><i>t</i></sub>, then there would be a trivial solution where
+       <i>d</i><sub><i>v</i></sub> = 0, &forall; <i>v</i> &in; <i>V</i>. </li> 
+  <li> The minimization that finds shortest paths is actually implicit in the first constraint.
+       <br> Each <i>d</i><sub><i>v</i></sub> will be given the maximum value that is yet &le; the
+       <em>smallest</em> <i>d</i><sub><i>u</i></sub> + <i>w</i>(<i>u</i>, <i>v</i>). </li>
+</ul>
+<p>(Compare to the fact that we needed to find <u>longest</u> paths when determining the shortest
+time in which a set of jobs could finish in the parallel scheduling problem given in class.)</p>
+
+<p>The extension to <b>single-source all-destinations</b> is straightforward: maximize the <u>sum</u> of the
+destination distances.</p>
+
+<p>The custom algorithms for <a href="Topic-18.html">single-source</a> and indeed <a
+ href="Topic-19.html">all-pairs</a> shortest paths will be more efficient than solving these
+problems with linear programming, but it is very easy to write these linear programs, and this
+example (and the next) illustrates how linear programming works in terms of a familiar example. </p>
+
+<h4>Linear Program for Max Flow</h4>
+
+<p>Next we show how to model a max-flow problem with linear programming. Instead of writing
+<i>f</i>(<i>s</i>,<i>a</i>) to indicate the flow over edge (<i>s</i>,<i>a</i>) (for example), we
+follow the conventions of the linear programming literature and write
+<i>f</i><sub><i>sa</i></sub>. (Sedgewick uses <i>X</i><sub>AB</sub>.) CLRS present a more general
+template for any flow network, whereas here we look at a specific example:</p>
+
+<img src="Topic-21/flow-network-example.jpg" align="right">
+
+<blockquote> 
+Maximize:  &nbsp; &nbsp; <i>f</i><sub>sa</sub>+ <i>f</i><sub>sb</sub><br>
+Subject to: <br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;
+<i>f</i><sub>sa</sub> &le; 8 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i>f</i><sub>sb</sub> &le; 2 <br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;
+<i>f</i><sub>ac</sub> &le; 6 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i>f</i><sub>da</sub> &le; 3 <br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;
+<i>f</i><sub>bd</sub>&le; 5 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i>f</i><sub>cb</sub> &le; 2 <br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;
+<i>f</i><sub>ct</sub> &le; 4 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i>f</i><sub>dt</sub> &le; 5 <br> 
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;
+<i>f</i><sub>sa</sub> + <i>f</i><sub>da</sub> = <i>f</i><sub>ac</sub> 
+&nbsp; &nbsp;  &nbsp; &nbsp; 
+<i>f</i><sub>sb</sub> + <i>f</i><sub>cb</sub> = <i>f</i><sub>bd</sub> <br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+<i>f</i><sub>dt</sub> + <i>f</i><sub>da</sub> + <i>f</i><sub>dc</sub> = <i>f</i><sub>bd</sub>
+&nbsp; &nbsp;  &nbsp; &nbsp; 
+<i>f</i><sub>cb</sub> + <i>f</i><sub>ct</sub> = <i>f</i><sub>ac</sub> <br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+
+<i>f</i><sub>sa</sub>, &nbsp; <i>f</i><sub>sb</sub>, &nbsp; <i>f</i><sub>ac</sub>, &nbsp;
+<i>f</i><sub>cb</sub>, &nbsp; <i>f</i><sub>ct</sub>, &nbsp; <i>f</i><sub>bd</sub>, &nbsp;
+<i>f</i><sub>da</sub>, &nbsp; <i>f</i><sub>dt</sub> &nbsp; &ge; &nbsp; 0.
+
+</blockquote> 
+
+<p>The expression to be maximized,</p>
+
+<blockquote> 
+<i>f<sub>sa</sub></i> + <i>f<sub>sb</sub></i>
+</blockquote>
+
+<p>is the flow over the edges coming out of the source, and hence will be the flow of the entire
+network. If the linear program maximizes this, then we have found the max flow. (If there are edges
+incoming to <i>s</i> we can subtract these in the expression to be maximized.)</p>
+
+<p>These inequalities capture edge capacities:</p>
+<blockquote>
+<i>f<sub>sa</sub></i> &le; 8; &nbsp; 
+<i>f<sub>sb</sub></i> &le; 2; &nbsp; 
+<i>f<sub>ac</sub></i> &le; 6; &nbsp;
+<i>f<sub>da</sub></i> &le; 3; &nbsp; 
+<i>f<sub>bd</sub></i> &le; 5; &nbsp; 
+<i>f<sub>cb</sub></i> &le; 2; &nbsp;
+<i>f<sub>ct</sub></i> &le; 4; &nbsp; 
+<i>f<sub>dt</sub></i> &le; 5. 
+</blockquote>
+
+<p>These equalities capture the conservation of flow at vertices (I've reordered the last two to
+show that it's flow in = flow out):</p>
+
+<blockquote>
+<i>f<sub>sa</sub></i> + <i>f<sub>da</sub></i> = <i>f<sub>ac</sub></i> &nbsp; &nbsp; (flow through a)<br>
+<i>f<sub>sb</sub></i> + <i>f<sub>cb</sub></i> = <i>f<sub>bd</sub></i> &nbsp; &nbsp; (flow through b)<br>
+<i>f<sub>ac</sub></i> = <i>f<sub>cb</sub></i> + <i>f<sub>ct</sub></i> &nbsp; &nbsp; (flow through c) <br>
+<i>f<sub>bd</sub></i> = <i>f<sub>dt</sub></i> + <i>f<sub>da</sub></i> &nbsp; &nbsp; (flow through d)
+
+</blockquote>
+
+<p>The final eight inequalities (written in one line for brevity) express the constraint that all
+flows must be positive: </p>
+<blockquote>
+<i>f</i><sub>sa</sub>, &nbsp; <i>f</i><sub>sb</sub>, &nbsp; <i>f</i><sub>ac</sub>, &nbsp;
+<i>f</i><sub>cb</sub>, &nbsp; <i>f</i><sub>ct</sub>, &nbsp; <i>f</i><sub>bd</sub>, &nbsp;
+<i>f</i><sub>da</sub>, &nbsp; <i>f</i><sub>dt</sub> &nbsp; &ge; &nbsp; 0.
+</blockquote> 
+
+<p>The Simplex algorithm (discussed later and in the readings), when given a suitable form of these
+equations (see section 29.1 CLRS), will return an assignment of values to variables
+<i>f<sub>sa</sub></i>, ... <i>f<sub>dt</sub></i> that maximizes the expression
+<i>f<sub>sa</sub></i> + <i>f<sub>sb</sub></i> and hence flow.</p>
+
+<p>The Edmonds-Karp flow algorithm is more efficient than the Simplex algorithm for solving this
+version of the max-flow problem. However, Edmonds-Karp is difficult to modify for problem variations
+such as multiple commodities or dealing with cost-benefit tradeoffs. These additional constraints
+are easy to add to a linear program. </p> </p>
+
+<p>In general, if a problem can be expressed as a linear program it may be quicker from a
+development standpoint to do that rather than to invent a custom algorithm for it. Linear
+programming covers a large variety of problems. </p>
+
+<p>The point here is to introduce linear programming with a familiar example, and to illustrate its
+generality, but this also provides another example of "problem reduction", a concept that will be at
+the core of the final topic of this course on Complexity Theory & NP-Completeness.</p>
+
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Gaussian Elimination </h2>
+
+<p>The Simplex algorithm works in a manner similar to (derived from) Gaussian Elimination for solving a set
+of linear equations.</p>
+
+<p>Invented by Chinese mathematicians a few thousand  years ago, and in Europe by Newton and
+revised by Gauss, Gaussian elimination is a two part method for solving a system of linear
+equations.</p>
+
+<p>As a simple example, suppose we have the following system:</p>
+
+<blockquote><b>
+  <i>x</i> + 3<i>y</i> &minus; 4<i>z</i> = 8<br>
+  <i>x</i> + <i>y</i> &minus; 2<i>z</i> = 2<br>
+  &minus;<i>x</i> &minus; 2<i>y</i> + 5<i>z</i> = &minus;1
+</b></blockquote>
+
+<p>The goal is to find values of <i>x</i>, <i>y</i>, and <i>z</i> that satisfy these
+equations. (Recall that there may be zero, one, or an infinite number of solutions, and you need as
+many equations as variables to have a unique solution.)</p>
+
+<p>If we think of the variables as subscripted as shown on the left, then we can rewrite the system
+of equations as a matrix equation using the subscripts as column indices as shown on the right:</p>
+
+<table>
+  <tr>
+    <th scope="col">
+      <blockquote>
+      <i>x</i><sub>1</sub> + 3<i>x</i><sub>2</sub> &minus; 4<i>x</i><sub>3</sub> = 8<br>
+      <i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> &minus; 2<i>x</i><sub>3</sub> = 2<br>
+      &minus;<i>x</i><sub>1</sub> &minus; 2<i>x</i><sub>2</sub> + 5<i>x</i><sub>3</sub> = &minus;1
+      </blockquote> 
+    </th>
+    <th scope="col">
+      <blockquote>
+      <img src="Topic-21/gauss-example-1c.jpg">
+      </blockquote>
+    </th>
+  </tr>
+</table>
+
+<p>The following operations can be done on systems of linear equations such as the above. (Later, in
+the section on linear programing, we'll drop the parentheses and put everything in one matrix. Then,
+the operations below will be operations on rows and columns of the matrix.) </p>
+
+<ul>
+  <li><i><b>Interchanging equations:</b></i> Since the order in which we write equations does not matter, we
+  can reorder the rows.</li>
+  <li><i><b>Renaming variables:</b></i> Swapping entire columns with each
+     other. If we swap columns <i>i</i> and <i>j</i>, what was formerly <i>x<sub>i</sub></i> becomes
+     <i>x<sub>j</sub></i> and vice-versa. This is OK because variable names are arbitrary.</li> 
+  <li><i><b>Multiplying equations by a constant:</b></i> Accomplished by multiplying all numbers in
+     a row by that constant.</li>
+  <li><i><b>Adding two equations and replacing one by the sum:</b></i> Since the two sides of an equation
+    are equal, we can add them to the two sides of another equation without affecting
+    equality. </li> 
+</ul> 
+
+<!-- ----------------------- -->
+<h3> The Strategy </h3>
+
+<p>Gaussian elimination is a systematic way of applying these operations to make the value of one
+variable obvious (<i>forward elimination</i>), and then substituting this value back into the other
+equations to expose their values (<i>backward substitution</i>).</p>
+
+<h4>Forward Elimination (Triangulation)</h4>
+
+<p>Forward elimination turns the matrix into a triangular matrix, where there is only one variable
+in the last equation, only that variable plus one more in the next equation up, etc.</p>
+
+<p>For example, replace the second equation by the difference between the first two:</p>
+Before:  &nbsp; &nbsp;  <img src="Topic-21/gauss-example-1c.jpg"> <br>
+After:  &nbsp; &nbsp;  &nbsp; <img src="Topic-21/gauss-example-1d.jpg">
+
+<p>One term has gone to 0: this means <i>x<sub>1</sub></i> has been eliminated from the second
+equation. Let's eliminate <i>x<sub>1</sub></i> from the third equation by replacing the third by the
+sum of the first and the third:</p>
+ &nbsp; &nbsp; <img src="Topic-21/gauss-example-1e.jpg">
+
+<p>Now if we replace the third equation by the difference between the second and twice the third, we
+can eliminate <i>x<sub>2</sub></i> from the third row, leaving a <i>triangular</i> matrix. Writing
+the result as equations:</p>
+
+<blockquote>
+  <i>x</i><sub>1</sub> + 3<i>x</i><sub>2</sub> &minus; 4<i>x</i><sub>3</sub> = 8<br>
+  &nbsp; &nbsp;&nbsp; &nbsp; 2<i>x</i><sub>2</sub> &minus; 2<i>x</i><sub>3</sub> = 6<br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &minus;4<i>x</i><sub>3</sub> = &minus;8
+</blockquote> 
+
+<p>At the completion of the forward elimination phase, the equations are easy to solve. </p>
+
+<h4>Backward Substitution Phase</h4> 
+
+<p>It is easy to determine from the third equation that <i>x<sub>3</sub></i> = 2. Substituting that
+into the second equation, we can derive <i>x<sub>2</sub></i>:</p>
+
+<blockquote>
+  2<i>x</i><sub>2</sub> &minus; 4 = 6<br>
+   &nbsp; &nbsp; &nbsp; &nbsp; <i>x</i><sub>2</sub> = 5
+</blockquote> 
+
+<p>Substituting this and <i>x<sub>3</sub></i> = 2 into the equation above (rewritten below) solves for
+ <i>x<sub>1</sub></i>:</p> 
+
+<blockquote>
+  <i>x</i><sub>1</sub> + 3<i>x</i><sub>2</sub> &minus; 4<i>x</i><sub>3</sub> = 8<br>
+  &nbsp; &nbsp; &nbsp; <i>x</i><sub>1</sub> + 15 &minus; 8 = 8<br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i>x</i><sub>1</sub> = 1
+</blockquote> 
+
+<h3> The Algorithm </h3>
+
+<p>In general we can solve systems of linear equations as written on the left by converting them
+into matrices as written on the right:</p>
+ &nbsp; &nbsp; <img src="Topic-21/gauss-general-example-a.jpg">  &nbsp; &nbsp; 
+  &nbsp; &nbsp; <img src="Topic-21/gauss-general-example-b.jpg"> 
+
+<p>or <b><i>Ax</i></b> = <b><i>b</i></b> in matrix equation form. It is convenient to represent this
+entire system in one <i>N</i> x (<i>N</i>+1) matrix consisting of <b><i>A</i></b> and the last
+column for <i><b>b</b></i>: </p>
+
+<pre>
+    <i>a</i><sub>11</sub> <i>a</i><sub>12</sub> ... <i>a</i><sub>1N</sub> <i>b</i><sub>1</sub>
+    <i>a</i><sub>21</sub> <i>a</i><sub>22</sub> ... <i>a</i><sub>2N</sub> <i>b</i><sub>2</sub>
+        ... 
+    <i>a</i><sub>N1</sub> <i>a</i><sub>N2</sub> ... <i>a</i><sub>NN</sub> <i>b</i><sub>N</sub>
+</pre>
+
+
+<h4>Basic Algorithm for Gaussian Elimination</h4>
+<p>We can eliminate
+<ul>
+  <li>the <i>first variable</i> from <i>all but the first equation</i> by adding an appropriate
+      multiple of the first equation to each of the second through <i>N</i>th equations (the
+      multiple will be different for each equation);</li>  
+  <li>the <i>second variable</i> from <i>all but the first two equations</i> by adding an
+      appropriate multiple of the second equation to the third through <i>N</i>th equations;</li>
+  <li>and so on ...</li>
+</ul>
+
+<p>In general, the algorithm for forward elimination eliminates the <i>i</i>th variable in the
+<i>j</i>th equation by multiplying the <i>i</i>th equation by
+<i>a<sub>ji</sub></i> / <i>a<sub>ii</sub></i> and subtracting it from the <i>j</i>th equation, for
+<i>i</i>+1 &le; <i>j</i> &le; <i>N</i>.</p>
+
+<p>We use <i>a<sub>ji</sub></i> / <i>a<sub>ii</sub></i> because
+(<i>a<sub>ji</sub></i> / <i>a<sub>ii</sub></i>) * <i>a<sub>ii</sub></i> = <i>a<sub>ji</sub></i>, so
+when we subtract row <i>i</i> from row <i>j</i> we get <i>a<sub>ji</sub></i> - <i>a<sub>ji</sub></i>
+= 0 in cell <i>j,i</i>.</p>
+
+<p>The essential idea can be expressed in this pseudocode fragment (translated from Sedgewick's Pascal):</p>
+
+<big><pre>
+    for i = 1 to N do
+        for j = i + 1 to N do
+            for k = N + 1 downto i do
+                a[j,k] = a[j,k] &minus; a[i,k] * a[j,i] / a[i,i] 
+</pre></big>
+
+<p>There are three nested loops. <i>Trivial Question: How do the loops grow with N? What's the
+complexity?</i> </p>
+
+<h4> Elimination Elaborated</h4> 
+<p>This code is too simple: In an actual implementation, various issues must be dealt with, including: </p>
+<ul>
+  <li>If <i>a<sub>ii</sub></i> = 0, we cannot divide by 0. Need to swap rows to make
+     <i>a<sub>ii</sub></i> non-zero in the outer loop. If this is not possible, there is no unique
+    solution.</li>
+  <li>If <i>a<sub>ii</sub></i> is very small, the scaling factor
+    <i>a<sub>ji</sub></i> / <i>a<sub>ii</sub></i> could get very large, leading to rounding error in
+    floating point representations used in computers. This is solved by always choosing the row in
+    <i>i</i>+1 to <i>N</i> with the largest absolute value.</li>
+</ul>
+
+<p>The process of elimination is also called <b>pivoting</b>, a concept that shows up in the
+application to linear programming. </p>
+
+<p>Sedgewick presents an improved version as a Pascal procedure. If you want to understand the
+algorithm at this level of detail you should read CLRS 28.1.</p>
+
+<!-- ------------------------------------------------------------ -->
+<hr><h2> Linear Programming  </h2>
+
+<p>Linear programs are systems of linear equations, but with the additional twists that</p>
+<ul>
+  <li>The constraint equations may include inequalities.</li>
+  <li>There is also a linear expression, the objective function, to be maximized.</li>
+</ul> 
+
+<p> These two are related: </p>
+<ul>
+  <li>The constraints being inequalities means there is often no unique solution to the system of 
+      constraints.</li> 
+  <li>Maximizing the objective function helps us choose from among the infinite possible
+      solutions.</li> 
+</ul>
+
+<p>In fact, these points capture our motivations, in many cases, for using linear programming for
+real-world problems! There are many ways to act (i.e., many solutions), but we want to know which
+one is the best (i.e., maximized objective function). The constraints model a set of possible
+solutions, and the objective function helps us pick one that maximizes something we care
+about. Linear programming is a <em>general</em> way to approach any such situation that can be
+modeled with linear equations.</p>
+
+<!-- ----------------------- -->
+<h3> Example</h3>
+
+<p>For example, a simple linear program in two variables might look like this:</p>
+<img src="Topic-21/linear-programming-example-1b.jpg" align="right">
+
+<blockquote>
+  &nbsp; &minus;<i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> &le; 5<br>
+  &nbsp; <i>x</i><sub>1</sub> + 4<i>x</i><sub>2</sub> &le; 45<br>
+  &nbsp;  2<i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> &le; 27<br>
+  3<i>x</i><sub>1</sub> &minus; 4<i>x</i><sub>2</sub> &le; 24<br><br>
+  &nbsp;  &nbsp;  &nbsp;  <i>x</i><sub>1</sub>, <i>x</i><sub>2</sub> &ge; 0
+</blockquote>
+
+<h4>Geometric Interpretation</h4>
+
+<p>We can graph this example as shown:</p>
+
+<p>Each inequality divides the plane into one half in which a solution cannot lie and one in which
+it can.</p>
+
+<p>For example, <i>x<sub>1</sub></i> &ge; 0 excludes solutions to the left of the
+<i>x<sub>2</sub></i> axis, and &minus;<i>x<sub>1</sub></i> + <i>x<sub>2</sub></i> &le; 5 means solutions
+must lie below and to the right of the line &minus;<i>x<sub>1</sub></i> + <i>x<sub>2</sub></i> = 5,
+shown between (0,5) and (5,10). </p>
+
+<!-- ----------------------- -->
+<h3>Simplex</h3>
+
+<p>Solutions must lie within the feasible region defined by the intersection of the regions defined
+by the constraint equations. That region is called the <b>simplex</b>.  In the above example, each
+equation defines a half plane and the simplex, shaded grey in the above figure, is the intersection
+of these half planes. In systems with more variables the regions are in higher dimensions that are
+harder to visualize.</p>
+
+<p>The simplex is a <b>convex region:</b> for any two points
+in the region, all points on a line segment between them are also in the region.
+Convexness can be used to show an important fact: </p>
+
+<h4>Fundamental Theorem</h4> 
+<p><b><i>The objective function is always maximized at one of the vertices of the simplex.</i></b></p>
+
+<img src="Topic-21/linear-programming-example-1b-small.jpg" align="right" hspace="1" vspace="2"> 
+
+<p>Think of the objective function (here, <i>x<sub>1</sub></i> + <i>x<sub>2</sub></i>, the dotted
+line) as a line of known slope but unknown position. Imagine the line being slid towards the simplex
+from infinity. If there is a solution, it will first touch the simplex at one of the vertices (one
+solution) or coincide with an edge (many solutions) that includes a vertex. </p>
+
+<p><i>Where would this line touch the simplex?</i></p>
+
+<h4>Simplex Algorithm</h4>
+
+<p><u>The algorithm does not actually slide a line</u>. Rather, this geometric interpretation tells
+us that the algorithm need only need search for a solution at the vertices of the convex
+simplex.</p>
+
+<p><u>The simplex method systematically searches the vertices</u>, moving to new vertices on which
+the objective function is no less, and is usually greater than the value for the previous
+vertex. An example will be given below. See CLRS 29.3 for details of the algorithm.</p>
+
+<h4>Other Issues Exposed by the Geometric Interpretation</h4>
+<ul>
+  <li><b>Linearity is important</b>: if either the objective function or the simplex were
+      curved, it would be much harder to tell where they overlap optimally.</li>
+  <li>If the intersection of the half-planes is empty, the linear program is <b>infeasible</b>.</li>
+  <li>A constraint is <b>redundant</b> if the simplex defined by the other constraints lies entirely
+      within its half-plane. This is not a problem but the code must handle these situations.</li>
+  <li> The simplex may be <b>unbounded</b>. As a result, the solution may be ill-defined, or even if it is
+      well defined an algorithm may have difficulty with the unbounded portion.</li> 
+</ul> 
+
+<h3>Multiple Dimensions</h3> 
+
+<p>The geometric interpretation extends to more variables = dimensions. </p>
+
+<p><b>In three dimensions,</b> </p>
+<ul>
+  
+  <li> The simplex is a convex 3-dimenstional solid defined by the intersection of half-spaces
+       defined by constraints expressing planes rather than lines.</li>
+       
+  <li> The objective function is a plane and Simplex finds the maximal value for which it
+       intersects a vertex of the 3-dimensional solid.</li>
+       
+</ul>
+
+<p><b>In <i>n</i> dimensions,</b></p>
+<ul>
+  
+  <li> (<i>n</i>-1)-dimensional hyperplanes are intersected to define an <i>n</i>-dimensional
+    simplex.</li>
+    
+  <li> The objective function is an <i>n</i>-1 dimensional hyper-plane, and again Simplex finds the
+    maximal value at which it intersects a vertex of the <i>n</i>-dimensional region. </li>
+    
+</ul>
+
+<p>The anomalous situations get much harder to detect in advance as dimensions increase, so it is
+important to handle them well in the code.</p>
+
+<p>As an example, add the inequalities <i>x<sub>3</sub></i> &le; 4 and <i>x<sub>3</sub></i> &ge;
+0 to our previous example. The simplex becomes a 3-D solid:</p>
+
+<img src="Topic-21/linear-programming-example-2a-nolines.jpg" align="right">
+
+<blockquote>
+  &nbsp; &minus;<i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> &le; 5<br>
+  &nbsp; <i>x</i><sub>1</sub> + 4<i>x</i><sub>2</sub> &le; 45<br>
+  &nbsp;  2<i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> &le; 27<br>
+  3<i>x</i><sub>1</sub> &minus; 4<i>x</i><sub>2</sub> &le; 24<br>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i>x</i><sub>3</sub> &le; 4<br><br> 
+  &nbsp; <i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, <i>x</i><sub>3</sub> &ge; 0
+</blockquote>
+
+
+<p>If the objective function is defined to be <i>x<sub>1</sub></i> + <i>x<sub>2</sub></i> +
+<i>x<sub>3</sub></i>, this is a plane perpendicular to the line <i>x<sub>1</sub></i>= <i>x<sub>2</sub></i> =
+<i>x<sub>3</sub></i>. Imagine this plane being brought from infinity to the origin: <i>where would it
+hit the simplex?</i></p>
+
+<p>Again, the algorithm we discuss below does not actually move planes from infinity; this is just a
+way of visualizing the fact that an optimal solution must lie on <i>some</i> vertex of the
+<i>n</i>-dimensional simplex, so we need only search these vertices.</p>
+
+<!-- ----------------------- -->
+<h3>The Simplex Method</h3> 
+<p>Now we see how pivoting from Gaussian elimination is used. Pivoting is analogous to moving
+between the vertices of the simplex, starting at the origin. First, we need to prepare the data
+...</p> 
+
+<h4>Standard Form</h4>
+
+<p><i>(Note: Sedgewick does not distinguish between standard and slack forms; this discussion is
+based on CLRS section 29.1, to which the reader is referred for details.)</i> </p> 
+
+<p>When equations are written to model a problem in a natural way, they may have various features
+that are not suitable for input to the Simplex Method. We begin by conversion into <b>standard
+form</b>:</p>
+
+<blockquote>
+
+Given <b><i>n</i> real numbers <i>c</i><sub>1</sub>, <i>c</i><sub>2</sub>,
+... <i>c</i><sub><i>n</i></sub></b> &nbsp; &nbsp; <i>(coefficients on objective function)</i>,</br> 
+<b><i>m</i> real numbers <i>b</i><sub>1</sub>, <i>b</i><sub>2</sub>,
+... <i>b</i><sub><i>m</i></sub></b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  <i>(constants on right hand side of equations)</i>, <br> 
+and <b><i>m</i><i>n</i> real numbers <i>a</i><sub><i>i</i><i>j</i></sub></b> for &nbsp;
+<i>i</i> = 1, 2 ... <i>m</i> and <i>j</i> = 1, 2, ... <i>n</i> &nbsp; &nbsp; <i>(coefficients on variables in equations)</i>,<br> 
+<b>find real numbers <i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, ... <i>x</i><sub><i>n</i></sub></b>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  <i>(the variables)</i> 
+<blockquote>
+<b>that maximize: &nbsp;
+<big>&Sigma;</big><sub><i>j</i>=1,<i>n</i></sub> <i>c<sub>j</sub></i> <i>x<sub>j</sub></i></b>
+&nbsp; &nbsp; <i>(the objective function)</i><br><br>
+
+<b>subject to: 
+&nbsp;  <big>&Sigma;</big><sub><i>j</i>=1,<i>n</i></sub> <i>a<sub>ij</sub></i>
+<i>x<sub>j</sub></i> &le; <i>b<sub>j</sub></i>
+&nbsp; for <i>i</i> = 1, 2, ... <i>m</i></b>
+&nbsp; &nbsp; <i>(regular constraints)</i> <br><br>
+
+&nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;
+<b>and &nbsp; <i>x<sub>j</sub></i> &ge; 0, &nbsp; for <i>j</i> = 1, 2, ... <i>n</i></b>
+&nbsp; &nbsp; <i>(nonnegativity constraints)</i> 
+</blockquote> 
+</blockquote> 
+
+<p>The following conversions may be needed to convert a linear program into standard form (see CLRS
+for details and justification):</p>
+
+<ol>
+  <li> If the objective function is to be minimized rather than maximized, negate the objective
+       function (i.e., negate its coefficients). </li>
+  <li> Replace each variable <i>x</i> that does not have a nonnegativity constraint with
+       <i>x'</i>&minus;<i>x''</i>, and introduce the constraints <i>x'</i> &ge; 0 and
+       <i>x''</i> &ge; 0. </li>
+  <li> Convert equality constraints of form
+       <i>f</i>(<i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, ... <i>x</i><sub><i>n</i></sub>) = <i>b</i>
+       into two inequality constraints
+       <i>f</i>(<i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, ... <i>x</i><sub><i>n</i></sub>) &le;
+       <i>b</i>
+       and
+       <i>f</i>(<i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, ... <i>x</i><sub><i>n</i></sub>) &ge;
+       <i>b</i>. </li>
+   <li> Convert &ge; constraints (except the nonnegativity constraints) into &le; constraints by
+       multiplying the constraints by -1.</li> 
+</ol>
+
+<p>Our example above is already in standard form, except that some of the coefficients
+<i>a<sub>ij</sub></i> are equal to 1 and are not written out, and we have not written terms with 0
+coefficents. Making all <i>a<sub>ij</sub></i> explicit, we would write:</p> 
+
+<blockquote>
+  &minus;1<i>x</i><sub>1</sub> + 1<i>x</i><sub>2</sub> + 0<i>x</i><sub>3</sub> &le; 5<br>
+  &nbsp; 1<i>x</i><sub>1</sub> + 4<i>x</i><sub>2</sub> + 0<i>x</i><sub>3</sub> &le; 45<br>
+  &nbsp; 2<i>x</i><sub>1</sub> + 1<i>x</i><sub>2</sub> + 0<i>x</i><sub>3</sub> &le; 27<br>
+  &nbsp; 3<i>x</i><sub>1</sub> &minus; 4<i>x</i><sub>2</sub> + 0<i>x</i><sub>3</sub> &le; 24<br>
+  &nbsp; 0<i>x</i><sub>1</sub> + 0<i>x</i><sub>2</sub> + 1<i>x</i><sub>3</sub> &le; 4<br><br>
+  &nbsp; <i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, <i>x</i><sub>3</sub> &ge; 0
+</blockquote>
+
+<h4>Slack Form</h4>
+
+<p>The Simplex Method is based on methods (akin to Gaussian elimination) for solving systems of
+linear equations that require that we work with equalities rather than inequalities (except for the
+constraints that the variables are non-negative).</p>
+
+<p>We can convert standard form into slack form by introducing <b>slack variables</b>, one for each
+inequality, that "take up the slack" allowed by the inequality. (These will be allowed to range as
+needed to do so.)</p>
+
+<p>For example, instead of <i>x</i><sub>1</sub>+ 4<i>x</i><sub>2</sub> &le; 45, we can write
+<i>x</i><sub>1</sub> + 4<i>x</i><sub>2</sub> + <i>y</i> = 45, where <i>y</i> can range over the
+values needed to "take up the slack" between inequality and equality. </p>
+
+<p>Applying this idea to the 3-D example above, and using a different <i>y<sub>i</sub></i> for each
+equation, we can model that example with:  </p>
+
+<blockquote>
+Maximize <i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> + <i>x</i><sub>3</sub> subject to the
+constraints: 
+
+<blockquote>
+  &minus;1<i>x</i><sub>1</sub> + 1<i>x</i><sub>2</sub> + 0<i>x</i><sub>3</sub> + <i>y</i><sub>1</sub> = 5<br>
+  &nbsp; 1<i>x</i><sub>1</sub> + 4<i>x</i><sub>2</sub> + 0<i>x</i><sub>3</sub> + <i>y</i><sub>2</sub> = 45<br>
+  &nbsp; 2<i>x</i><sub>1</sub> + 1<i>x</i><sub>2</sub> + 0<i>x</i><sub>3</sub> + <i>y</i><sub>3</sub> = 27<br>
+  &nbsp; 3<i>x</i><sub>1</sub> &minus; 4<i>x</i><sub>2</sub> + 0<i>x</i><sub>3</sub> + <i>y</i><sub>4</sub> = 24<br>
+  &nbsp; 0<i>x</i><sub>1</sub> + 0<i>x</i><sub>2</sub> + 1<i>x</i><sub>3</sub> + <i>y</i><sub>5</sub> =
+  &nbsp; 4<br><br>
+  <i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, <i>x</i><sub>3</sub>, <i>y</i><sub>1</sub>,
+  <i>y</i><sub>2</sub>, <i>y</i><sub>3</sub>, <i>y</i><sub>4</sub>, <i>y</i><sub>5</sub> &ge; 0
+</blockquote> 
+</blockquote>
+
+<p>There are <i>m</i> equations in <i>n</i> variables, including up to <i>m</i> slack variables (one
+for each inequality). (Note: in using <i>n</i> and <i>m</i>, I am following CLRS. Sedgewick uses <i>M</i>
+for number of variables and <i>N</i> for number of equations.) </p>
+<ul>
+ <li>We assume that <i>n</i> &gt; <i>m</i> (more variables than equations), so there are many
+      solutions possible. (In our example above, <i>n</i> = 8 and <i>m</i> = 5.) </li>
+ <li>We assume that the origin ((0, 0, 0) in this example) is a point on the simplex, so we can use
+      it as a starting point for the search for the best solution, which must lie on some
+      vertex. (The assumption that the origin is a solution can be eliminated if needed.)  </li>
+</ul>
+
+<p>We can now write the slack-form system of equations (e.g., above) as a matrix (e.g., shown
+below), where the 0th row contains the negated coefficients of the objective function. Sedgewick
+describes how this negation directs the procedure to select the correct rows and columns for
+pivoting), and the (<i>n</i>+1)th column has the numbers on the right hand side of the equation.
+</p>
+      
+ &nbsp; &nbsp; <img src="Topic-21/linear-programming-example-2c.jpg">
+
+<p>We want to perform pivot operations, using the same row and column manipulations as for Gaussian
+elimination.</p> 
+<ul>
+  <li> Instead of trying to make a triangular matrix we are trying to get each column corresponding
+       to the non-slack variables <i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, and
+       <i>x</i><sub>3</sub> to have exactly one "1" in it and all the rest "0"s.</li>
+  <li>This is because the variables with one "1" in it and all the rest "0"s are the <b>basis
+       variables</b>: their values give the solution if we set all other variables to 0.</li> 
+  <li>Then we will be able to read off the values of the variables in the
+      (<i>n</i>+1)th or rightmost column. The value of variable <i>x</i><sub><i>i</i></sub> will be
+       found in row <i>i</i> column <i>n</i>+1, or at <i>a</i><sub><i>i</i>, <i>n</i>+1</sub>.</li> 
+  <li>We don't care what the values of the slack variables <i>y<sub>i</sub></i> are (they just move
+      the solution around in the feasible inequality areas).</li> 
+</ul>
+
+<p>As we proceed, the upper right cell will have the current value of the objective function. We
+always want to increase this. The question is what strategy to take.</p>
+
+<p>The most popular strategy is <b>greatest increment</b>:</p>
+<ul>
+  <li> Choose the <i>column q</i> with the smallest value in row 0 (the largest absolute value). The
+       objective function will increase if we use any column with a negative entry in row 0. </li>
+  <li> Choose the <i>row p</i> from among those with positive values in the chosen column that has the
+       smallest value when divided into the (<i>n</i>+1)th element in the same row. (Sedgewick
+       discusses how this guarantees that the objective function increases and also that we stay in
+       the simplex.)</li> 
+  <li> In the case of ties, choose the row that will result in the column of lowest index being
+       removed from the basis (this policy prevents cycling). </li>
+</ul>
+
+<p>An alternative strategy is <b> steepest descent </b> (actually ascent!): evaluate the
+alternatives and choose the column that increases the objective function the most.</p>
+
+<h4>Example</h4> 
+
+<p>We'll solve the example given above and copied below. Keep in mind that row indices start at 0,
+but column indices start at 1. (See Sedgewick for discussion of issues concerning staying in the
+simplex, detecting unbounded simplexes, and avoiding circularity; and then CLRS if you want details
+and proofs.)</p>
+ 
+&nbsp; &nbsp; <img src="Topic-21/linear-programming-example-2c.jpg">
+
+<p>There are three columns with the smallest value (-1) in row 0; we choose to operate on the lowest
+indexed column 1. Dividing the last number by the positive values in this column, 45/1 = 45 (row 2),
+27/2 = 13.5 (row 3) and 24/3 = 8 (row 4), so we choose to pivot on row 4, as this has the smallest
+result.</p>
+
+<p>Pivot for row <i>p</i>= 4 and column <i>q</i> = 1 by adding an appropriate multiple of the
+fourth row to each of the other rows to make the first column 0 except for a 1 in row 4):</p>
+
+ &nbsp; &nbsp; <img src="Topic-21/linear-programming-example-2d.jpg">
+
+<p>After that pivot, only <i>x</i><sub>1</sub> is a basis variable. Setting the others to 0, we have
+moved to vertex (8,0,0) on the simplex (see figure), and the objective function has value 8.00 (upper
+right corner of matrix above). </p>
+
+<img src="Topic-21/linear-programming-example-2a-small-1.jpg" align = "right">
+
+<p>Now, column 2 has the smallest value. Rows 2 and 3 are candidates: for row 2, 37/5.33 = 6.94; and
+for row 3, 11/3.67 = 2.99. We choose row 3. Pivoting on row <i>p</i> = 3  and column <i>q</i> = 2:
+</p>
+ &nbsp; &nbsp; <img src="Topic-21/linear-programming-example-2e.jpg">
+
+<p>After that pivot, <i>x</i><sub>1</sub> and <i>x</i><sub>2</sub> are basis variables, with values
+12 and 3 respectively, so we are at vertex (12,3,0). The objecive function has value 15.00. The
+figure to the right shows how we are moving through the space. </p>
+
+<p>Now pivot on column <i>q</i> = 3 (it has -1 in row 0) and row <i>p</i> = 5 (it has the only
+positive value in column 3).</p>
+
+ &nbsp; &nbsp; <img src="Topic-21/linear-programming-example-2f.jpg">
+
+<p>Now all three <i>x</i><sub><i>i</i></sub> are in the basis, and we are at vertex (12,3,4).<p>
+<img src="Topic-21/linear-programming-example-2a-small-2.jpg" align = "right">
+
+<p> But we are not done: there is still a negative value in row 0 (at column 7), so we know that we can still
+increase the objective function. I leave it to you to do the math to verify that row 2 will be
+selected. Pivoting on row <i>p</i> = 2 and column <i>q</i> = 7, we get::</p>
+ &nbsp; &nbsp; <img src="Topic-21/linear-programming-example-2g-solved.jpg">
+
+<p>Now row 0 has no negative values, and the columns for the three variables of interest are in the
+basis (all 0 except one 1 in each). We can read off the solution: <i>x</i><sub>1</sub> = 9,
+<i>x</i><sub>2</sub> = 9, and <i>x</i><sub>3</sub> = 4, with optimum value 22. </p>
+
+<!-- ----------------------- -->
+<h3>Sedgewick's Code</h3>
+
+<p><i>(Here I briefly explain Sedgewick's Pascal code, but if you want to understand the algorithm in
+detail I recommend going to CLRS for a more current treatment in pseudocode you are familiar
+with.)</i> </p>
+
+<p>Keep in mind that for Sedgewick there are <i>N</i> equations in <i>M</i> variables.</p> 
+
+<p>The main procedure finds values of <i>p</i> and <i>q</i> and calls <tt>pivot</tt>, repeating
+until the optimum is reached (<tt><i>q</i>=<i>M</i>+1</tt>) or the simplex is found to be unbounded
+(<tt><i>p</i>=<i>N</i>+1</tt>).</p>
+<img src="Topic-21/linear-programming-code-main.jpg" align="right" border="1">
+<ul>
+  <li>The first line finds <i>q</i> by finding the first negative value in the 0th row.</li> 
+  <li> The second line finds the first positive value in the <i>q</i>th column. </li>
+  <li> The <tt>for</tt> loop finds the best row <i>p</i> for pivoting by searching for
+       the smallest ratio with the value in <i>M</i>+1).</li>
+  <li> If the conditions for continuation are met, <tt>pivot</tt> is called.</li>
+</ul> 
+
+<p>The <tt>pivot</tt> procedure has similarities to Gaussian elimination. (The <tt>for</tt> loops below
+correspond to the two innermost <tt>for</tt> loops of Gaussian elimination, and the outer
+<tt>for</tt> loop of Gauss corresponds to the <tt>repeat</tt> loop in the main procedure above):</p>
+ &nbsp; &nbsp; <img src="Topic-21/linear-programming-code-pivot.jpg">
+
+<p>The innermost line is where one row is scaled and subtracted from another. Other details are
+discussed in Sedgewick's chapter, including the need to implement cycle avoidance and test
+whether the matrix has a feasible basis (absent from the code above).</p>
+
+<hr><h3>What's Next</h3>
+
+<p>At this point, I highy recommend reading CLRS Sections 29.0 (the introduction to the chapter)
+through the middle of 29.3 (where the Simplex algorithm is introduced: as a "consumer" of the
+algorithm you don't need to read the proofs that follow in the rest of the section). </p>
+
+<!-- ------------------------------------------------------------ -->
+<hr>
+<address>Dan Suthers</address>
+<!-- hhmts start -->Last modified: Mon May  4 16:49:25 HST 2015 <!-- hhmts end -->
+<br>Images are from Sedgewick (1983). Algorithms. Reading, MA: Addison-Wesley. First Edition.</br> 
+</body>
+</html>

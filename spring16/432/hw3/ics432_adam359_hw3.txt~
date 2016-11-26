@@ -1,0 +1,123 @@
+??? from here until ???END lines may have been inserted/deleted
+                                                    Adam Butac
+                                                    02/12/16
+                                                    ICS 432
+
+                     Homework Assignment #3
+
+Exercise #1
+    
+    Question #1
+        
+        Suppose there are two threads, A and B, and our stack
+        has a size of 10, with 9 items in the stack.
+
+        A calls push, passes the if at line 7, and adds an item
+        to the array at line 11.
+
+        Evil OS context switches A out.
+        
+        B calls push, passes the if at line 7, since A did not 
+        yet increment stack.size. B pushes a value, overwriting
+        what A had put in the stack. B increments stack.size 
+        and returns.
+
+        Evil OS switches A back into the running queue and A 
+        increments stack.size.
+
+        So now, stack.size is one greater than its maximum, and
+        the data that A wrote is lost.
+
+    Question #2
+
+        The code is not safe because the checking methods are
+        not synchronized with push and pop. 
+
+        Suppose there are again two threads, A, B, and our stack
+        has a size of 10, with 9 initial items in the stack.
+
+        Thread A calls push and aquires the lock, and reaches
+        line 13, setting a value in the array.
+
+        Evil OS switches A out of the running queue. 
+
+        Thread B calls isFull(stack), and returns false because
+        stack.size is still 9. Thread B says "OK, the stack has
+        room so I will push my value!", calls push, then blocks.
+
+        Evil OS switches B out of the running queue, and A back
+        in. 
+
+        Thread A increments stack.size and releases the lock.
+
+        Evil OS switches A out and B in.
+
+        Thread B aquires the lock and fails the if statment at 
+        line 9, printing "Stack full" and the program exits at
+        line 11.
+
+    Question #3
+
+
+        If the if statement at line 9 ever succeeds, then push
+        returns STACK_ERROR without ever releasing the lock.
+        Afterwards, nothing can push or pop from the stack.
+
+
+    Question #4
+        
+        First of all, the call to lock() is now within the if
+        statment at line 9, reintroducing the very first
+        problem where multiple threads can step on eachothers
+        toes.
+
+        Secondly, wait() is called but there is no code to 
+        signal the threads to "wake up."
+
+
+        Finally, wait() is called after lock which should NEVER
+        happen. You've fallen asleep in the bathroom with the
+        key, and now nobody can use the bathroom. 
+
+
+    Question #5
+
+        This code is so very broken...
+        
+        One counter example proving this is broken is that
+        V(not_empty) is never called in the code, so
+        P(not_empty) will block forever.
+
+    Question #6 
+
+     1 Stack {
+     2   int size;
+     3   int items[SIZE];
+     4   Semaphore mutex = 1;
+     5   Semaphore SemA = SIZE; 
+     6   Semaphore SemB = 0; 
+     7 }
+     8 
+     9 void push(Stack stack, int value) {
+    10   P(SemA)
+    11   P(mutex);
+    12   //nothing
+    13   stack.items[stack.size] = value;
+    14   stack.size ++;
+    15   //nothing
+    16   V(mutex)
+    17   V(SemB)
+    18   return;
+    19 }
+    20 
+    21 int pop(Stack stack) {
+    22   P(SemB)
+    23   P(mutex);
+    24   //nothing
+    25   int value = stack.items[stack.size - 1];
+    26   stack.size --;
+    27   //nothing
+    28   V(mutex);
+    29   V(SemA)
+    30   return value;
+    31 }

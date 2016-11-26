@@ -1,0 +1,456 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 26.83      6.20     6.20 1120776228     0.00     0.00  sphere_ray_intersect(sphere*, vec&, vec&, double*, vec&, vec&)
+ 14.90      9.64     3.44 3925354530     0.00     0.00  vec_dot(vec&, vec&)
+  9.74     11.89     2.25 196471030     0.00     0.00  vec_jitter_xyz(vec&, double, vec&)
+  8.88     13.94     2.05 188724544     0.00     0.00  scene_ray_intersect_for_transmission(scene*, vec&, vec&)
+  8.75     15.96     2.02 1316244900     0.00     0.00  vec_from_to(vec&, vec&, vec&)
+  8.27     17.87     1.91 1313063130     0.00     0.00  shape_ray_intersect(shape*, vec&, vec&, double*, vec&, vec&)
+  7.90     19.70     1.83  3054198     0.00     0.00  scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&)
+  4.55     20.75     1.05 192286902     0.00     0.00  plane_ray_intersect(plane*, vec&, vec&, double*, vec&, vec&)
+  3.85     21.64     0.89 199031030     0.00     0.00  vec_normalize(vec&)
+  2.27     22.16     0.53 322982816     0.00     0.00  col_accum_mult_scale(col&, col&, col&, double)
+  1.56     22.52     0.36 176797654     0.00     0.00  vec_reflect(vec&, vec&, vec&)
+  0.69     22.68     0.16  2560000     0.00     0.00  pixel_view_ray(float, float, vec*)
+  0.63     22.83     0.15        6     0.02     0.02  sphere_new(ezxml*)
+  0.30     22.90     0.07  3562358     0.00     0.00  scene_ray_intersect(scene*, vec&, vec&, double*, vec&, vec&)
+  0.24     22.95     0.06  1002358     0.00     0.00  col_accum_scale(col&, col&, double)
+  0.17     22.99     0.04        1     0.04     0.04  plane_new(ezxml*)
+  0.17     23.03     0.04                             vec_length(vec&)
+  0.13     23.06     0.03  2560000     0.00     0.00  scene_add_pixel_color(scene*, int, int, col, double)
+  0.06     23.08     0.02 30943515     0.00     0.00  vec_set(vec&, double, double, double)
+  0.06     23.09     0.02  3562358     0.00     0.00  scene_ray_color(scene*, vec&, vec&, int, col&)
+  0.04     23.10     0.01        1     0.01     0.01  scene_write_ppm_file(scene*, char*)
+  0.02     23.11     0.01                             indent(int)
+  0.00     23.11     0.00  6108396     0.00     0.00  light_num_illum_rays(light*, vec&)
+  0.00     23.11     0.00  1002358     0.00     0.00  material_num_refl_rays(material*)
+  0.00     23.11     0.00      224     0.00     0.00  vec_negate(vec&)
+  0.00     23.11     0.00      169     0.00     0.00  ezxml_attr
+  0.00     23.11     0.00       83     0.00     0.00  ezxml_decode
+  0.00     23.11     0.00       26     0.00     0.00  ezxml_char_content
+  0.00     23.11     0.00       18     0.00     0.00  ezxml_close_tag
+  0.00     23.11     0.00       18     0.00     0.00  ezxml_free_attr
+  0.00     23.11     0.00       18     0.00     0.00  ezxml_open_tag
+  0.00     23.11     0.00       17     0.00     0.00  ezxml_add_child
+  0.00     23.11     0.00       17     0.00     0.00  ezxml_set_flag
+  0.00     23.11     0.00       16     0.00     0.00  col_set(col&, char const*)
+  0.00     23.11     0.00       13     0.00     0.00  vec_set(vec&, char const*)
+  0.00     23.11     0.00       11     0.00     0.00  ezxml_child
+  0.00     23.11     0.00        7     0.00     0.00  material_new(ezxml*)
+  0.00     23.11     0.00        7     0.00     0.00  scene_add_shape(scene*, shape*)
+  0.00     23.11     0.00        3     0.00     0.00  col_set(col&, double, double, double)
+  0.00     23.11     0.00        2     0.00     0.00  scene_add_light(scene*, light*)
+  0.00     23.11     0.00        2     0.00     0.00  light_new(ezxml*)
+  0.00     23.11     0.00        1     0.00    22.87  scene_render(scene*)
+  0.00     23.11     0.00        1     0.00    22.88  create_graphics_window(int*, char**)
+  0.00     23.11     0.00        1     0.00     0.19  scene_new(char*)
+  0.00     23.11     0.00        1     0.00     0.00  ezxml_free
+  0.00     23.11     0.00        1     0.00     0.00  ezxml_new
+  0.00     23.11     0.00        1     0.00     0.00  ezxml_parse_fd
+  0.00     23.11     0.00        1     0.00     0.00  ezxml_parse_file
+  0.00     23.11     0.00        1     0.00     0.00  ezxml_parse_str
+  0.00     23.11     0.00        1     0.00     0.00  ezxml_proc_inst
+  0.00     23.11     0.00        1     0.00     0.00  ezxml_str2utf8
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.04% of 23.11 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     99.8    0.00   23.06                 main [1]
+                0.00   22.88       1/1           create_graphics_window(int*, char**) [2]
+                0.00    0.19       1/1           scene_new(char*) [18]
+                0.00    0.00       1/30943515     vec_set(vec&, double, double, double) [25]
+                0.00    0.00       3/3           col_set(col&, double, double, double) [72]
+-----------------------------------------------
+                0.00   22.88       1/1           main [1]
+[2]     99.0    0.00   22.88       1         create_graphics_window(int*, char**) [2]
+                0.00   22.87       1/1           scene_render(scene*) [3]
+                0.01    0.00       1/1           scene_write_ppm_file(scene*, char*) [26]
+-----------------------------------------------
+                0.00   22.87       1/1           create_graphics_window(int*, char**) [2]
+[3]     99.0    0.00   22.87       1         scene_render(scene*) [3]
+                1.84   20.83 2560000/2560000     scene_ray_color(scene*, vec&, vec&, int, col&) <cycle 1> [16]
+                0.16    0.01 2560000/2560000     pixel_view_ray(float, float, vec*) [19]
+                0.03    0.00 2560000/2560000     scene_add_pixel_color(scene*, int, int, col, double) [24]
+-----------------------------------------------
+[4]     98.1    1.84   20.83 2560000+4056556 <cycle 1 as a whole> [4]
+                1.83   20.49 3054198             scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+                0.02    0.33 3562358             scene_ray_color(scene*, vec&, vec&, int, col&) <cycle 1> [16]
+-----------------------------------------------
+                             3054198             scene_ray_color(scene*, vec&, vec&, int, col&) <cycle 1> [16]
+[5]     96.6    1.83   20.49 3054198         scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+                2.05   13.59 188724544/188724544     scene_ray_intersect_for_transmission(scene*, vec&, vec&) [6]
+                2.25    0.00 196471030/196471030     vec_jitter_xyz(vec&, double, vec&) [10]
+                0.88    0.00 196471030/199031030     vec_normalize(vec&) [13]
+                0.53    0.00 322982816/322982816     col_accum_mult_scale(col&, col&, col&, double) [14]
+                0.36    0.15 176797654/176797654     vec_reflect(vec&, vec&, vec&) [15]
+                0.33    0.00 372266326/3925354530     vec_dot(vec&, vec&) [9]
+                0.30    0.00 195468672/1316244900     vec_from_to(vec&, vec&, vec&) [11]
+                0.06    0.00 1002358/1002358     col_accum_scale(col&, col&, double) [21]
+                0.00    0.00 6108396/6108396     light_num_illum_rays(light*, vec&) [65]
+                0.00    0.00 1002358/1002358     material_num_refl_rays(material*) [66]
+                             1002358             scene_ray_color(scene*, vec&, vec&, int, col&) <cycle 1> [16]
+-----------------------------------------------
+                2.05   13.59 188724544/188724544     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+[6]     67.7    2.05   13.59 188724544         scene_ray_intersect_for_transmission(scene*, vec&, vec&) [6]
+                1.87   11.72 1288126624/1313063130     shape_ray_intersect(shape*, vec&, vec&, double*, vec&, vec&) [7]
+-----------------------------------------------
+                0.04    0.23 24936506/1313063130     scene_ray_intersect(scene*, vec&, vec&, double*, vec&, vec&) [17]
+                1.87   11.72 1288126624/1313063130     scene_ray_intersect_for_transmission(scene*, vec&, vec&) [6]
+[7]     60.0    1.91   11.94 1313063130         shape_ray_intersect(shape*, vec&, vec&, double*, vec&, vec&) [7]
+                6.20    4.69 1120776228/1120776228     sphere_ray_intersect(sphere*, vec&, vec&, double*, vec&, vec&) [8]
+                1.05    0.00 192286902/192286902     plane_ray_intersect(plane*, vec&, vec&, double*, vec&, vec&) [12]
+-----------------------------------------------
+                6.20    4.69 1120776228/1120776228     shape_ray_intersect(shape*, vec&, vec&, double*, vec&, vec&) [7]
+[8]     47.1    6.20    4.69 1120776228         sphere_ray_intersect(sphere*, vec&, vec&, double*, vec&, vec&) [8]
+                2.96    0.00 3376290550/3925354530     vec_dot(vec&, vec&) [9]
+                1.72    0.00 1120776228/1316244900     vec_from_to(vec&, vec&, vec&) [11]
+                0.01    0.00 27923732/30943515     vec_set(vec&, double, double, double) [25]
+                0.00    0.00     224/224         vec_negate(vec&) [67]
+-----------------------------------------------
+                0.15    0.00 176797654/3925354530     vec_reflect(vec&, vec&, vec&) [15]
+                0.33    0.00 372266326/3925354530     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+                2.96    0.00 3376290550/3925354530     sphere_ray_intersect(sphere*, vec&, vec&, double*, vec&, vec&) [8]
+[9]     14.9    3.44    0.00 3925354530         vec_dot(vec&, vec&) [9]
+-----------------------------------------------
+                2.25    0.00 196471030/196471030     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+[10]     9.7    2.25    0.00 196471030         vec_jitter_xyz(vec&, double, vec&) [10]
+-----------------------------------------------
+                0.30    0.00 195468672/1316244900     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+                1.72    0.00 1120776228/1316244900     sphere_ray_intersect(sphere*, vec&, vec&, double*, vec&, vec&) [8]
+[11]     8.7    2.02    0.00 1316244900         vec_from_to(vec&, vec&, vec&) [11]
+-----------------------------------------------
+                1.05    0.00 192286902/192286902     shape_ray_intersect(shape*, vec&, vec&, double*, vec&, vec&) [7]
+[12]     4.6    1.05    0.00 192286902         plane_ray_intersect(plane*, vec&, vec&, double*, vec&, vec&) [12]
+                0.00    0.00 3019782/30943515     vec_set(vec&, double, double, double) [25]
+-----------------------------------------------
+                0.01    0.00 2560000/199031030     pixel_view_ray(float, float, vec*) [19]
+                0.88    0.00 196471030/199031030     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+[13]     3.9    0.89    0.00 199031030         vec_normalize(vec&) [13]
+-----------------------------------------------
+                0.53    0.00 322982816/322982816     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+[14]     2.3    0.53    0.00 322982816         col_accum_mult_scale(col&, col&, col&, double) [14]
+-----------------------------------------------
+                0.36    0.15 176797654/176797654     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+[15]     2.2    0.36    0.15 176797654         vec_reflect(vec&, vec&, vec&) [15]
+                0.15    0.00 176797654/3925354530     vec_dot(vec&, vec&) [9]
+-----------------------------------------------
+                             1002358             scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+                1.84   20.83 2560000/2560000     scene_render(scene*) [3]
+[16]     1.5    0.02    0.33 3562358         scene_ray_color(scene*, vec&, vec&, int, col&) <cycle 1> [16]
+                0.07    0.26 3562358/3562358     scene_ray_intersect(scene*, vec&, vec&, double*, vec&, vec&) [17]
+                             3054198             scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+-----------------------------------------------
+                0.07    0.26 3562358/3562358     scene_ray_color(scene*, vec&, vec&, int, col&) <cycle 1> [16]
+[17]     1.4    0.07    0.26 3562358         scene_ray_intersect(scene*, vec&, vec&, double*, vec&, vec&) [17]
+                0.04    0.23 24936506/1313063130     shape_ray_intersect(shape*, vec&, vec&, double*, vec&, vec&) [7]
+-----------------------------------------------
+                0.00    0.19       1/1           main [1]
+[18]     0.8    0.00    0.19       1         scene_new(char*) [18]
+                0.15    0.00       6/6           sphere_new(ezxml*) [20]
+                0.04    0.00       1/1           plane_new(ezxml*) [22]
+                0.00    0.00      16/169         ezxml_attr [28]
+                0.00    0.00       7/7           scene_add_shape(scene*, shape*) [71]
+                0.00    0.00       4/11          ezxml_child [36]
+                0.00    0.00       2/2           light_new(ezxml*) [74]
+                0.00    0.00       2/2           scene_add_light(scene*, light*) [73]
+                0.00    0.00       1/1           ezxml_parse_file [40]
+                0.00    0.00       1/13          vec_set(vec&, char const*) [69]
+                0.00    0.00       1/1           ezxml_free [37]
+-----------------------------------------------
+                0.16    0.01 2560000/2560000     scene_render(scene*) [3]
+[19]     0.7    0.16    0.01 2560000         pixel_view_ray(float, float, vec*) [19]
+                0.01    0.00 2560000/199031030     vec_normalize(vec&) [13]
+-----------------------------------------------
+                0.15    0.00       6/6           scene_new(char*) [18]
+[20]     0.6    0.15    0.00       6         sphere_new(ezxml*) [20]
+                0.00    0.00      24/169         ezxml_attr [28]
+                0.00    0.00       6/13          vec_set(vec&, char const*) [69]
+                0.00    0.00       6/11          ezxml_child [36]
+                0.00    0.00       6/7           material_new(ezxml*) [70]
+-----------------------------------------------
+                0.06    0.00 1002358/1002358     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+[21]     0.2    0.06    0.00 1002358         col_accum_scale(col&, col&, double) [21]
+-----------------------------------------------
+                0.04    0.00       1/1           scene_new(char*) [18]
+[22]     0.2    0.04    0.00       1         plane_new(ezxml*) [22]
+                0.00    0.00      10/169         ezxml_attr [28]
+                0.00    0.00       4/13          vec_set(vec&, char const*) [69]
+                0.00    0.00       1/7           material_new(ezxml*) [70]
+                0.00    0.00       1/11          ezxml_child [36]
+-----------------------------------------------
+                                                 <spontaneous>
+[23]     0.2    0.04    0.00                 vec_length(vec&) [23]
+-----------------------------------------------
+                0.03    0.00 2560000/2560000     scene_render(scene*) [3]
+[24]     0.1    0.03    0.00 2560000         scene_add_pixel_color(scene*, int, int, col, double) [24]
+-----------------------------------------------
+                0.00    0.00       1/30943515     main [1]
+                0.00    0.00 3019782/30943515     plane_ray_intersect(plane*, vec&, vec&, double*, vec&, vec&) [12]
+                0.01    0.00 27923732/30943515     sphere_ray_intersect(sphere*, vec&, vec&, double*, vec&, vec&) [8]
+[25]     0.1    0.02    0.00 30943515         vec_set(vec&, double, double, double) [25]
+-----------------------------------------------
+                0.01    0.00       1/1           create_graphics_window(int*, char**) [2]
+[26]     0.0    0.01    0.00       1         scene_write_ppm_file(scene*, char*) [26]
+-----------------------------------------------
+                                                 <spontaneous>
+[27]     0.0    0.01    0.00                 indent(int) [27]
+-----------------------------------------------
+                0.00    0.00      10/169         plane_new(ezxml*) [22]
+                0.00    0.00      14/169         light_new(ezxml*) [74]
+                0.00    0.00      16/169         scene_new(char*) [18]
+                0.00    0.00      24/169         sphere_new(ezxml*) [20]
+                0.00    0.00     105/169         material_new(ezxml*) [70]
+[28]     0.0    0.00    0.00     169         ezxml_attr [28]
+-----------------------------------------------
+                0.00    0.00      25/83          ezxml_char_content [30]
+                0.00    0.00      58/83          ezxml_parse_str [41]
+[29]     0.0    0.00    0.00      83         ezxml_decode [29]
+-----------------------------------------------
+                0.00    0.00      26/26          ezxml_parse_str [41]
+[30]     0.0    0.00    0.00      26         ezxml_char_content [30]
+                0.00    0.00      25/83          ezxml_decode [29]
+                0.00    0.00      17/17          ezxml_set_flag [35]
+-----------------------------------------------
+                0.00    0.00      18/18          ezxml_parse_str [41]
+[31]     0.0    0.00    0.00      18         ezxml_close_tag [31]
+-----------------------------------------------
+                0.00    0.00      18/18          ezxml_free [37]
+[32]     0.0    0.00    0.00      18         ezxml_free_attr [32]
+-----------------------------------------------
+                0.00    0.00      18/18          ezxml_parse_str [41]
+[33]     0.0    0.00    0.00      18         ezxml_open_tag [33]
+                0.00    0.00      17/17          ezxml_add_child [34]
+-----------------------------------------------
+                0.00    0.00      17/17          ezxml_open_tag [33]
+[34]     0.0    0.00    0.00      17         ezxml_add_child [34]
+-----------------------------------------------
+                0.00    0.00      17/17          ezxml_char_content [30]
+[35]     0.0    0.00    0.00      17         ezxml_set_flag [35]
+-----------------------------------------------
+                0.00    0.00       1/11          plane_new(ezxml*) [22]
+                0.00    0.00       4/11          scene_new(char*) [18]
+                0.00    0.00       6/11          sphere_new(ezxml*) [20]
+[36]     0.0    0.00    0.00      11         ezxml_child [36]
+-----------------------------------------------
+                                  36             ezxml_free [37]
+                0.00    0.00       1/1           scene_new(char*) [18]
+[37]     0.0    0.00    0.00       1+36      ezxml_free [37]
+                0.00    0.00      18/18          ezxml_free_attr [32]
+                                  36             ezxml_free [37]
+-----------------------------------------------
+                0.00    0.00       1/1           ezxml_parse_str [41]
+[38]     0.0    0.00    0.00       1         ezxml_new [38]
+-----------------------------------------------
+                0.00    0.00       1/1           ezxml_parse_file [40]
+[39]     0.0    0.00    0.00       1         ezxml_parse_fd [39]
+                0.00    0.00       1/1           ezxml_parse_str [41]
+-----------------------------------------------
+                0.00    0.00       1/1           scene_new(char*) [18]
+[40]     0.0    0.00    0.00       1         ezxml_parse_file [40]
+                0.00    0.00       1/1           ezxml_parse_fd [39]
+-----------------------------------------------
+                0.00    0.00       1/1           ezxml_parse_fd [39]
+[41]     0.0    0.00    0.00       1         ezxml_parse_str [41]
+                0.00    0.00      58/83          ezxml_decode [29]
+                0.00    0.00      26/26          ezxml_char_content [30]
+                0.00    0.00      18/18          ezxml_open_tag [33]
+                0.00    0.00      18/18          ezxml_close_tag [31]
+                0.00    0.00       1/1           ezxml_new [38]
+                0.00    0.00       1/1           ezxml_str2utf8 [43]
+                0.00    0.00       1/1           ezxml_proc_inst [42]
+-----------------------------------------------
+                0.00    0.00       1/1           ezxml_parse_str [41]
+[42]     0.0    0.00    0.00       1         ezxml_proc_inst [42]
+-----------------------------------------------
+                0.00    0.00       1/1           ezxml_parse_str [41]
+[43]     0.0    0.00    0.00       1         ezxml_str2utf8 [43]
+-----------------------------------------------
+                0.00    0.00 6108396/6108396     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+[65]     0.0    0.00    0.00 6108396         light_num_illum_rays(light*, vec&) [65]
+-----------------------------------------------
+                0.00    0.00 1002358/1002358     scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) <cycle 1> [5]
+[66]     0.0    0.00    0.00 1002358         material_num_refl_rays(material*) [66]
+-----------------------------------------------
+                0.00    0.00     224/224         sphere_ray_intersect(sphere*, vec&, vec&, double*, vec&, vec&) [8]
+[67]     0.0    0.00    0.00     224         vec_negate(vec&) [67]
+-----------------------------------------------
+                0.00    0.00       2/16          light_new(ezxml*) [74]
+                0.00    0.00      14/16          material_new(ezxml*) [70]
+[68]     0.0    0.00    0.00      16         col_set(col&, char const*) [68]
+-----------------------------------------------
+                0.00    0.00       1/13          scene_new(char*) [18]
+                0.00    0.00       2/13          light_new(ezxml*) [74]
+                0.00    0.00       4/13          plane_new(ezxml*) [22]
+                0.00    0.00       6/13          sphere_new(ezxml*) [20]
+[69]     0.0    0.00    0.00      13         vec_set(vec&, char const*) [69]
+-----------------------------------------------
+                0.00    0.00       1/7           plane_new(ezxml*) [22]
+                0.00    0.00       6/7           sphere_new(ezxml*) [20]
+[70]     0.0    0.00    0.00       7         material_new(ezxml*) [70]
+                0.00    0.00     105/169         ezxml_attr [28]
+                0.00    0.00      14/16          col_set(col&, char const*) [68]
+-----------------------------------------------
+                0.00    0.00       7/7           scene_new(char*) [18]
+[71]     0.0    0.00    0.00       7         scene_add_shape(scene*, shape*) [71]
+-----------------------------------------------
+                0.00    0.00       3/3           main [1]
+[72]     0.0    0.00    0.00       3         col_set(col&, double, double, double) [72]
+-----------------------------------------------
+                0.00    0.00       2/2           scene_new(char*) [18]
+[73]     0.0    0.00    0.00       2         scene_add_light(scene*, light*) [73]
+-----------------------------------------------
+                0.00    0.00       2/2           scene_new(char*) [18]
+[74]     0.0    0.00    0.00       2         light_new(ezxml*) [74]
+                0.00    0.00      14/169         ezxml_attr [28]
+                0.00    0.00       2/16          col_set(col&, char const*) [68]
+                0.00    0.00       2/13          vec_set(vec&, char const*) [69]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [20] sphere_new(ezxml*)     [65] light_num_illum_rays(light*, vec&) [28] ezxml_attr
+  [23] vec_length(vec&)       [26] scene_write_ppm_file(scene*, char*) [30] ezxml_char_content
+  [67] vec_negate(vec&)        [8] sphere_ray_intersect(sphere*, vec&, vec&, double*, vec&, vec&) [36] ezxml_child
+  [11] vec_from_to(vec&, vec&, vec&) [24] scene_add_pixel_color(scene*, int, int, col, double) [31] ezxml_close_tag
+  [15] vec_reflect(vec&, vec&, vec&) [5] scene_compute_shading(scene*, shape&, vec&, vec&, vec&, int, col&) [29] ezxml_decode
+  [70] material_new(ezxml*)    [2] create_graphics_window(int*, char**) [37] ezxml_free
+   [3] scene_render(scene*)   [66] material_num_refl_rays(material*) [32] ezxml_free_attr
+  [13] vec_normalize(vec&)     [6] scene_ray_intersect_for_transmission(scene*, vec&, vec&) [38] ezxml_new
+  [19] pixel_view_ray(float, float, vec*) [27] indent(int) [33] ezxml_open_tag
+  [10] vec_jitter_xyz(vec&, double, vec&) [68] col_set(col&, char const*) [39] ezxml_parse_fd
+  [21] col_accum_scale(col&, col&, double) [72] col_set(col&, double, double, double) [40] ezxml_parse_file
+  [73] scene_add_light(scene*, light*) [9] vec_dot(vec&, vec&) [41] ezxml_parse_str
+  [71] scene_add_shape(scene*, shape*) [69] vec_set(vec&, char const*) [42] ezxml_proc_inst
+  [16] scene_ray_color(scene*, vec&, vec&, int, col&) [25] vec_set(vec&, double, double, double) [35] ezxml_set_flag
+  [12] plane_ray_intersect(plane*, vec&, vec&, double*, vec&, vec&) [74] light_new(ezxml*) [43] ezxml_str2utf8
+  [17] scene_ray_intersect(scene*, vec&, vec&, double*, vec&, vec&) [22] plane_new(ezxml*) [4] <cycle 1>
+   [7] shape_ray_intersect(shape*, vec&, vec&, double*, vec&, vec&) [18] scene_new(char*)
+  [14] col_accum_mult_scale(col&, col&, col&, double) [34] ezxml_add_child
