@@ -1,0 +1,91 @@
+Script started on Mon 09 Jan 2017 05:07:39 PM HST
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                  [0m[27m[24m[Jnyx% [K[?2004h[1m[31ml[0m[39m[0m[32ml[32ms[39m[?2004l
+chalkboard  client.py  comment.js  [0m[01;34mDesktop[0m  [01;34mDownloads[0m  [01;34mics[0m  invictus.txt  [01;34mPictures[0m  RozeGal.order.number.txt  Scytale.py  text.txt  typescript  typescript.timing
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                  [0m[27m[24m[Jnyx% [K[?2004h[1m[31ms[0m[39m[0m[32ms[32ms[39m[32ms[32ms[32mh[39m adam359@uhunix.hawaii.edu[?2004l
+Unauthorized access is prohibited by law in accordance with Chapter 708, 
+Hawaii Revised Statutes; all use is subject to University of Hawaii 
+Executive Policy E2.210.
+Password: 
+Last login: Mon Jan  9 17:07:13 2017 from cpe-76-172-53-1
+
+Welcome to uhunix.hawaii.edu
+========================================================================
+Unauthorized access is prohibited by law in accordance with Chapter 708,
+Hawaii Revised Statutes; all use is subject to University of Hawaii
+Executive Policy E2.210.
+========================================================================
+
+ANNOUNCEMENTS:
+
+For Current Status and Alerts, see http://www.hawaii.edu/technews/
+
+
+uhunix:/home04/a/adam359% bash
+[adam359@uhx01 [1m~[m]$ ls
+box          ics451       makefile     public_html
+[adam359@uhx01 [1m~[m]$ exit
+exit
+uhunix:/home04/a/adam359% exit
+uhunix:/home04/a/adam359% logout
+Connection to uhunix.hawaii.edu closed.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                  [0m[27m[24m[Jnyx% [K[?2004h[7m[32mcurl[39m[7m http://www2.hawaii.edu/~nreed/ics313/assignments/guess.lisp | [7m[32msed[39m[7m -e [7m[33m's/^ \{1,\}//g'[39m[7m | [7m[32mcut[39m[7m -d' ' -f 1 | [7m[32mgrep[39m[7m [7m[33m'defun'[39m[7m | [7m[32mssh[39m[7m adam359@uhunix.hawaii.edu [7m[33m'cat > guess.lisp.defun; mkdir -p ics/313; mv guess.lisp.defun'[39m[27m
+[K[A[5C[27m[32mc[27m[32mu[27m[32mr[27m[32ml[39m[27m [27mh[27mt[27mt[27mp[27m:[27m/[27m/[27mw[27mw[27mw[27m2[27m.[27mh[27ma[27mw[27ma[27mi[27mi[27m.[27me[27md[27mu[27m/[27m~[27mn[27mr[27me[27me[27md[27m/[27mi[27mc[27ms[27m3[27m1[27m3[27m/[27ma[27ms[27ms[27mi[27mg[27mn[27mm[27me[27mn[27mt[27ms[27m/[27mg[27mu[27me[27ms[27ms[27m.[27ml[27mi[27ms[27mp[27m [27m|[27m [27m[32ms[27m[32me[27m[32md[39m[27m [27m-[27me[27m [27m[33m'[27m[33ms[27m[33m/[27m[33m^[27m[33m [27m[33m\[27m[33m{[27m[33m1[27m[33m,[27m[33m\[27m[33m}[27m[33m/[27m[33m/[27m[33mg[27m[33m'[39m[27m [27m|[27m [27m[32mc[27m[32mu[27m[32mt[39m[27m [27m-[27md[27m'[27m [27m'[27m [27m-[27mf[27m [27m1[27m [27m|[27m [27m[32mg[27m[32mr[27m[32me[27m[32mp[39m[27m [27m[33m'[27m[33md[27m[33me[27m[33mf[27m[33mu[27m[33mn[27m[33m'[39m[27m [27m|[27m [27m[32ms[27m[32ms[27m[32mh[39m[27m [27ma[27md[27ma[27mm[27m3[27m5[27m9[27m@[27mu[27mh[27mu[27mn[27mi[27mx[27m.[27mh[27ma[27mw[27ma[27mi[27mi[27m.[27me[27md[27mu[27m [27m[33m'[27m[33mc[27m[33ma[27m[33mt[27m[33m [27m[33m>[27m[33m [27m[33mg[27m[33mu[27m[33me[27m[33ms[27m[33ms[27m[33m.[27m[33ml[27m[33mi[27m[33ms[27m[33mp[27m[33m.[27m[33md[27m[33me[27m[33mf[27m[33mu[27m[33mn[27m[33m;[27m[33m [27m[33mm[27m[33mk[27m[33md[27m[33mi[27m[33mr[27m[33m [27m[33m-[27m[33mp[27m[33m [27m[33mi[27m[33mc[27m[33ms[27m[33m/[27m[33m3[27m[33m1[27m[33m3[27m[33m;[27m[33m [27m[33mm[27m[33mv[27m[33m [27m[33mg[27m[33mu[27m[33me[27m[33ms[27m[33ms[27m[33m.[27m[33ml[27m[33mi[27m[33ms[27m[33mp[27m[33m.[27m[33md[27m[33me[27m[33mf[27m[33mu[27m[33mn[27m[33m'[39m[1B[K[?2004l
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   378  100   378    0     0   2029      0 --:--:-- --:--:-- --:--:--  2021
+Unauthorized access is prohibited by law in accordance with Chapter 708, 
+Hawaii Revised Statutes; all use is subject to University of Hawaii 
+Executive Policy E2.210.
+Password: 
+mv: Insufficient arguments (1)
+Usage: mv [-f] [-i] f1 f2
+       mv [-f] [-i] f1 ... fn d1
+       mv [-f] [-i] d1 d2
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                  [0m[27m[24m[Jnyx% [K[?2004h[32mcurl[39m http://www2.hawaii.edu/~nreed/ics313/assignments/guess.lisp | [32msed[39m -e [33m's/^ \{1,\}//g'[39m | [32mcut[39m -d' ' -f 1 | [32mgrep[39m [33m'defun'[39m | [32mssh[39m adam359@uhunix.hawaii.edu [33m'cat > guess.lisp.defun; mkdir -p ics/313; mv guess.lisp.defun'[39m
+[K[K[A[5C[1C[1C[1C[1C[1C[1C[1C[210C[33m [33m'[39m[33mi[33m'[39m[33mc[33m'[39m[33ms[33m'[39m 
+[K[A[A[225C[33m/[33m'[39m[1B[K[A[33m3[33m'[39m[33m3[33m1[33m'[39m[33m3[33m'[39m[33m/[33m'[39m[33m'[39m[39m [?2004l[1B
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   378  100   378    0     0   2052      0 --:--:-- --:--:-- --:--:--  2054
+Unauthorized access is prohibited by law in accordance with Chapter 708, 
+Hawaii Revised Statutes; all use is subject to University of Hawaii 
+Executive Policy E2.210.
+Password: 
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                  [0m[27m[24m[Jnyx% [K[?2004h[1m[31ms[0m[39m[0m[32ms[32ms[39m[32ms[32ms[32mh[39m adam359@uhunix.hawaii.edu[?2004l
+Unauthorized access is prohibited by law in accordance with Chapter 708, 
+Hawaii Revised Statutes; all use is subject to University of Hawaii 
+Executive Policy E2.210.
+Password: 
+Last login: Mon Jan  9 17:09:30 2017 from cpe-76-172-53-1
+
+Welcome to uhunix.hawaii.edu
+========================================================================
+Unauthorized access is prohibited by law in accordance with Chapter 708,
+Hawaii Revised Statutes; all use is subject to University of Hawaii
+Executive Policy E2.210.
+========================================================================
+
+ANNOUNCEMENTS:
+
+For Current Status and Alerts, see http://www.hawaii.edu/technews/
+
+
+uhunix:/home04/a/adam359% bash
+[adam359@uhx01 [1m~[m]$ ls
+box          ics          ics451       makefile     public_html
+[adam359@uhx01 [1m~[m]$ cd ics/313/
+[adam359@uhx01 [1m313[m]$ [Kls
+guess.lisp.defun
+[adam359@uhx01 [1m313[m]$ cat guess.lisp.defun 
+(defun
+(defun
+(defun
+(defun
+[adam359@uhx01 [1m313[m]$ [Kexit
+exit
+uhunix:/home04/a/adam359% exit
+uhunix:/home04/a/adam359% logout
+Connection to uhunix.hawaii.edu closed.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                  [0m[27m[24m[Jnyx% [K[?2004h[1m[31me[0m[39m[0m[32me[32mx[39m[1m[31me[1m[31mx[1m[31mi[0m[39m[0m[32me[0m[32mx[0m[32mi[32mt[39m[?2004l
+
+Script done on Mon 09 Jan 2017 05:09:04 PM HST

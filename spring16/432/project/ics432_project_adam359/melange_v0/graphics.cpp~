@@ -438,7 +438,6 @@ scene *scene_new(char *filename)
 
 void scene_render(scene *scn)
 {
-  #pragma omp parallel for
   for (int y = 0; y < scn->window_h; y++) {
     for (int x = 0; x < scn->window_w; x++) {
       for (int sy = 0; sy < scn->pixel_samples; sy++) {

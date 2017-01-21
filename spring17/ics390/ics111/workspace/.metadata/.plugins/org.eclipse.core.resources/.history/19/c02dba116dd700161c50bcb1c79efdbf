@@ -1,0 +1,10 @@
+package ics111_helloworld;
+
+import java.awt.Color;
+
+public class HelloWorld {
+	public static void main(String[] args){
+		EZ.initialize(200, 200);
+		EZ.addText(100, 100, "hello world", Color.BLACK);
+	}
+}
