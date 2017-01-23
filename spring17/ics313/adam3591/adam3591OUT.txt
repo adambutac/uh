@@ -1,0 +1,74 @@
+Script started on Fri 13 Jan 2017 06:05:08 PM HST
+
+Finding 1 took 6 guesses.
+	42 took 7 guesses.
+	89 took 6 guesses.
+
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                  [0m[27m[24m[Jnyx% [K[?2004h[1m[31mc[0m[39m[1m[31mc[1m[31ml[0m[39m[1m[31mc[1m[31ml[1m[31mi[0m[39m[1m[31mi[1m[31ms[0m[39m[0m[32mc[0m[32ml[0m[32mi[0m[32ms[32mp[39m[?2004l
+  i i i i i i i       ooooo    o        ooooooo   ooooo   ooooo
+  I I I I I I I      8     8   8           8     8     o  8    8
+  I  \ `+' /  I      8         8           8     8        8    8
+   \  `-+-'  /       8         8           8      ooooo   8oooo
+    `-__|__-'        8         8           8           8  8
+        |            8     o   8           8     o     8  8
+  ------+------       ooooo    8oooooo  ooo8ooo   ooooo   8
+
+Welcome to GNU CLISP 2.49 (2010-07-07) <http://clisp.cons.org/>
+
+Copyright (c) Bruno Haible, Michael Stoll 1992, 1993
+Copyright (c) Bruno Haible, Marcus Daniels 1994-1997
+Copyright (c) Bruno Haible, Pierpaolo Bernardi, Sam Steingold 1998
+Copyright (c) Bruno Haible, Sam Steingold 1999-2000
+Copyright (c) Sam Steingold, Bruno Haible 2001-2010
+
+Type :h and hit Enter for context help.
+
+[1]> (load "adam3591.lisp")[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+;; Loading file adam3591.lisp ...
+;; Loaded file adam3591.lisp
+T
+[2]> (guess-my-number)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+50
+[3]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+25
+[4]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+12
+[5]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+6
+[6]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+3
+[7]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+1
+[8]> (start-over)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+50
+[9]> (les[K[K[Ksmaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+25
+[10]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K[K[K[K[K[K[K[Kbigger)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+37
+[11]> (bigger)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+43
+[12]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+40
+[13]> (bigger)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+41
+[14]> (bigger)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+42
+[15]> (start-over)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+50
+[16]> (bigger)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+75
+[17]> (bigger)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+88
+[18]> (bigger)[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+94
+[19]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+91
+[20]> (smaller)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+89
+[21]> ([K+ID+
+"Adam Butac"
+[22]> (quit)[C[C[C[C[C[C
+Bye.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                  [0m[27m[24m[Jnyx% [K[?2004h[1m[31me[0m[39m[0m[32me[32mx[39m[1m[31me[1m[31mx[1m[31mi[0m[39m[0m[32me[0m[32mx[0m[32mi[32mt[39m[?2004l
+
+Script done on Fri 13 Jan 2017 06:07:53 PM HST
