@@ -1,0 +1,89 @@
+MODUS OPERANDI
+  Convince to the reader that there is a great need for anonomizing internet traffic.
+  Show the reader how TOR fills the need as a tool to anonomize the internet.
+
+  Our arguments must be supported by facts about the TOR protocol.
+
+    Ex. 
+      ARGUMENT: Anonomizing the internet is important because: spying is unethical. 
+      SOLUTION: TOR allows one to securly browse the internet by encrypting data in layers.
+      SOLUTION: TOR provides anonimity by creating random chains within the TOR network.
+
+  Perhaps we should try to focus on legitimate activites so we may build a better argument using pathos.
+    Ex.
+      How would you feel if you had vital information to share, but were afraid of becoming a target?
+      How would you feel if my job was to watch everything you do on the internet?
+      How would you feel if the internet was censored by the government?
+
+  We can save the illicit activities for "entertainment secitons" during the presentation.
+
+ _________________________________________________
+/ |intro
+| |  ananomizing the internet is important because
+|1|    subtopic 1,2,3,4,5... 
+| |
+| |  tor has desireable qualities
+| |    1,2,3,4,5...
+|-|
+| |anonomizing the internet is important because
+| |
+| |  subtopic 1
+| |
+| |  desirable quality 1
+| |
+| |  subtopic 2
+| |
+| |  desirable quality 2
+| |
+| |  subtopic 3
+| |
+|5|  desirable quality 3
+| |
+| |  subtopic 4
+| |
+| |  desirable quality 4
+| |
+| |  subtopic 5
+| |
+| |  desirable quality 5
+| |
+| |  ...
+|_|
+| |anonomizing the internet is important because
+|1|  subtopic 1,2,3,4,5... 
+|_|______________________________________________
+
+
+What is TOR?
+
+  TOR is a circuit-based anonymous communication service that works on the real-world internet and provides the average internet user the ability to browse anonymously in a more relative sense of the word. To be succinct, TOR is NOT a perfect solution for complete anonimity across the internet and SHOULD NOT be used in this way.  Although discussed later, details as to why TOR should not be considered full proof rely heavily on security concepts that are beyond the scope of this essay.  The concept of Onion Routing was originally designed by scientists employed by the United States Naval Research Labratory with the purpose of securing intelligence communications online.  Their idea of Onion Routing was an internet protocol that would encapsulate data with layers of encryption and then route the encrypted data through an undeterministic chain of "Onion Routers" which exist on the internet. At each Onion Router in the chain, a layer of encryption would be peeled away, and the data would then be forwarded to the next link.  Once the data reached its final exit node and the last layer of encryption was peeled away, the exit node would act as a proxy, making the data appear to originate from that exit node.  The ultimate goal of these Naval researchers was to make it impossible to read the data or trace the data back to its origin, rendering the client relatively anonymous.  The TOR project we are familiar with today kept this philosophy of secure layering and adapted it in a way that it could be used on the internet by any willing person.  
+
+TOR has layers.
+
+  I. The importance of an Anonymous Internet 
+  
+  Anonomizing the internet is important because 
+  1.  Privacy is important.
+       Great Brittian just passed a law that allows the capture and temporary storage of
+       internet traffic metadata.
+       They have many other internet sensoring laws.
+      - An observer may not know your name, but they know or can guess from metadata 
+        The websites you go to.
+        Your interests.
+        Your gender.
+        Your Age.
+        What time youre home.
+        When you go to sleep.
+        What you bought on the internet.
+
+  2.  Freedom to information is important.
+      - In Countries like China, citizens are allow to visit only the websites that
+      its government finds acceptable. 
+
+  TOR fixes this with its anonymous routing protocl.
+
+
+II.
+  TOR PROTOCL
+    The tor protocl allows us to define what is and is not acceptable when using TOR for 
+    anonymous communications
