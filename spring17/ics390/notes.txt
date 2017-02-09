@@ -1,0 +1,44 @@
+"In order to be fair, communication should be two-way, not one-way." (Quinn)
+
+Example with Anne sending emails to her coworkers:
+  Act Utilitarianism: ok, but would be resonable if the company said don't do that.
+  Rule Utilitarianism: wrong, everyone would send spam.
+  Social Contract Theory: ok, anne did nothing wrong. 
+
+Attributes of the Web:
+  It is decentralized
+  Every object on the web has a unique address
+  It is based on the internet
+
+Decentralization makes the web difficult to control.
+The web makes it more difficult for an authoritarian government to control the flow of information.
+The lack of conftrol makes it difficult for parents to shield their children from porn and violent things.
+
+We use the web to:
+  Shop
+    Amazon
+  Socialize
+    Facebook
+  Contribute content
+    Wikipedia
+  Blog
+    Reddit
+  Learn
+    MIT OpenCourseWare
+  Explore our roots
+    National Archives
+  Enter Virtual worlds
+    World of Warcraft
+    "Young people are losing their ability to relate to each other, except through games" (quinn 119)
+  Pay our taxes
+    IRS
+  Gamble
+    
+  Take humanitarian action
+    Kiva (micro lending)
+
+In May 2009 the government told all pc makers that they would need to install web-content filtering software on all pc's designed to prevent a web browser from displaying web pages from blacklisted sites. Computers would automatically update their list of banned sites.  It is required in all public computers such as net cafes, but use among private computer owners is voluntary.
+
+Children's Internet Protection Act
+
+
