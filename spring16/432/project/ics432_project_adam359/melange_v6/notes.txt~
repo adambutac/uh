@@ -1,8 +1,0 @@
-Make file -O3 52.4051
-Makefile -O4 52.3374
-Makefile -O3 -funroll-loops 52.2761 
-Makefile -O3 -funroll-all-loops 52.6051
-Makefile -O4 -funroll-loops 52.2650
-Makefile -O3 -ftree-vectorize 52.6137
--O4 -ftree-vectorize -msse4 -ftree-vectorizer-verbose=5 52.3068
--O4 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5 52.3849

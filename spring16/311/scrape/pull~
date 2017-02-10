@@ -1,7 +1,0 @@
-#!/bin/bash
-
-for OUTPUT in $(cat podcasts.list)
-do
-    curl -O -b "JSESSIONID=SOMETHING-SOMETHING-SOMETHING-SOMETHING.sak30" $OUTPUT 
-done
-
