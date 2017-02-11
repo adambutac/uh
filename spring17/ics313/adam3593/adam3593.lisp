@@ -106,11 +106,15 @@
 )
 
 (defun gcd-non-recursive(a b)
+"Greatest common divisor algorithm using a loop in place of recursion."
   (if (and (integerp a) (integerp b))
-    (loop for x = a
-      then y and y = (mod x b)
-      while (> x 0)
-      finally (print x)
+    (loop  while(not (= 0 b))
+      maximize b
+      do
+        (setq x a)
+        (setq a b)
+        (setq b (mod x b))
     )
+    (format t "Error: Parameters must be integers.")
   )
 )
