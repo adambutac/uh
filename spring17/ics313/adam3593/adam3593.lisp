@@ -73,12 +73,19 @@
         (cons (car lst) (remove-numbers-recursive (cdr lst)))
       )
     )
-    (format t "Error: Parameter must be a list")
+    (format t "Error: Parameter must be a list.")
   )
 )
 
-(defun remove-numbers-non-recursive()
-  
+(defun remove-numbers-non-recursive(lst)
+  (if (not (consp lst))
+    (return (format t "Error: Parameter must be a list.")) 
+  )  
+
+  (loop for i in lst
+    when (not (integerp i))
+    collect i
+  )
 )
 
 (defun gcd-recursive-three(a b c)
