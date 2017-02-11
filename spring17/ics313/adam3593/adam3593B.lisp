@@ -5,6 +5,17 @@
 (in-package :User) ; optional - this is also in the header above
 (defconstant +ID+ "Adam Butac")
 
+(defun id (crsNum asnNum)
+  "Print name, course number, and homework assignment number. Return nil."
+  (cond
+    ((and (integerp crsNum) (integerp asnNum))
+      (format t "Name: ~S~%" +ID+)
+      (format t "Course: ICS~D~%" crsNum)
+      (format t "Assignment # ~D~%" asnNum)
+    )
+  )
+)
+
 
 ; wizards_game part 1
 
