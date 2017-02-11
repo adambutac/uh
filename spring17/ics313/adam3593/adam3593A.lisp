@@ -50,17 +50,23 @@
   "The Least Common Multiple (LCM) of two or three numbers is the smallest number that the numbers are factors of. Like the LCM of 3 and 4 is 12, because 12 is the smallest number that 3 and 4 are both factors for."
   (if (and (integerp a) (integerp b))
     (/ (* a b) (gcd-recursive a b))
+    (format t "Error: Parameter(s) must be an integer.")
   )
+)
+
+(defun lcm-non-recursive-three(a b c)
+  (lcm-non-recursive a (lcm-non-recursive b c))
 )
 
 (defun lcm-non-recursive(a b)
   (if (and (integerp a) (integerp b))
     (/ (* a b) (gcd-non-recursive a b))
+    (format t "Error: Parameter(s) must be an integer.")
   )
 )
 
 (defun remove-numbers-recursive(lst)
-"Create a recursive (5 p) and a non-recursive (5 p) version of a remove-numbers function. This function takes a list of parameters and returns a list of all parameters in the input that are not numbers (in the same order and at the same depth). I.e. Numeric parameters are discarded."
+"A recursive function to filter out integers from a list"
   ;;check lst for type cons
   (if (consp lst)
     ;;if the next item in the list is nil return
@@ -78,22 +84,22 @@
 )
 
 (defun remove-numbers-non-recursive(lst)
-  (if (not (consp lst))
+  (if (consp lst)
+    (loop for i in lst
+      when (not (numberp i))
+      collect i
+    )
     (return (format t "Error: Parameter must be a list.")) 
-  )  
-
-  (loop for i in lst
-    when (not (integerp i))
-    collect i
   )
 )
 
 (defun gcd-recursive-three(a b c)
+"Greatest common divisor algorithm using the classic recusive method.(proof of concept)"
   (gcd-recursive a (gcd-recursive b c))
 )
 
 (defun gcd-recursive(a b)
-"Create a recursive (5 p) and non-recursive (5 p) implementation of the greatest common divisor function that works on 2 or 3 numbers. The greatest common divisor is the largest integer that is a divisor of all parameters. "
+"Greatest common divisor algorithm using the classic recusive method."
   ;;if b is 0 we reached the end case, a should be the gcd
   (if (and (integerp a) (integerp b))
     (if (= b 0)
@@ -105,16 +111,24 @@
   )
 )
 
+(defun gcd-non-recursive-three(a b c)
+"Greatest common divisor algorithm using a loop in place of recursion.(proof of correctness)"
+  (gcd-non-recursive a (gcd-non-recursive b c)) 
+)
+
 (defun gcd-non-recursive(a b)
 "Greatest common divisor algorithm using a loop in place of recursion."
-  (if (and (integerp a) (integerp b))
-    (loop  while(not (= 0 b))
-      maximize b
-      do
+  (cond 
+    ((not (and (integerp a) (integerp b)))
+      (format t "Error: Parameters must be integers.")
+    )
+    (t
+      (loop  while(not (= 0 b)) do
         (setq x a)
         (setq a b)
         (setq b (mod x b))
+      )
+      a
     )
-    (format t "Error: Parameters must be integers.")
   )
 )
