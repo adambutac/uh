@@ -1,0 +1,97 @@
+Script started on Fri 10 Feb 2017 09:26:37 PM HST
+[1m[7m%[27m[1m[0m                                                                                                                       ]2;super@enyo: ~/uh/spring17/ics313/adam3593]1;..s313/adam3593[0m[27m[24m[J[01;32m➜  [36madam3593[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31mc[0m[39m[1m[31mc[1m[31ml[0m[39m[1m[31mc[1m[31ml[1m[31mi[0m[39m[1m[31mi[1m[31ms[0m[39m[0m[32mc[0m[32ml[0m[32mi[0m[32ms[32mp[39m[?1l>[?2004l
+]2;clisp]1;clisp  i i i i i i i       ooooo    o        ooooooo   ooooo   ooooo
+  I I I I I I I      8     8   8           8     8     o  8    8
+  I  \ `+' /  I      8         8           8     8        8    8
+   \  `-+-'  /       8         8           8      ooooo   8oooo
+    `-__|__-'        8         8           8           8  8
+        |            8     o   8           8     o     8  8
+  ------+------       ooooo    8oooooo  ooo8ooo   ooooo   8
+
+Welcome to GNU CLISP 2.49 (2010-07-07) <http://clisp.cons.org/>
+
+Copyright (c) Bruno Haible, Michael Stoll 1992, 1993
+Copyright (c) Bruno Haible, Marcus Daniels 1994-1997
+Copyright (c) Bruno Haible, Pierpaolo Bernardi, Sam Steingold 1998
+Copyright (c) Bruno Haible, Sam Steingold 1999-2000
+Copyright (c) Sam Steingold, Bruno Haible 2001-2010
+
+Type :h and hit Enter for context help.
+
+[1]> (load "adam3593A.lisp")[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+;; Loading file adam3593A.lisp ...
+;; Loaded file adam3593A.lisp
+T
+[2]> (test)[C[C[C[C[C[C
+Name: "Adam Butac~%"
+Course: ICS313
+Assignment # 3
+[PASS] EVAL: (ID 313 3)
+      RESULT: NIL
+[PASS] EVAL: (FIBONACCI-RECURSIVE 10)
+      RESULT: 55
+[PASS] EVAL: (FIBONACCI-NON-RECURSIVE 10)
+      RESULT: 55
+[PASS] EVAL: (REMOVE-NUMBERS-RECURSIVE '(1 A 2 B 3 C 4 5 D E F))
+      RESULT: (A B C D E F)
+[PASS] EVAL: (REMOVE-NUMBERS-NON-RECURSIVE '(1 A 2 B 3 C 4 5 D E F))
+      RESULT: (A B C D E F)
+[PASS] EVAL: (LCM-RECURSIVE 8 116)
+      RESULT: 232
+[PASS] EVAL: (LCM-NON-RECURSIVE 8 116)
+      RESULT: 232
+[PASS] EVAL: (LCM-RECURSIVE-THREE 5 8 116)
+      RESULT: 1160
+[PASS] EVAL: (LCM-NON-RECURSIVE-THREE 5 8 116)
+      RESULT: 1160
+[PASS] EVAL: (GCD-RECURSIVE 8 116)
+      RESULT: 4
+[PASS] EVAL: (GCD-NON-RECURSIVE 8 116)
+      RESULT: 4
+[PASS] EVAL: (GCD-RECURSIVE-THREE 42 8 116)
+      RESULT: 2
+[PASS] EVAL: (GCD-NON-RECURSIVE-THREE 42 8 116)
+      RESULT: 2
+Error: Parameter must be an integer.
+[PASS] EVAL: (FIBONACCI-RECURSIVE 'ASDF)
+      RESULT: NIL
+Error: Parameter must be an integer.
+[PASS] EVAL: (FIBONACCI-NON-RECURSIVE 'ASDF)
+      RESULT: NIL
+Error: Parameter must be a list.
+[PASS] EVAL: (REMOVE-NUMBERS-RECURSIVE 42)
+      RESULT: NIL
+Error: Parameter must be a list.
+[PASS] EVAL: (REMOVE-NUMBERS-NON-RECURSIVE 42)
+      RESULT: NIL
+Error: Parameter(s) must be an integer.
+[PASS] EVAL: (LCM-RECURSIVE "asdf" 116)
+      RESULT: NIL
+Error: Parameter(s) must be an integer.
+[PASS] EVAL: (LCM-NON-RECURSIVE 8 "asdf")
+      RESULT: NIL
+Error: Parameter must be an integer.
+[PASS] EVAL: (LCM-RECURSIVE-THREE 'A 8 116)
+      RESULT: NIL
+[FAIL] EVAL: (LCM-NON-RECURSIVE-THREE 5 '8 116)
+      RESULT: 1160
+Error: Parameters must be integers.
+[PASS] EVAL: (GCD-RECURSIVE 8 'A16)
+      RESULT: NIL
+Error: Parameters must be integers.
+[PASS] EVAL: (GCD-NON-RECURSIVE 'A 116)
+      RESULT: NIL
+Error: Parameters must be integers.
+Error: Parameters must be integers.
+[PASS] EVAL: (GCD-RECURSIVE-THREE 42 8 'A16)
+      RESULT: NIL
+Error: Parameters must be integers.
+Error: Parameters must be integers.
+[PASS] EVAL: (GCD-NON-RECURSIVE-THREE 42 'A 116)
+      RESULT: NIL
+NIL
+[3]> (quit)[C[C[C[C[C[C
+Bye.
+[1m[7m%[27m[1m[0m                                                                                                                       ]2;super@enyo: ~/uh/spring17/ics313/adam3593]1;..s313/adam3593[0m[27m[24m[J[01;32m➜  [36madam3593[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31me[0m[39m[0m[32me[32mx[39m[1m[31me[1m[31mx[1m[31mi[0m[39m[0m[32me[0m[32mx[0m[32mi[32mt[39m[?1l>[?2004l
+]2;exit]1;exit
+Script done on Fri 10 Feb 2017 09:26:52 PM HST
