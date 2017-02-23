@@ -77,8 +77,15 @@
   )
 )
 
-(defun remove-numbers-non-recursive()
-  
+(defun remove-numbers-non-recursive(lst)
+  (if (consp lst)  
+    (loop repeat (length lst)
+      then rst and rst = (cdr lst) 
+      finally (if (not (integerp nxt))
+        (cons nxt rst)
+      )
+    )
+  )
 )
 
 (defun gcd-recursive-three(a b c)
