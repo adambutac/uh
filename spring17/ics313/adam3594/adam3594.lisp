@@ -57,18 +57,32 @@
     ;check input
     (cond
       ;if x then exit 
-      ((equal in "x") (format t "Shoots den!~%"))
+      ((equal in "x") 
+        (format t "Shoots den!~%"))
       ;if c then number guessed
-      ((equal in "c") (format t "Eh I guessed ~d in ~d tries! ~%Hana hou? ~%~%" guess count) (start-over))
+      ((equal in "c") 
+        (format t "Eh I guessed ~d in ~d tries!~%Hana hou?~%~%" guess count) 
+        (start-over))
       ;if h then bigger
-      ((equal in "h") (setq count (+ count 1)) (bigger))
+      ((equal in "h") 
+        (setq count (+ count 1)) (bigger))
       ;if l then smaller
-      ((equal in "l") (setq count (+ count 1)) (smaller))
+      ((equal in "l") 
+        (setq count (+ count 1)) (smaller))
       ;if r then reset
-      ((equal in "r") (format t "Restarting!~%") (setq count 0) (start-over))
-      ;if guess = (guess-my-number) then somethings wrong
+      ((equal in "r") 
+        (format t "Restarting!~%~%") (setq count 0) (start-over))
       ;otherwise print error notice and ask again
-      (t (format t "No can handle da kine.~%"))
+      (t 
+        (format t "No can handle da kine.~%"))
+    )
+    (cond
+      ;if there are no more moves
+      ((and (> count 1) (= guess (guess-my-number)))
+        (format t "No more moves left brah.~%Restarting!~%~%") 
+        (setq count 0) 
+        (start-over)
+      )
     )
     (setq guess (guess-my-number))
   )
