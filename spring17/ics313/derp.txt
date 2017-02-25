@@ -1,0 +1,10 @@
+f='adam359'
+mkdir 
+cd 
+echo ";;;; -*- Mode: LISP; Syntax: Common-lisp; Package: USER; Base: 10 -*-" >> .lisp 
+echo ";;;; Name: Adam Butac                               Date:Fri Feb 24 14:23:48 HST 2017" >> .lisp
+echo ";;;; Course: ICS313        Assignment:  "  >> .lisp
+echo ";;;; File: .lisp" >> .lisp
+echo -e "\n(in-package :User) ; optional - this is also in the header above" >> .lisp
+echo "(defconstant +ID+ \"Adam Butac\")" >> .lisp
+EOF 
