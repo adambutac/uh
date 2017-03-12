@@ -4,13 +4,38 @@ import java.util.Random;
 
 public class HelloWorld {
 	public static void main(String[] args){
-		Random rand = new Random();
-		int sLenX=500, sLenY=500;
-		int skip = sLenY/10;
+		int sLenX=500, sLenY=500, w=9, h=9;
 		EZ.initialize(sLenX, sLenY);
-		for(int i=skip/2; i < sLenY; i+=skip){
-			EZ.addLine(rand.nextInt(sLenX), i, rand.nextInt(sLenX), i, Color.BLACK, 1);	
-			EZ.addLine(i, rand.nextInt(sLenY), i, rand.nextInt(sLenY), Color.BLACK, 1);	
+
+		EZRectangle[] rts = new EZRectangle[10000];
+		Random rand = new Random();
+
+		for(int i=0; i< rts.length; i++) {
+			Color c = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+		    int x = rand.nextInt(sLenX - w) + w/2;
+			int y = rand.nextInt(sLenY - h) + h/2;
+
+			rts[i] = new EZRectangle(x, y, w, h, c, true);
+			EZ.addElement(rts[i]);
+		}
+
+		while(true) {
+//		    if(EZInteraction.wasMouseLeftButtonReleased()) {
+				int mx = EZInteraction.getXMouse();
+				int my = EZInteraction.getYMouse();
+				for (int i=0; i<rts.length; i++) {
+					EZRectangle r = rts[i];
+//					if (r.isPointInElement(mx, my)) {
+						EZ.removeEZElement(r);
+						Color c = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+						int x = rand.nextInt(sLenX - w) + w / 2;
+						int y = rand.nextInt(sLenY - h) + h / 2;
+						rts[i] = new EZRectangle(x, y, w, h, c, true);
+						EZ.addElement(rts[i]);
+//					}
+				}
+//			}
+			EZ.refreshScreen();
 		}
 	}
 }
