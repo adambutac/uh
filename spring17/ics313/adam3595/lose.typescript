@@ -1,0 +1,83 @@
+Script started on Sun 12 Mar 2017 04:36:09 PM HST
+[1m[7m%[27m[1m[0m                                                                                          ]2;super@nyx: ~/uh manoa/spring17/ics313/adam3595]1;..s313/adam3595[0m[27m[24m[J[01;32m➜  [36madam3595[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31mc[0m[39mlisp[1m[31mc[1m[31ml[0m[39m[1m[31mc[1m[31ml[1m[31mi[0m[39m[1m[31mi[1m[31ms[0m[39m[0m[32mc[0m[32ml[0m[32mi[0m[32ms[32mp[39m[?1l>[?2004l
+]2;clisp]1;clisp  i i i i i i i       ooooo    o        ooooooo   ooooo   ooooo
+  I I I I I I I      8     8   8           8     8     o  8    8
+  I  \ `+' /  I      8         8           8     8        8    8
+   \  `-+-'  /       8         8           8      ooooo   8oooo
+    `-__|__-'        8         8           8           8  8
+        |            8     o   8           8     o     8  8
+  ------+------       ooooo    8oooooo  ooo8ooo   ooooo   8
+
+Welcome to GNU CLISP 2.49 (2010-07-07) <http://clisp.cons.org/>
+
+Copyright (c) Bruno Haible, Michael Stoll 1992, 1993
+Copyright (c) Bruno Haible, Marcus Daniels 1994-1997
+Copyright (c) Bruno Haible, Pierpaolo Bernardi, Sam Steingold 1998
+Copyright (c) Bruno Haible, Sam Steingold 1999-2000
+Copyright (c) Sam Steingold, Bruno Haible 2001-2010
+
+Type :h and hit Enter for context help.
+
+[1]> (game-repl)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+
+*** - EVAL: undefined function GAME-REPL
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of (FDEFINITION 'GAME-REPL).
+RETRY          :R2      Retry
+STORE-VALUE    :R3      Input a new value for (FDEFINITION 'GAME-REPL).
+ABORT          :R4      Abort main loop
+Break 1 [2]> load([K[K[K[K[K(load adam[K[K[K[K"adam3595.lisp")[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+;; Loading file adam3595.lisp ...
+;; Loaded file adam3595.lisp
+T
+Break 1 [2]> (game-rep;[Kl;[K)[C[C[C[C[C[C[C[C[C[C[C
+walk west
+You are in a beautiful garden. There is a well in front of you. There is a door going
+ east from here. You see a frog on the floor. You see a chain on the floor. You see a
+ raspberry on the floor.
+pickup frog
+You are now carrying the frog
+walk nor[K[K[Keast
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door
+ going west from here. There is a ladder going upstairs from here. There is a door going
+ north from here. You see a bucket on the floor. You see a whiskey on the floor. You see
+ a crt-monitor on the floor.
+pickup bucket
+You are now carrying the bucket
+walk west
+You are in a beautiful garden. There is a well in front of you. There is a door going
+ east from here. You see a chain on the floor. You see a raspberry on the floor.
+pickup ca[Khain
+You are now carrying the chain
+walk east
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door
+ going west from here. There is a ladder going upstairs from here. There is a door going
+ north from here. You see a whiskey on the floor. You see a crt-monitor on the floor.
+walk upstairs
+You are in the attic. There is a giant welding torch in the corner. There is a ladder
+ going downstairs from here. You see a ibm-keyboard on the floor.
+walk[K[K[K[Kweld chain bucket
+The chain is now securely welded to the bucket.
+walk downstairs
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door
+ going west from here. There is a ladder going upstairs from here. There is a door going
+ north from here. You see a whiskey on the floor. You see a crt-monitor on the floor.
+walk e[Kwest
+You are in a beautiful garden. There is a well in front of you. There is a door going
+ east from here. You see a raspberry on the floor.
+walk[K[K[K[Kdunk bucket well
+The bucket is now full of water
+walk east
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door
+ going west from here. There is a ladder going upstairs from here. There is a door going
+ north from here. You see a whiskey on the floor. You see a crt-monitor on the floor.
+splash buacke[K[K[K[Kcket wizard
+The wizard awakens and sees that you stole his frog. He is so upset he banishes you to
+ the netherworlds- you lose! The end.
+quit
+NIL
+Break 1 [2]> (quit)[C[C[C[C[C[C
+Bye.
+[1m[7m%[27m[1m[0m                                                                                          ]2;super@nyx: ~/uh manoa/spring17/ics313/adam3595]1;..s313/adam3595[0m[27m[24m[J[01;32m➜  [36madam3595[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31mq[0m[39mls[1m[31mq[1m[31mu[0m[39m [1m[31mq[1m[31mu[1m[31mi[0m[39m[1m[31mq[1m[31mu[0m[39m[0m[39m [1m[31mq[0m[39m[0m[39mls[0m[39m   [1m[31me[0m[39mxit[0m[32me[32mx[39m[1m[31me[1m[31mx[1m[31mi[0m[39m[0m[32me[0m[32mx[0m[32mi[32mt[39m[?1l>[?2004l
+]2;exit]1;exit
+Script done on Sun 12 Mar 2017 04:37:40 PM HST

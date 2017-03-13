@@ -104,7 +104,8 @@
 
 (defun have (object)
     (member object (cdr (inventory))))
-;  wizards_game part 2
+
+(defparameter *allowed-commands* '(look walk pickup inventory help h ?))
 
 (defun help ()
   "lists the allowed commands"
@@ -130,7 +131,6 @@
                     (list 'quote x)))
              (cons (car cmd) (mapcar #'quote-it (cdr cmd))))))
 
-(defparameter *allowed-commands* '(look walk pickup inventory help h ?))
 
 (defun game-eval (sexp)
     (if (member (car sexp) *allowed-commands*)
@@ -189,12 +189,12 @@
 (defparameter *pi-baked* nil)
 
 (game-action bake pie oven kitchen
-  "includes the bake command to let the user bake a pie"
-  (if (and (have 'raspberry)
-           (have 'ibm-keyboard)
-           (have 'crt-monitor)
-           (have 'pie)
-           (not *pi-baked*))
+  (if (and
+        (have 'raspberry)
+        (have 'ibm-keyboard)
+        (have 'crt-monitor)
+        (have 'pie)
+        (not *pi-baked*))
     (progn
       (setf *pi-baked* 't)
       (game-print '(you put the raspberry ibm-keyboard crt-monitor and pie into the oven
@@ -203,7 +203,7 @@
             in an ancient and archaech language. all of a sudden...))
       (load "adam3595.lisp")
       (game-repl)
-      (game-print (look)))
+    )
     '(you are missing some items...)))
 
 ;; add all the locations to the game
