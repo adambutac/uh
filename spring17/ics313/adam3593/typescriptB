@@ -1,82 +1,0 @@
-Script started on Fri 10 Feb 2017 09:28:58 PM HST
-[1m[7m%[27m[1m[0m                                                                                                                       ]2;super@enyo: ~/uh/spring17/ics313/adam3593]1;..s313/adam3593[0m[27m[24m[J[01;32m➜  [36madam3593[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31mc[0m[39m[1m[31mc[1m[31ml[0m[39m[1m[31mc[1m[31ml[1m[31mi[0m[39m[1m[31mi[1m[31ms[0m[39m[0m[32mc[0m[32ml[0m[32mi[0m[32ms[32mp[39m[?1l>[?2004l
-]2;clisp]1;clisp  i i i i i i i       ooooo    o        ooooooo   ooooo   ooooo
-  I I I I I I I      8     8   8           8     8     o  8    8
-  I  \ `+' /  I      8         8           8     8        8    8
-   \  `-+-'  /       8         8           8      ooooo   8oooo
-    `-__|__-'        8         8           8           8  8
-        |            8     o   8           8     o     8  8
-  ------+------       ooooo    8oooooo  ooo8ooo   ooooo   8
-
-Welcome to GNU CLISP 2.49 (2010-07-07) <http://clisp.cons.org/>
-
-Copyright (c) Bruno Haible, Michael Stoll 1992, 1993
-Copyright (c) Bruno Haible, Marcus Daniels 1994-1997
-Copyright (c) Bruno Haible, Pierpaolo Bernardi, Sam Steingold 1998
-Copyright (c) Bruno Haible, Sam Steingold 1999-2000
-Copyright (c) Sam Steingold, Bruno Haible 2001-2010
-
-Type :h and hit Enter for context help.
-
-[1]> (load "adam3593B.lisp")[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
-;; Loading file adam3593B.lisp ...
-;; Loaded file adam3593B.lisp
-T
-[2]> (id 313 3)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
-Name: "Adam Butac"
-Course: ICS313
-Assignment # 3
-NIL
-[3]> (game-repl)[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
-look
-You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here. There is a
- ladder going upstairs from here. There is a door going north from here. You see a whiskey on the floor. You see a
- bucket on the floor.
-pickup bucket
-You are now carrying the bucket
-pickup whiskey
-You are now carrying the whiskey
-loo[K[K[Kwalk north
-You are in the kitchen. There is a beautiful chocolate cake on the table. There is a door going south from here. You
- see a cake on the floor.
-pickup cake
-You are now carrying the cake
-walk south
-You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here. There is a
- ladder going upstairs from here. There is a door going north from here.
-walk upstairs
-You are in the attic. There is a giant welding torch in the corner. There is a ladder going downstairs from here.
-pickup torch
-You cannot get that.
-l[Klook
-You are in the attic. There is a giant welding torch in the corner. There is a ladder going downstairs from here.
-walk downstairs
-You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here. There is a
- ladder going upstairs from here. There is a door going north from here.
-ls
-I do not know that command.
-look
-You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here. There is a
- ladder going upstairs from here. There is a door going north from here.
-walk west
-You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see a frog
- on the floor. You see a chain on the floor.
-loo[K[K[Kpickup chain
-You are now carrying the chain
-pickup frog
-You are now carrying the frog
-ine[Kvintory
-I do not know that command.
-inventory
-Items- whiskey bucket frog chain cake
-have whisy[Kkey
-I do not know that command.
-have
-I do not know that command.
-quit
-NIL
-[4]> (quit)[C[C[C[C[C[C
-Bye.
-[1m[7m%[27m[1m[0m                                                                                                                       ]2;super@enyo: ~/uh/spring17/ics313/adam3593]1;..s313/adam3593[0m[27m[24m[J[01;32m➜  [36madam3593[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31me[0m[39m[0m[32me[32mx[39m[1m[31me[1m[31mx[1m[31mi[0m[39m[0m[32me[0m[32mx[0m[32mi[32mt[39m[?1l>[?2004l
-]2;exit]1;exit
-Script done on Fri 10 Feb 2017 09:30:26 PM HST
