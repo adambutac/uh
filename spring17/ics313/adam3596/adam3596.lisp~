@@ -153,7 +153,6 @@
 (defun start ()
   (setq *initial-state* (get-current-state))
   (game-repl)
-  (game-print (game-eval '(look)))
 )
 
 (defun game-repl ()
