@@ -5,17 +5,28 @@
 (in-package :User) ; optional - this is also in the header above
 (defconstant +ID+ "Adam Butac")
 
-(defun id (crsNum asnNum)
-  "Print name, course number, and homework assignment number. Return nil."
-  (cond
-    ((and (integerp crsNum) (integerp asnNum))
-      (format t "Name: ~S~%" +ID+)
-      (format t "Course: ICS~D~%" crsNum)
-      (format t "Assignment # ~D~%" asnNum))))
-
-; wizards_game part 1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;-----GLOBES------;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;misc global variables
 (defparameter *nodes* '())
+(defparameter *edges* '())
+(defparameter *allowed-commands* '(look walk pickup inventory help h ?))
+;;stateful variables
+(defparameter *end* nil)
+(defparameter *state* ())
+(defparameter *initial-state* ())
+;;game state variables
+(defparameter *objects* ())
+(defparameter *object-locations* ())
+(defparameter *location* 'living-room)
+(defparameter *chain-welded* nil)
+(defparameter *bucket-filled* nil)
+(defparameter *pi-baked* nil)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;-----MACROS------;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defmacro new-location (loc des)
   "macro to create new locations in the game"
   (if (and (symbolp loc) (consp des))
@@ -24,10 +35,6 @@
       (format t "~S already exists in the game.~%" loc))
     (format t "Incorrect parameter types.  Macro new-location requires a symbol and a list.")))
 
-(defun describe-location (location nodes)
-   (cadr (assoc location nodes)))
-
-(defparameter *edges* '())
 (defmacro new-path (loc edgs &optional opt1 opt2)
   "macro designed to create edges going from one location to another"
   (if (and (symbolp loc) (consp edgs))
@@ -40,15 +47,6 @@
         (t
           `(push  '(,loc ,edgs (,@opt1) (,@opt2)) *edges*)))
       (format t "Paths from ~s were already generated.~%" loc))))
-
-(defun describe-path (edge)
-  `(there is a ,(caddr edge) going ,(cadr edge) from here.))
-
-(defun describe-paths (location edges)
-  (apply #'append (mapcar #'describe-path (cdr (assoc location edges)))))
-
-(defparameter *objects* ())
-(defparameter *object-locations* ())
 
 (defmacro println (msg)
   "lets you print a line followed by a new line"
@@ -66,6 +64,36 @@
       (push `(,obj ,loc) *object-locations*)))
   nil)
 
+(defmacro game-action (command subj obj place &body body)
+  `(progn (defun ,command (subject object)
+            (if (and (eq *location* ',place)
+                     (eq subject ',subj)
+                     (eq object ',obj)
+                     (have ',subj))
+                ,@body
+            '(i cant ,command like that.)))
+          (pushnew ',command *allowed-commands*)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;-----FUNCNS------;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun id (crsNum asnNum)
+  "Print name, course number, and homework assignment number. Return nil."
+  (cond
+    ((and (integerp crsNum) (integerp asnNum))
+      (format t "Name: ~S~%" +ID+)
+      (format t "Course: ICS~D~%" crsNum)
+      (format t "Assignment # ~D~%" asnNum))))
+
+(defun describe-location (location nodes)
+   (cadr (assoc location nodes)))
+
+(defun describe-path (edge)
+  `(there is a ,(caddr edge) going ,(cadr edge) from here.))
+
+(defun describe-paths (location edges)
+  (apply #'append (mapcar #'describe-path (cdr (assoc location edges)))))
+
 (defun objects-at (loc objs obj-loc)
    (labels ((is-at (obj)
               (eq (cadr (assoc obj obj-loc)) loc)))
@@ -76,7 +104,6 @@
               `(you see a ,obj on the floor.)))
       (apply #'append (mapcar #'describe-obj (objects-at loc objs obj-loc)))))
 
-(defparameter *location* 'living-room)
 
 (defun look ()
   (append (describe-location *location* *nodes*)
@@ -104,7 +131,6 @@
 (defun have (object)
     (member object (cdr (inventory))))
 
-(defparameter *allowed-commands* '(look walk pickup inventory help h ?))
 
 (defun help ()
   "lists the allowed commands"
@@ -118,58 +144,67 @@
   "lists the allowed commands"
   (help))
 
-(defparameter *state* ())
-
-(defun reset-state(s)
+(defun reset-state (s)
+  "resets the current game state to a givien state s"
   (setq state s)
   (setq *objects*           (pop state))
   (setq *object-locations*  (pop state))
   (setq *location*          (pop state))
   (setq *pi-baked*          (pop state))
   (setq *bucket-filled*     (pop state))
-  (setq *chain-welded*      (pop state))
-)
+  (setq *chain-welded*      (pop state)))
 
 (defun get-current-state()
+  "returns the current state of the game"
   (setq state `( ,*objects*
                  ,*object-locations*
                  ,*location*
                  ,*pi-baked*
                  ,*bucket-filled*
-                 ,*chain-welded*))
-)
+                 ,*chain-welded*)))
 
 (defun push-state()
-  (push (get-current-state) *state*)
-)
+  "Add a state list to the list of states"
+  (push (get-current-state) *state*))
 
 (defun pop-state()
-  (reset-state (pop *state*))
-)
-
-(defparameter *initial-state* ())
-(defparameter *end* nil)
+  "pop the last state from the list of states, and
+  set the current game state to that state"
+  (reset-state (pop *state*)))
 
 (defun start ()
+  (terpri) (terpri) (terpri)
+  (game-print '(" ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^ "))
+  (game-print '(" )                                                                           ( "))
+  (game-print '("(     _/_/_/_/  _/    _/  _/_/_/      _/_/_/  _/_/_/_/    _/_/    _/      _/  )"))
+  (game-print '(" )   _/        _/    _/  _/    _/  _/        _/        _/    _/  _/_/    _/  ( "))
+  (game-print '("(   _/        _/    _/  _/_/_/      _/_/    _/_/_/    _/    _/  _/  _/  _/    )"))
+  (game-print '(" ) _/        _/    _/  _/    _/        _/  _/        _/    _/  _/    _/_/    ( "))
+  (game-print '("(   _/_/_/    _/_/    _/    _/  _/_/_/    _/_/_/_/    _/_/    _/      _/      )"))
+  (game-print '(" )                                                                           ( "))
+  (game-print '(" ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^"))
+  (terpri) (terpri) (terpri)
   (setq *initial-state* (get-current-state))
-  (game-repl)
+  (game-print '(welcome to CURSEON - the layer of the sleeping unix wizard! please type quietly!))
+  (terpri)
   (game-print (game-eval '(look)))
-)
+  (game-repl)
+  (game-print '(Your journey has finally come to an end. Goodbye!))
+  )
 
 (defun game-repl ()
   (cond
     ((not *end*)
       (let ((cmd (game-read)))
           (unless (eq (car cmd) 'quit)
+            (terpri)
             (game-print (game-eval cmd))
             (game-repl))))
     ((> (length *state*) 0)
       (setq *end* nil)
       (pop-state)
       (game-print `(you are shocked to find yourself back in the ,*location* where you started.
-                                   the thinkpad shuts down.)))
-  )
-)
+                                   the thinkpad shuts down.)))))
 
 (defun game-read ()
     (let ((cmd (read-from-string (concatenate 'string "(" (read-line) ")"))))
@@ -198,25 +233,11 @@
     (princ (coerce (tweak-text (coerce (string-trim "() " (prin1-to-string lst)) 'list) t nil) 'string))
     (fresh-line))
 
-(defmacro game-action (command subj obj place &body body)
-  `(progn (defun ,command (subject object)
-            (if (and (eq *location* ',place)
-                     (eq subject ',subj)
-                     (eq object ',obj)
-                     (have ',subj))
-                ,@body
-            '(i cant ,command like that.)))
-          (pushnew ',command *allowed-commands*)))
-
-(defparameter *chain-welded* nil)
-
 (game-action weld chain bucket attic
              (if (and (have 'bucket) (not *chain-welded*))
                  (progn (setf *chain-welded* 't)
                         '(the chain is now securely welded to the bucket.))
                '(you do not have a bucket.)))
-
-(defparameter *bucket-filled* nil)
 
 (game-action dunk bucket well garden
              (if *chain-welded*
@@ -233,8 +254,6 @@
                    (t (setq *end* t)
                       '(the wizard awakens from his slumber and greets you warmly.
                         he hands you the magic low-carb donut- you win! the end.))))
-
-(defparameter *pi-baked* nil)
 
 (game-action bake pie oven kitchen
   (if (and
@@ -255,6 +274,9 @@
     )
     '(you are missing some items...)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;------INITS------;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; add all the locations to the game
 (new-location living-room (you are in the living-room.
                                 a wizard is snoring loudly on the couch.))
@@ -282,3 +304,4 @@
 (new-object garden frog)
 (new-object kitchen cake)
 (new-object kitchen pie)
+(start)
