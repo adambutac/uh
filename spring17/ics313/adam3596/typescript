@@ -1,0 +1,478 @@
+Script started on Fri 24 Mar 2017 04:20:15 PM HST
+[1m[7m%[27m[1m[0m                                                                                                                ]2;super@nyx: ~/uh manoa/spring17/ics313/adam3596]1;..s313/adam3596[0m[27m[24m[J[01;32m➜  [36madam3596[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[4mc[24mlisp curseon.lisp[17D[24m[1m[31mc[1m[31ml[0m[39m[1m[31mc[1m[31ml[1m[31mi[0m[39m[1m[31mi[1m[31ms[0m[39m[0m[32mc[0m[32ml[0m[32mi[0m[32ms[32mp[39m[1C            [13D[?1l>[?2004l
+]2;clisp]1;clisp  i i i i i i i       ooooo    o        ooooooo   ooooo   ooooo
+  I I I I I I I      8     8   8           8     8     o  8    8
+  I  \ `+' /  I      8         8           8     8        8    8
+   \  `-+-'  /       8         8           8      ooooo   8oooo
+    `-__|__-'        8         8           8           8  8
+        |            8     o   8           8     o     8  8
+  ------+------       ooooo    8oooooo  ooo8ooo   ooooo   8
+
+Welcome to GNU CLISP 2.49 (2010-07-07) <http://clisp.cons.org/>
+
+Copyright (c) Bruno Haible, Michael Stoll 1992, 1993
+Copyright (c) Bruno Haible, Marcus Daniels 1994-1997
+Copyright (c) Bruno Haible, Pierpaolo Bernardi, Sam Steingold 1998
+Copyright (c) Bruno Haible, Sam Steingold 1999-2000
+Copyright (c) Sam Steingold, Bruno Haible 2001-2010
+
+Type :h and hit Enter for context help.
+
+[1]> (load "adam3596.[K[K[K[K[K[K[K[K[Kcurseon.lisp")[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+;; Loading file curseon.lisp ...
+
+
+ ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^ 
+ )                                                                           ( 
+(     _/_/_/_/  _/    _/  _/_/_/      _/_/_/  _/_/_/_/    _/_/    _/      _/  )
+ )   _/        _/    _/  _/    _/  _/        _/        _/    _/  _/_/    _/  ( 
+(   _/        _/    _/  _/_/_/      _/_/    _/_/_/    _/    _/  _/  _/  _/    )
+ ) _/        _/    _/  _/    _/        _/  _/        _/    _/  _/    _/_/    ( 
+(   _/_/_/    _/_/    _/    _/  _/_/_/    _/_/_/_/    _/_/    _/      _/      )
+ )                                                                           ( 
+ ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+
+
+
+Welcome to curseon - the layer of the sleeping unix wizard! Please type quietly!
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor. You see a crt-monitor on the floor.
+pickup crt-monitor 
+
+You are now carrying the crt-monitor
+pickup bucket
+
+You are now carrying the bucket
+look
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+pikcup whiskey
+
+I do not know that command.
+pickup whiskey
+
+You are now carrying the whiskey
+look
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here.
+waslk[K[K[K[K[Kwalk west
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor. You see a chain on the floor. You see a raspberry on the floor.
+pickup chain
+
+You are now carrying the chain
+w[Kpickup raspberry
+
+You are now carrying the raspberry
+look
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor.
+walk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here.
+was[Klk upstairs
+
+You are in the attic. There is a giant welding torch in the corner. There is a ladder going downstairs from
+ here. You see a ibm-keyboard on the floor.
+pik[Kckup ibm-keyboard
+
+You are now carrying the ibm-keyboard
+weld chain bucket
+
+The chain is now securely welded to the bucket.
+walk downstairs
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here.
+walk east
+
+You cannot go that way.
+dunk[K[K[K[Kealk w[K[K[K[K[K[Kwl[Kpalk[K[K[K[K[Kalk[K[K[Kwalk west
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor.
+dunk bucket well
+
+The bucket is now full of water
+walk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here.
+walk north
+
+You are in the kitchen. There is a beautiful chocolate cake on the table. There is an oven in front of you.
+ there is a door going south from here. You see a pie on the floor. You see a cake on the floor.
+pickup a[Kcake
+
+You are now carrying the cake
+pickup pie
+
+You are now carrying the pie
+bake pie oven
+
+You put the raspberry ibm-keyboard crt-monitor and pie into the oven and set it to ez-bake mode. *ding* out
+ pops a thinkpad! You are hypnotized by its boot animation... An unknown force guides your hands as you
+ furiously type in an ancient and archaech language. All of a sudden...
+
+
+
+ ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^ 
+ )                                                                           ( 
+(     _/_/_/_/  _/    _/  _/_/_/      _/_/_/  _/_/_/_/    _/_/    _/      _/  )
+ )   _/        _/    _/  _/    _/  _/        _/        _/    _/  _/_/    _/  ( 
+(   _/        _/    _/  _/_/_/      _/_/    _/_/_/    _/    _/  _/  _/  _/    )
+ ) _/        _/    _/  _/    _/        _/  _/        _/    _/  _/    _/_/    ( 
+(   _/_/_/    _/_/    _/    _/  _/_/_/    _/_/_/_/    _/_/    _/      _/      )
+ )                                                                           ( 
+ ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+
+
+
+Welcome to curseon - the layer of the sleeping unix wizard! Please type quietly!
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor. You see a crt-monitor on the floor.
+pickup bucket[K[K[K[K[K[Ki[Kcrt-monitor
+
+You are now carrying the crt-monitor
+pickup[K[K[K[K[K[Kw[Klook
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor.
+walk upstairs
+
+You are in the attic. There is a giant welding torch in the corner. There is a ladder going downstairs from
+ here. You see a ibm-keyboard on the floor.
+walk [K[K[K[K[Kpickup -[Kibm-keyboard
+
+You are now carrying the ibm-keyboard
+walk downstairs
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor.
+walk west
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor. You see a chain on the floor. You see a raspberry on the floor.
+pickup raspberry
+
+You are now carrying the raspberry
+walk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor.
+walk north
+
+You are in the kitchen. There is a beautiful chocolate cake on the table. There is an oven in front of you.
+ there is a door going south from here. You see a pie on the floor. You see a cake on the floor.
+pickpu pie
+
+I do not know that command.
+pickup pie
+
+You are now carrying the pie
+bake pie oven
+
+You put the raspberry ibm-keyboard crt-monitor and pie into the oven and set it to ez-bake mode. *ding* out
+ pops a thinkpad! You are hypnotized by its boot animation... An unknown force guides your hands as you
+ furiously type in an ancient and archaech language. All of a sudden...
+
+
+
+ ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^ 
+ )                                                                           ( 
+(     _/_/_/_/  _/    _/  _/_/_/      _/_/_/  _/_/_/_/    _/_/    _/      _/  )
+ )   _/        _/    _/  _/    _/  _/        _/        _/    _/  _/_/    _/  ( 
+(   _/        _/    _/  _/_/_/      _/_/    _/_/_/    _/    _/  _/  _/  _/    )
+ ) _/        _/    _/  _/    _/        _/  _/        _/    _/  _/    _/_/    ( 
+(   _/_/_/    _/_/    _/    _/  _/_/_/    _/_/_/_/    _/_/    _/      _/      )
+ )                                                                           ( 
+ ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+
+
+
+Welcome to curseon - the layer of the sleeping unix wizard! Please type quietly!
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor. You see a crt-monitor on the floor.
+pickup bucket
+
+You are now carrying the bucket
+pickup crtmo[K[K-monitor m[K
+
+You are now carrying the crt-monitor
+walk east
+
+You cannot go that way.
+walk upstairs
+
+You are in the attic. There is a giant welding torch in the corner. There is a ladder going downstairs from
+ here. You see a ibm-keyboard on the floor.
+pickup ibm-keyboard 
+
+You are now carrying the ibm-keyboard
+walk downstairs 
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+look
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+walk east[K[K[K[Kwest
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor. You see a chain on the floor. You see a raspberry on the floor.
+pickup raspbery[Kry
+
+You are now carrying the raspberry
+pick[K[K[K[Kpickup chain
+
+You are now carrying the chain
+wak ea[K[K[K[K[K[Kwalk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+walk upstairs
+
+You are in the attic. There is a giant welding torch in the corner. There is a ladder going downstairs from
+ here.
+weld chain bucket
+
+The chain is now securely welded to the bucket.
+walk downs[Kstairs
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+we[Kalk e[Kwest
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor.
+dunk bucket well
+
+The bucket is now full of water
+walk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+walk north
+
+You are in the kitchen. There is a beautiful chocolate cake on the table. There is an oven in front of you.
+ there is a door going south from here. You see a pie on the floor. You see a cake on the floor.
+pickup pie
+
+You are now carrying the pie
+pik[Kck[K[K[K[Kbake pie oven
+
+You put the raspberry ibm-keyboard crt-monitor and pie into the oven and set it to ez-bake mode. *ding* out
+ pops a thinkpad! You are hypnotized by its boot animation... An unknown force guides your hands as you
+ furiously type in an ancient and archaech language. All of a sudden...
+
+
+
+ ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^ 
+ )                                                                           ( 
+(     _/_/_/_/  _/    _/  _/_/_/      _/_/_/  _/_/_/_/    _/_/    _/      _/  )
+ )   _/        _/    _/  _/    _/  _/        _/        _/    _/  _/_/    _/  ( 
+(   _/        _/    _/  _/_/_/      _/_/    _/_/_/    _/    _/  _/  _/  _/    )
+ ) _/        _/    _/  _/    _/        _/  _/        _/    _/  _/    _/_/    ( 
+(   _/_/_/    _/_/    _/    _/  _/_/_/    _/_/_/_/    _/_/    _/      _/      )
+ )                                                                           ( 
+ ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+
+
+
+Welcome to curseon - the layer of the sleeping unix wizard! Please type quietly!
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor. You see a crt-monitor on the floor.
+look
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor. You see a crt-monitor on the floor.
+depth
+
+You are now 3 levels deep.
+T
+pickup bucket
+
+You are now carrying the bucket
+walk e[Kwest
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor. You see a chain on the floor. You see a raspberry on the floor.
+pickup chain
+
+You are now carrying the chain
+walk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor. You see a crt-monitor on the floor.
+p[Kwalk upstairs
+
+You are in the attic. There is a giant welding torch in the corner. There is a ladder going downstairs from
+ here. You see a ibm-keyboard on the floor.
+weld chain bucket
+
+The chain is now securely welded to the bucket.
+walk downstairs
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor. You see a crt-monitor on the floor.
+pickup whiskey
+
+You are now carrying the whiskey
+walk west
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor. You see a raspberry on the floor.
+dunk bucket well
+
+The bucket is now full of water
+walk east[K[Kas[K[Kst
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a crt-monitor on
+ the floor.
+splash bucketw[K wizard
+
+The wizard awakens from his slumber and greets you warmly. He hands you the magic low-carb donut- you win! The
+ end.
+You are shocked to find yourself back in the kitchen where you started. The thinkpad shuts down.
+T
+depth
+
+You are now 2 levels deep.
+T
+item[K[K[Knventory
+
+Items- pie chain raspberry ibm-keyboard bucket crt-monitor
+walk south
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+walk west
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor.
+pickup crog[K[K[K[Kfrog
+
+You are now carrying the frog
+walk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+du[K[Ksplash bucket wizard
+
+The wizard awakens and sees that you stole his frog. He is so upset he banishes you to the netherworlds- you
+ lose! The end.
+You are shocked to find yourself back in the kitchen where you started. The thinkpad shuts down.
+T
+ite[K[Knventory
+
+Items- pie raspberry ibm-keyboard crt-monitor
+walk south
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a bucket on the
+ floor. You see a whiskey on the floor.
+pickup bucket
+
+You are now carrying the bucket
+walk west
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor. You see a chain on the floor.
+pickup chain
+
+You are now carrying the chain
+walk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+walk upstairs
+
+You are in the attic. There is a giant welding torch in the corner. There is a ladder going downstairs from
+ here.
+pickup [K[K[K[K[K[K[Kweld chain bucket
+
+The chain is now securely welded to the bucket.
+walk downt[Kstairs
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+walk west
+
+You are in a beautiful garden. There is a well in front of you. There is a door going east from here. You see
+ a frog on the floor.
+dunk bucket well
+
+The bucket is now full of water
+walk east
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here. You see a whiskey on the
+ floor.
+splash bucket wizard
+
+The wizard awakens from his slumber and greets you warmly. He hands you the magic low-carb donut- you win! The
+ end.
+You are shocked to find yourself back in the kitchen where you started. The thinkpad shuts down.
+T
+items
+
+I do not know that command.
+inventory
+
+Items- pie cake chain raspberry ibm-keyboard bucket whiskey crt-monitor
+splash [K[K[K[K[K[K[Kwalk south
+
+You are in the living-room. A wizard is snoring loudly on the couch. There is a door going west from here.
+ there is a ladder going upstairs from here. There is a door going north from here.
+splash bucket wizard
+
+The wizard awakens from his slumber and greets you warmly. He hands you the magic low-carb donut- you win! The
+ end.
+Your journey has finally come to an end. Goodbye!
+;; Loaded file curseon.lisp
+T
+[2]> ([K([K*state*
+NIL
+[3]> *initial-state*
+((PIE CAKE FROG CHAIN RASPBERRY IBM-KEYBOARD BUCKET WHISKEY CRT-MONITOR)
+ ((PIE KITCHEN) (CAKE KITCHEN) (FROG GARDEN) (CHAIN GARDEN) (RASPBERRY GARDEN) (IBM-KEYBOARD ATTIC)
+  (BUCKET LIVING-ROOM) (WHISKEY LIVING-ROOM) (CRT-MONITOR LIVING-ROOM))
+ LIVING-ROOM NIL NIL NIL)
+[4]> (quit)[C[C[C[C[C[C
+Bye.
+[1m[7m%[27m[1m[0m                                                                                                                ]2;super@nyx: ~/uh manoa/spring17/ics313/adam3596]1;..s313/adam3596[0m[27m[24m[J[01;32m➜  [36madam3596[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31mq[0m[39mpaeq[1m[31mq[1m[31mu[0m[39mit [1m[31mq[1m[31mu[1m[31mi[0m[39m[1m[31mi[1m[31mt[0m[39m[?1l>[?2004l
+]2;quit]1;quitzsh: command not found: quit
+[1m[7m%[27m[1m[0m                                                                                                                ]2;super@nyx: ~/uh manoa/spring17/ics313/adam3596]1;..s313/adam3596[0m[27m[24m[J[01;31m➜  [36madam3596[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31me[0m[39mxit[0m[32me[32mx[39m[1m[31me[1m[31mx[1m[31mi[0m[39m[0m[32me[0m[32mx[0m[32mi[32mt[39m[?1l>[?2004l
+]2;exit]1;exit
+Script done on Fri 24 Mar 2017 04:25:42 PM HST
