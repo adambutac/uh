@@ -1,0 +1,18 @@
+INTRODUCTION:
+
+  CURSEON is a ultra-lite text based rpg.  You play the role of a wanderer who
+is trapped in the relm of the *rip-van-winkle* wizard Curseon.  Can you find a
+way out of Curesons world? Or will your stack be doomed to overflow?
+
+INSTALLATION:
+
+  Installation is easy! All you need is a copy of CLISP on your device.
+  To star the game, type "clisp curseon.lisp".
+
+GAMEPLAY:
+
+  As with most text based games, the player enters commands to explore the
+world by walking, looking, etc.  The help command lists all the possible
+commands that the game will accept.  However, it is up to you to find out
+how to use these commands to free yourself.
+

@@ -1,0 +1,126 @@
+#!/bin/bash
+
+clisp curseon.lisp <<EOF
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+pickup crt-monitor
+walk west
+pickup raspberry
+walk east
+walk upstairs
+pickup ibm-keyboard
+walk downstairs
+walk north
+pickup pie
+bake pie oven
+depth
+pickup bucket
+walk west
+pickup chain
+walk east
+walk upstairs
+weld chain bucket
+walk downstairs
+walk west
+dunk bucket well
+walk east
+splash bucket wizard
+EOF
