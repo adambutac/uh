@@ -1,0 +1,8 @@
+ICS111
+Bert 46
+BigBird 78
+Count 91
+Elmo 91
+Ernie 45
+Kermit 81
+Oscar 100
