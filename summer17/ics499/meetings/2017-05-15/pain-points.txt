@@ -1,0 +1,29 @@
+So I'm about to make my new ICS smartfolio, portsmolio... techfolio.
+Right, techfolio.
+
+I'm already unsure of where to begin, but I haven't really started yet so not
+sure why I'm already complaining.  Seems like something you pull, and then
+push to your own repo? Will be back soon.
+
+Found info on how to make the techfolio, initial assumption was correct.
+You pull the techfolio boiler plate, then edit the files to your liking.
+Once youre satisfied, you push to your own github.io site. Having the ability
+to view changes locally would be good because sometimes we like to work
+without an internet connection. Being able to view changes on the fly would be
+great.
+
+root directory
+  http://techfolios.github.io/
+quick start
+  http://techfolios.github.io/quickstart.html
+User Guide
+  http://techfolios.github.io/userguide.html
+
+
+At this point, I've gotten tired of following the guide step by step, and
+have moved on to editing the bio.js file which I found to be relatively
+painless.  One thing I did notice is that updates to the files in the repo
+take some time to appear on the site, which is slightly annoying.
+
+I've been working for a while now, so I will come back to this hopefully
+tomorrow.

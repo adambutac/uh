@@ -1,0 +1,12 @@
+Please create and/or update your TechFolio this week (Create a new project, write a simple essay, update something there).
+Use this as an opportunity to discover "pain points" around creation/maintenance of techfolios.
+Refer to ics-portfolios.github.io for examples if you're doing this for the first time.
+Write an essay that discusses your personal experience with TechFolio and how a desktop client could help. (If you want, you can provide background on Electron and/or your hopes for this summer project.)
+Please start creating an electron app.
+Create your own repo in techfolios organization. Call it electron-<your first name>.
+We will review this next Monday at 1pm.
+When you have something of interest to show, please post to #electron-intro. Please post both a link to your electron repo as well as a link to your techfolio by this Friday.
+Collaboration
+You can work together or not.
+Initial requirements for designer app are here:
+https://github.com/techfolios/designer
