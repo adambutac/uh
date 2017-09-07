@@ -1,0 +1,101 @@
+import java.io.FileNotFoundException;
+import java.io.File;
+import java.util.Scanner;
+
+public class Exercise {
+  static final int MAX_ROW = 100;
+  static final int MAX_COL = 100;
+  static final char[][] keyring = new char[MAX_ROW][MAX_COL];
+
+  public static void main(String[] args) throws FileNotFoundException{
+
+    // Load up the key file
+    File f = new File("key.txt");
+    // get an iterator to read the file
+    Scanner s = new Scanner(f);
+    // FYI, this loops forever if you don't read anything.
+    while(s.hasNext()){
+
+      /*  The first token from key.txt is the row index */
+      int row = s.nextInt();
+      /* The second token is the column index */
+      int col = s.nextInt();
+      /* The third token is the character in ASCII */
+      char chr = (char)s.nextInt();
+      /* Store the char into the keyring using the row and column indices. */
+      keyring[row][col] = chr;
+    }
+    s.close();
+
+    /* Open the message file. */
+    File msgf = new File("messege.txt");
+    /* Call decode with the message file and print the result. */
+    System.out.println(decode(msgf));
+    for(int i = 0; i < MAX_COL; i++){
+    	System.out.print("-");
+    }
+    System.out.println();
+    for(int row = 0; row < MAX_ROW; row++){
+    	
+		for(int col = 0; col < MAX_COL; col++){
+			System.out.print("|" + (keyring[row][col] == 0 ? ' ' : keyring[row][col]));
+		}
+	    for(int i = 0; i < MAX_COL; i++){
+	    	System.out.print("-");
+	    }
+		System.out.println("|");
+    }
+  }
+
+  /* **********************************************************************
+   *
+   * This function takes in a single File as a parameter.
+   *
+   * The file contains row, column coordinate pairs.
+   *
+   * The coordinates are locations of chars in the global 2D array keyring.
+   *
+   * Loop over all the coordinates in the file, and return a string which
+   * contains all the characters retrieved from the keyring.
+   *
+   * Those who successfully decode the message will be greatly rewarded.
+   *
+   * ********************************************************************** */
+  private static String decode(File f) throws FileNotFoundException {
+	  Scanner s = new Scanner(f);
+	  String message = "";
+	  
+	  while(s.hasNext()){
+		  int row = s.nextInt();
+		  int col = s.nextInt();
+		  message += keyring[row][col];
+	  }
+	  
+	  s.close();
+	  return message;
+  }
+
+  private static String encode(String message) {
+    // uppercut the message to instill dominance
+    message = message.toUpperCase();
+    // string for (con)cats
+    String cipher = "";
+    // for every character in the message
+    for(int i = 0; i < message.length(); i++) {
+
+      // and every character in the keyring
+      for(int row = 0; row < MAX_ROW; row++) {
+        for(int col = 0; col < MAX_COL; col++) {
+
+          // if the char in the message and keyring are the same
+          if(message.charAt(i) == keyring[row][col]) {
+            // save the coordinates, check if solder is liquid
+            cipher += row + " " + col + "\n";
+          }
+        }
+      }
+    }
+    // return the cats, turns out they're not ours.
+    return cipher;
+  }
+}

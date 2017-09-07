@@ -1,0 +1,907 @@
+Script started on Fri 21 Apr 2017 10:40:11 PM HST
+[1m[7m%[27m[1m[0m                                                                                                                ]2;super@nyx: ~/uh manoa/spring17/ics313/adam3597]1;..s313/adam3597[0m[27m[24m[J[01;32m➜  [36madam3597[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31ms[0m[39mcript[1m[31ms[1m[31mw[0m[39mipl [0m[32ms[0m[32mw[32mi[32mp[32ml[39m[?1l>[?2004l
+]2;swipl]1;swiplWelcome to SWI-Prolog (threaded, 64 bits, version 7.4.1)
+SWI-Prolog comes with ABSOLUTELY NO WARRANTY. This is free software.
+Please run ?- license. for legal details.
+
+For online help and background, visit http://www.swi-prolog.org
+For built-in help, use ?- help(Topic). or ?- apropos(Word).
+
+?- go.['adam3597.pl'].
+[31;1mERROR: source_sink `'adam3597.pl'' does not exist
+ERROR: In:
+ERROR:   [20] throw(error(existence_error(source_sink,'adam3597.pl'),_7940))
+ERROR:   [15] '$load_file'('adam3597.pl',user,[expand(false),...]) at /usr/lib/swipl-7.4.1/boot/init.pl:1953
+ERROR:    [7] <user>
+ERROR: 
+ERROR: Note: some frames are missing due to last-call optimization.
+ERROR: Re-run your program in debug mode (:- debug.) to get more detail.
+[0m?- ['adam3597.pl'].[1P'].r'].o'].
+[1mtrue.[0m
+
+?- solution_1.
+[green,blue,green,blue,yellow]
+[1mtrue [0m[1m;[0m
+[green,blue,green,yellow,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,yellow,green,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,yellow,blue,green]
+[1mtrue [0m[1m;[0m
+[green,blue,green,blue,yellow]
+[1mtrue [0m[1m;[0m
+[green,blue,green,yellow,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,yellow,green,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,yellow,blue,green]
+[1mtrue [0m[1m;[0m
+[green,yellow,blue,green,blue]
+[1mtrue [0m[1m;[0m
+[green,yellow,blue,green,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,green,blue,yellow]
+[1mtrue [0m[1m;[0m
+[green,blue,green,yellow,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,yellow,green,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,yellow,blue,green]
+[1mtrue [0m[1m;[0m
+[green,blue,green,blue,yellow]
+[1mtrue [0m[1m;[0m
+[green,blue,green,yellow,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,yellow,green,blue]
+[1mtrue [0m[1m;[0m
+[green,blue,yellow,blue,green]
+[1mtrue [0m[1m;[0m
+[green,yellow,blue,green,blue]
+[1mtrue [0m[1m;[0m
+[green,yellow,blue,green,blue]
+[1mtrue [0m[1m;[0m
+[blue,green,blue,green,yellow]
+[1mtrue [0m[1m;[0m
+[blue,green,blue,yellow,green]
+[1mtrue [0m[1m;[0m
+[blue,green,yellow,green,blue]
+[1mtrue [0m[1m;[0m
+[blue,green,yellow,blue,green]
+[1mtrue [0m[1m;[0m
+[blue,green,blue,green,yellow]
+[1mtrue [0m[1m;[0m
+[blue,green,blue,yellow,green]
+[1mtrue [0m[1m;[0m
+[blue,green,yellow,green,blue]
+[1mtrue [0m[1m;[0m
+[blue,green,yellow,blue,green]
+[1mtrue [0m[1m;[0m
+[blue,yellow,green,blue,green]
+[1mtrue [0m[1m;[0m
+[blue,yellow,green,blue,green]
+[1mtrue [0m[1m;[0m
+[blue,green,blue,green,yellow]
+[1mtrue [0m[1m;[0m
+[blue,green,blue,yellow,green]
+[1mtrue [0m[1m;[0m
+[blue,green,yellow,green,blue]
+[1mtrue [0m[1m;[0m
+[blue,green,yellow,blue,green]
+[1mtrue [0m[1m;[0m
+[blue,green,blue,green,yellow]
+[1mtrue [0m[1m;[0m
+[blue,green,blue,yellow,green]
+[1mtrue [0m[1m;[0m
+[blue,green,yellow,green,blue]
+[1mtrue [0m[1m;[0m
+[blue,green,yellow,blue,green]
+[1mtrue [0m[1m;[0m
+[blue,yellow,green,blue,green]
+[1mtrue [0m[1m;[0m
+[blue,yellow,green,blue,green]
+[1mtrue [0m[1m;[0m
+[yellow,green,blue,green,blue]
+[1mtrue [0m[1m;[0m
+[yellow,green,blue,green,blue]
+[1mtrue [0m[1m;[0m
+[yellow,green,blue,green,blue]
+[1mtrue [0m[1m;[0m
+[yellow,green,blue,green,blue]
+[1mtrue [0m[1m;[0m
+[yellow,blue,green,blue,green]
+[1mtrue [0m[1m;[0m
+[yellow,blue,green,blue,green]
+[1mtrue [0m[1m;[0m
+[yellow,blue,green,blue,green]
+[1mtrue [0m[1m;[0m
+[yellow,blue,green,blue,green]
+[1mtrue [0m[1m;[0m
+[1;31mfalse.[0m
+
+?- ;;;;;;;;[K[K[K[K[K[K[K[Ksolution_2.
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,black,blue]
+[1mtrue [0m[1m;[0m
+[black,black,red,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,red,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,black,red]
+[1mtrue [0m[1m;[0m
+[black,black,blue,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,black,blue,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,black,blue,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,red,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,black,red,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[black,blue,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[red,black,black,blue,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[blue,black,black,red,black,black]
+[1mtrue [0m[1m;[0m
+[1;31mfalse.[0m
+
+?- ;;;;;;;;;;[K[K[K[K[K[K[K[K[K[Ksolution_3.
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+[black,white,white,green,red,green,red,green]
+[1mtrue [0m[1m;[0m
+;[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,black,green,red,white,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,black,white,green]
+[1mtrue [0m[1m;[0m
+[green,red,white,green,red,white,black,green]
+[1mtrue [0m[1m;[0m
+[1;31mfalse.[0m
+
+?- ;;;;;;;;;;;[K[K[K[K[K[K[K[K[K[K[Ke
+|    .
+[31;1mERROR: Undefined procedure: e/0 (DWIM could not correct goal)
+[0m?- 
+WARNING: By typing Control-C twice, you have forced an asynchronous
+WARNING: interrupt.  Your only SAFE operation are: c(ontinue), p(id),
+WARNING: s(stack) and e(xit).  Notably a(abort) often works, but
+WARNING: leaves the system in an UNSTABLE state
+
+Action (h for help) ? exit
+[1m[7m%[27m[1m[0m                                                                                                                ]2;super@nyx: ~/uh manoa/spring17/ics313/adam3597]1;..s313/adam3597[0m[27m[24m[J[01;32m➜  [36madam3597[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h[1m[31me[0m[39mxit[0m[32me[32mx[39m[1m[31me[1m[31mx[1m[31mi[0m[39m[0m[32me[0m[32mx[0m[32mi[32mt[39m[?1l>[?2004l
+]2;exit]1;exit
+Script done on Fri 21 Apr 2017 10:41:20 PM HST

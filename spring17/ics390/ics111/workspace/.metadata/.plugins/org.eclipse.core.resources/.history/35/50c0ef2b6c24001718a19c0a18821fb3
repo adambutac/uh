@@ -1,0 +1,99 @@
+import java.util.ArrayList;
+import java.util.Random;
+
+public class Part3 {
+	public static void main(String[] args) {
+
+		// An array of 52 references to cards
+		// Card[] deck = new Card[52];
+		ArrayList<Card> deck = new ArrayList<Card>();
+		int counter = 0;
+
+		/*
+		 * 1a Make 13 cards for Clubs 1b Make 13 cards for Hearts 1c Make 13
+		 * cards for Diamonds 1d Make 13 cards for Spades
+		 */
+		/*
+		 * Cycle through each suit and within each suit each card and make a new
+		 * card with that suit and card. Number the cards 1-13 for Ace, 2, 3,
+		 * .... Jack, Queen, King=13 Suits are numbered as follows: 1=Clubs,
+		 * 2=Hearts, 3=Diamonds, 4=Spades. Print the card created as its being
+		 * created.
+		 */
+		for (int s = 1; s <= 4; s = s + 1) {
+
+			for (int c = 1; c <= 13; c = c + 1) {
+
+				// Make a card
+				Card aCard = new Card(c, s);
+
+				// Store the card in the deck.
+				// deck[counter] = aCard;
+				deck.add(counter, aCard);
+				counter = counter + 1;
+			}
+		}
+
+		// Our random number generator
+		Random randomGenerator = new Random();
+
+		// Iterate through each card in the deck
+		for (int i = 0; i < 52; i++) {
+
+			// Use the random number generator to choose a card to swap with.
+			int j = randomGenerator.nextInt(52);
+			// Swap card i with card j in the deck
+
+			// Card tempCard = deck[j];
+			Card tempCard = deck.get(j);
+
+			// deck[j]=deck[i];
+			deck.set(j, deck.get(i));
+
+			// deck[i]=tempCard;
+			deck.set(i, tempCard);
+		}
+
+		ArrayList<Card> hand1 = new ArrayList<Card>();
+		ArrayList<Card> hand2 = new ArrayList<Card>();
+
+		for (int i = 0; i < 5; i++) {
+			hand1.add(deck.get(0));
+			deck.remove(0);
+			hand2.add(deck.get(0));
+			deck.remove(0);
+		}
+
+		System.out.println("======== Hand 1 ===========");
+		for (int i = 0; i < hand1.size(); i++) {
+			hand1.get(i).print();
+		}
+		System.out.println("======== Hand 2 ===========");
+		for (int i = 0; i < hand2.size(); i++) {
+			hand2.get(i).print();
+		}
+		
+		/***** PART 3 CODE GOES HERE *****/
+		
+		// Declare your three variables here
+		ArrayList<Card> discard = new ArrayList<Card>();
+		System.out.println("======== Hand 1 Draw ===========");
+		
+		// Place your for loop here
+			
+		// Print out hand1 with the same style of header as shown in sample output
+		
+		// Print out the discard pile with the same style of header as shown in sample output
+		
+		/***** END OF PART 3 CODE *****/	
+		
+		System.out.println("======== Deck After Draw ===========");
+		for (int i = 0; i < deck.size(); i++) {
+			deck.get(i).print();
+		}
+		
+		
+		
+	}
+
+}

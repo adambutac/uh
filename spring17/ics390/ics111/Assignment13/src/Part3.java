@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Part3 {
 	public static void main(String[] args) {
@@ -76,15 +77,38 @@ public class Part3 {
 		/***** PART 3 CODE GOES HERE *****/
 		
 		// Declare your three variables here
+		ArrayList<Card> discard = new ArrayList<Card>();
+		Scanner sc = new Scanner(System.in);
+		String keep = new String();
 		
 		System.out.println("======== Hand 1 Draw ===========");
 		
 		// Place your for loop here
+		for(int i = 0; i < hand1.size(); i++){
+			Card c = hand1.get(i);
+			c.print();
+			System.out.print("Would you like to keep this card (y/n):");
+			keep = sc.nextLine();
 			
+			if(keep.equals("y")){
+				//nothing happens
+			} else if(keep.equals("n")){
+				discard.add(hand1.remove(i));
+				hand1.add(i,deck.remove(0));
+			}else {
+				System.out.println("Something happened...");
+			}
+		}
 		// Print out hand1 with the same style of header as shown in sample output
-		
+		System.out.println("======== Hand1 After Draw ===========");
+		for (int i = 0; i < hand1.size(); i++) {
+			hand1.get(i).print();
+		}
 		// Print out the discard pile with the same style of header as shown in sample output
-		
+		System.out.println("======== Discard Pile After Draw ===========");
+		for (int i = 0; i < discard.size(); i++) {
+			discard.get(i).print();
+		}
 		/***** END OF PART 3 CODE *****/	
 		
 		System.out.println("======== Deck After Draw ===========");
@@ -92,7 +116,8 @@ public class Part3 {
 			deck.get(i).print();
 		}
 		
-		
+		System.out.println("total card count");
+		System.out.println(deck.size() + hand1.size() + hand2.size() + discard.size());
 		
 	}
 

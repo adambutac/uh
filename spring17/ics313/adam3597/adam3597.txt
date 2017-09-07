@@ -1,0 +1,20 @@
+Solution 1:
+  balls of the same color are unique
+    total number of permutations - subset of permutations where two balls of the same color touch
+                                  (assume same colors are touching, 3 colors of balls, 3 distinct elements)
+    5! - 3! = 114
+
+  balls of the same color are indistinquishable
+    5 * 2 * 1 = 10
+
+Solution 2:
+  balls of the same color are unique
+  ???
+  balls of the same color are indistinquishable
+  ???
+
+Solution 3:
+  balls of the same color are unique
+  ???
+  balls of the same color are indistinquishable
+  ???

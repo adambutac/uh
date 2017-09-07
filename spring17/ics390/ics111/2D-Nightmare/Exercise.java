@@ -10,26 +10,42 @@ public class Exercise {
   public static void main(String[] args) throws FileNotFoundException{
 
     // Load up the key file
-    File f = new File("./key.txt");
+    File f = new File("key.txt");
     // get an iterator to read the file
     Scanner s = new Scanner(f);
-    // FYI, this loops forever if you dont read anything.
+    // FYI, this loops forever if you don't read anything.
     while(s.hasNext()){
 
       /*  The first token from key.txt is the row index */
-
+      int row = s.nextInt();
       /* The second token is the column index */
-
+      int col = s.nextInt();
       /* The third token is the character in ASCII */
-
-      /* Store the char into the keyring using the row and column indecies. */
-
+      char chr = (char)s.nextInt();
+      /* Store the char into the keyring using the row and column indices. */
+      keyring[row][col] = chr;
     }
+    s.close();
 
     /* Open the message file. */
-
+    File msgf = new File("messege.txt");
     /* Call decode with the message file and print the result. */
-
+    System.out.println(decode(msgf));
+    for(int i = 0; i < MAX_COL; i++){
+    	System.out.print("-");
+    }
+    System.out.println();
+    for(int row = 0; row < MAX_ROW; row++){
+    	
+		for(int col = 0; col < MAX_COL; col++){
+			System.out.print("|" + (keyring[row][col] == 0 ? ' ' : keyring[row][col]));
+		}
+		System.out.print("|\n|");
+	    for(int i = 0; i < MAX_COL * 2 - 1; i++){
+	    	System.out.print("-");
+	    }
+		System.out.println("|");
+    }
   }
 
   /* **********************************************************************
@@ -43,10 +59,22 @@ public class Exercise {
    * Loop over all the coordinates in the file, and return a string which
    * contains all the characters retrieved from the keyring.
    *
-   * Those who succesfully decode the message will be greatly rewarded.
+   * Those who successfully decode the message will be greatly rewarded.
    *
    * ********************************************************************** */
-  //private static String decode(File f) throws FileNotFoundException {}
+  private static String decode(File f) throws FileNotFoundException {
+	  Scanner s = new Scanner(f);
+	  String message = "";
+	  
+	  while(s.hasNext()){
+		  int row = s.nextInt();
+		  int col = s.nextInt();
+		  message += keyring[row][col];
+	  }
+	  
+	  s.close();
+	  return message;
+  }
 
   private static String encode(String message) {
     // uppercut the message to instill dominance
